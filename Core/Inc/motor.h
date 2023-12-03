@@ -23,7 +23,8 @@ typedef struct
 	float x, y;
 }PosStr;
 
-extern int goal_speed[4];
+extern float goal_speed[4];
 void Move(uint8_t id, float pwm);
 void Update_Pwm(PosStr now, PosStr goal);
-void Mecanum(float vx, float vy, float w);
+void Mecanum_Speed(float vx, float vy, float w);
+void Mecanum_Pos(PosStr now, PosStr goal);

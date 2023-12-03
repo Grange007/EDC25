@@ -13,7 +13,7 @@
 
 #include <math.h>
 
-int goal_speed[4];
+float goal_speed[4];
 
 void Move(uint8_t id, float pwm)
 {
@@ -138,7 +138,7 @@ void Update_Pwm(PosStr now, PosStr goal)
 //	u1_printf("RRNow=%f RRPwm=%f\n", RRNow, RRPwm);
 }
 
-void Mecanum(float vx, float vy, float w)
+void Mecanum_Speed(float vx, float vy, float w)
 {
     float FL, FR, RL, RR;
     FL = (vx - vy - (LX + LY) * w) / R;
@@ -177,4 +177,12 @@ void Mecanum(float vx, float vy, float w)
     goal_speed[1] = FR;
     goal_speed[2] = RL;
     goal_speed[3] = RR;
+}
+
+void Mecanum_Pos(PosStr now, PosStr goal)
+{
+	float vx = PID_Cal(&xPid, now.x, goal.x);
+	float vy = PID_Cal(&yPid, now.y, goal.y);
+	float w = 0;
+	Mecanum_Speed(vx, vy, w);
 }
