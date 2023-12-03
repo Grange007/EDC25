@@ -13,6 +13,8 @@
 
 #include <math.h>
 
+int goal_speed[4];
+
 void Move(uint8_t id, float pwm)
 {
 	if (id == 1)
@@ -134,4 +136,45 @@ void Update_Pwm(PosStr now, PosStr goal)
 //	u1_printf("FRNow=%f FRPwm=%f\n", FRNow, FRPwm);
 //	u1_printf("RLNow=%f RLPwm=%f ", RLNow, RLPwm);
 //	u1_printf("RRNow=%f RRPwm=%f\n", RRNow, RRPwm);
+}
+
+void Mecanum(float vx, float vy, float w)
+{
+    float FL, FR, RL, RR;
+    FL = (vx - vy - (LX + LY) * w) / R;
+    FL = (vx + vy + (LX + LY) * w) / R;
+    FL = (vx + vy - (LX + LY) * w) / R;
+    FL = (vx - vy + (LX + LY) * w) / R;
+
+    // 限制最大速度
+    float max = fabs(FL);
+    if (fabs(FR) > max)
+        max = fabs(FR);
+    if (fabs(RL) > max)
+        max = fabs(RL);
+    if (fabs(RR) > max)
+        max = fabs(RR);
+    if (max > MAX_VELOCITY)
+    {
+        FL = FL / max * MAX_VELOCITY;
+        FR = FR / max * MAX_VELOCITY;
+        RL = RL / max * MAX_VELOCITY;
+        RR = RR / max * MAX_VELOCITY;
+    }
+
+    // 限制最小速度
+    if (FL < MIN_VELOCITY)
+        FL = MIN_VELOCITY;
+    if (FR < MIN_VELOCITY)
+        FR = MIN_VELOCITY;
+    if (RL < MIN_VELOCITY)
+        RL = MIN_VELOCITY;
+    if (RR < MIN_VELOCITY)
+        RR = MIN_VELOCITY;
+
+    // 更新电机速度
+    goal_speed[0] = FL;
+    goal_speed[1] = FR;
+    goal_speed[2] = RL;
+    goal_speed[3] = RR;
 }

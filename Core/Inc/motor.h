@@ -14,10 +14,16 @@
 #define MAX_VELOCITY 60
 #define MIN_VELOCITY -60
 
+#define LX 10
+#define LY 10
+#define R 10
+
 typedef struct
 {
 	float x, y;
 }PosStr;
 
+extern int goal_speed[4];
 void Move(uint8_t id, float pwm);
 void Update_Pwm(PosStr now, PosStr goal);
+void Mecanum(float vx, float vy, float w);
