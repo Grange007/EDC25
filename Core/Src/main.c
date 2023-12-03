@@ -28,6 +28,7 @@
 #include "jy62.h"
 #include "motor.h"
 #include "pid.h"
+#include "zigbee_edc25.h"
 
 #include <math.h>
 /* USER CODE END Includes */
@@ -127,8 +128,8 @@ int main(void)
 	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&xPid, 2.5f, 0.021f, 5.0f);
-	PID_Init(&yPid, 2.0f, 0.015f, 4.5f);
+	PID_Init(&xPid, 2.5f, 0.0f, 0.0f);
+	PID_Init(&yPid, 2.0f, 0.0f, 0.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
@@ -140,11 +141,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		u1_printf("hello\n");
-//		HAL_Delay(100);
-//		float y = 250.0;
-//		y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
 	}
   /* USER CODE END 3 */
 }
@@ -193,10 +189,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM6)
 	{
-//		float y = 250.0;
-//		y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
-		Update_Pwm(now, goal);
+		Mecanum_Pos(now, goal);
+		Update_Pwm();
 	}
 }
 /* USER CODE END 4 */

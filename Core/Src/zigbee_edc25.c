@@ -1,5 +1,6 @@
 #include "zigbee_edc25.h"
 
+#include "jy62.h"
 #include "main.h"
 #include "usart.h"
 
@@ -59,6 +60,8 @@ void zigbee_Init(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
+	if (huart == &huart3)
+		jy62MessageRecord();
     if (huart == zigbee_huart)
     {
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
@@ -68,18 +71,6 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
         zigbeeMessageRecord();
         // zigbeeMessageRecord is completed almost instantly in the callback function.
         // Please don't add u1_printf into the function.
-    }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart == zigbee_huart)
-    {
-        uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
-        uint8_t *rawPtr = &zigbeeRaw[MAX_MSG_LEN / 2];
-        memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);
-        memPtr = modularAdd(MAX_MSG_LEN / 2, memPtr, MAX_MSG_LEN * 2);
-        zigbeeMessageRecord();
     }
 }
 
