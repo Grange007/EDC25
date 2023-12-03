@@ -21,6 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include "jy62.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -257,6 +259,11 @@ void u1_printf(char* fmt, ...)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	if (huart == &huart3)
+	{
 		jy62MessageRecord();
+//		float y = 250.0;
+//		y = GetYaw();
+//		u1_printf("YAW:%f\n", y);
+	}
 }
 /* USER CODE END 1 */

@@ -26,22 +26,20 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "jy62.h"
+#include "motor.h"
 #include "pid.h"
+
 #include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef struct
-{
-	float x, y;
-}PosStr;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MAX_VELOCITY 60
-#define MIN_VELOCITY 60
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -59,17 +57,12 @@ PosStr goal = {0, 0};
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void Move(uint8_t id, float pwm);
-void Update_Pwm();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim->Instance == TIM6)
-		Update_Pwm();
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -136,7 +129,6 @@ int main(void)
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&xPid, 2.5f, 0.021f, 5.0f);
 	PID_Init(&yPid, 2.0f, 0.015f, 4.5f);
-	PID_Init(&anglePid, 1.1f, 0.04f, 0.01f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
@@ -146,12 +138,13 @@ int main(void)
 	while (1)
 	{
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
-		float r = GetRoll();
-		float p = GetPitch();
-		float y = GetYaw();
-		u1_printf("ROLL:%f, PITCH:%f, YAW:%f\n", r, p, y);
-		r=p=y=0;
+//		u1_printf("hello\n");
+//		HAL_Delay(100);
+//		float y = 250.0;
+//		y = GetYaw();
+//		u1_printf("YAW:%f\n", y);
 	}
   /* USER CODE END 3 */
 }
@@ -196,140 +189,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Move(uint8_t id, float pwm)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (id == 1)
+	if (htim->Instance == TIM6)
 	{
-		if (pwm > 0)
-		{// FL +
-			HAL_GPIO_WritePin(F_in3_GPIO_Port, F_in3_Pin, 0);
-			HAL_GPIO_WritePin(F_in4_GPIO_Port, F_in4_Pin, 1);
-		}
-		else
-		{// FL -
-			HAL_GPIO_WritePin(F_in3_GPIO_Port, F_in3_Pin, 1);
-			HAL_GPIO_WritePin(F_in4_GPIO_Port, F_in4_Pin, 0);
-		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, fabs(pwm));
+//		float y = 250.0;
+//		y = GetYaw();
+//		u1_printf("YAW:%f\n", y);
+		Update_Pwm(now, goal);
 	}
-	else if (id == 2)
-	{
-		if (pwm > 0)
-		{// FR +
-			HAL_GPIO_WritePin(F_in1_GPIO_Port, F_in1_Pin, 0);
-			HAL_GPIO_WritePin(F_in2_GPIO_Port, F_in2_Pin, 1);
-		}
-		else
-		{// FR -
-			HAL_GPIO_WritePin(F_in1_GPIO_Port, F_in1_Pin, 1);
-			HAL_GPIO_WritePin(F_in2_GPIO_Port, F_in2_Pin, 0);
-		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, fabs(pwm));
-	}
-	else if (id == 3)
-	{
-		if (pwm > 0)
-		{// RL +
-			HAL_GPIO_WritePin(R_in3_GPIO_Port, R_in3_Pin, 0);
-			HAL_GPIO_WritePin(R_in4_GPIO_Port, R_in4_Pin, 1);
-		}
-		else
-		{// RL -
-			HAL_GPIO_WritePin(R_in3_GPIO_Port, R_in3_Pin, 1);
-			HAL_GPIO_WritePin(R_in4_GPIO_Port, R_in4_Pin, 0);
-		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, fabs(pwm));
-	}
-	else if (id == 4)
-	{
-		if (pwm > 0)
-		{// RR +
-			HAL_GPIO_WritePin(R_in1_GPIO_Port, R_in1_Pin, 0);
-			HAL_GPIO_WritePin(R_in2_GPIO_Port, R_in2_Pin, 1);
-		}
-		else
-		{// RR -
-			HAL_GPIO_WritePin(R_in1_GPIO_Port, R_in1_Pin, 1);
-			HAL_GPIO_WritePin(R_in2_GPIO_Port, R_in2_Pin, 0);
-		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_4, fabs(pwm));
-	}
-}
-
-void Update_Pwm()
-{
-
-	float xVel = PID_Cal(&xPid, now.x, goal.x);
-	float yVel = PID_Cal(&yPid, now.y, goal.y);
-//	if (xVel > MAX_VELOCITY)
-//		xVel = MAX_VELOCITY;
-//	if (xVel < MIN_VELOCITY)
-//		xVel = MIN_VELOCITY;
-//	if (yVel > MAX_VELOCITY)
-//		yVel = MAX_VELOCITY;
-//	if (yVel < MIN_VELOCITY)
-//		yVel = MIN_VELOCITY;
-
-//	u1_printf("xVel=%f, yVel=%f\n", xVel, yVel);
-
-
-//	float angleErr = GetYaw();
-//	float angleErr = 0;
-//	if (angleErr > 180.0f)
-//		angleErr -= 360.0f;
-//	if (angleErr < -180.0f)
-//		angleErr += 360.0f;
-//	float aVel = PID_Cal(&anglePid, angleErr, 0);
-	float aVel = 0;
-//	if (aVel > 40)
-//		aVel = 40.0f;
-//	if (aVel < -40)
-//		aVel = -40.0f;
-
-	int FLCnt = __HAL_TIM_GET_COUNTER(&htim2);
-	__HAL_TIM_SetCounter(&htim2, 0);
-	if (FLCnt > 32767)
-		FLCnt = 65535 - FLCnt;
-	else
-		FLCnt = 0 - FLCnt;
-	float FLNow = 1.0 * FLCnt / 10.8;
-	float FLPwm = PID_Cal(&FLPid, FLNow, -aVel + xVel - yVel);
-	Move(1, FLPwm);
-
-	int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
-	__HAL_TIM_SetCounter(&htim3, 0);
-	if (FRCnt > 32767)
-		FRCnt = FRCnt - 65535;
-	else
-		FRCnt = FRCnt - 0;
-	float FRNow = 1.0 * FRCnt / 10.8;
-	float FRPwm = PID_Cal(&FRPid, FRNow, -aVel + xVel + yVel);
-	Move(2, FRPwm);
-
-	int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
-	__HAL_TIM_SetCounter(&htim4, 0);
-	if (RLCnt > 32767)
-		RLCnt = 65535 - RLCnt;
-	else
-		RLCnt = 0 - RLCnt;
-	float RLNow = 1.0 * RLCnt / 10.8;
-	float RLPwm = PID_Cal(&RLPid, RLNow, aVel + xVel + yVel);
-	Move(3, RLPwm);
-
-	int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
-	__HAL_TIM_SetCounter(&htim5, 0);
-	if (RRCnt > 32767)
-		RRCnt = RRCnt - 65535;
-	else
-		RRCnt = RRCnt - 0;
-	float RRNow = 1.0 * RRCnt / 10.8;
-	float RRPwm = PID_Cal(&RRPid, RRNow, aVel + xVel - yVel);
-	Move(4, RRPwm);
-
-//	u1_printf("FLNow=%f FLPwm=%f ", FLNow, FLPwm);
-//	u1_printf("FRNow=%f FRPwm=%f\n", FRNow, FRPwm);
-//	u1_printf("RLNow=%f RLPwm=%f ", RLNow, RLPwm);
-//	u1_printf("RRNow=%f RRPwm=%f\n", RRNow, RRPwm);
 }
 /* USER CODE END 4 */
 

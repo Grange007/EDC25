@@ -21,7 +21,7 @@ void jy62_Init(UART_HandleTypeDef* huart);
 #ifndef JY62_H
 #define JY62_H
 #include "stm32f1xx_hal.h"
-#define JY62_MESSAGE_LENTH 11
+#define JY62_MESSAGE_LENGTH 11
 #define g 9.8   //定义重力加速度值
 
 
