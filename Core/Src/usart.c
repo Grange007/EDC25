@@ -255,15 +255,4 @@ void u1_printf(char* fmt, ...)
 	len = strlen((char*)buf);
 	HAL_UART_Transmit(&huart2, buf, len, HAL_MAX_DELAY);
 }
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-	if (huart == &huart3)
-	{
-		jy62MessageRecord();
-//		float y = 250.0;
-//		y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
-	}
-}
 /* USER CODE END 1 */
