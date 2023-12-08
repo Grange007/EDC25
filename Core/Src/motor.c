@@ -2,14 +2,15 @@
  * motor.c
  *
  *  Created on: Dec 2, 2023
- *      Author: 小土豆
+ *      Author: 蒟蒻是这样的
  */
+
+
+#include "motor.h"
+#include "jy62.h"
+#include "pid.h"
 #include "tim.h"
 #include "usart.h"
-
-#include "jy62.h"
-#include "motor.h"
-#include "pid.h"
 
 #include <math.h>
 
@@ -83,7 +84,7 @@ void Update_Pwm()
 		FLCnt = 65535 - FLCnt;
 	else
 		FLCnt = 0 - FLCnt;
-	float FLNow = 1.0 * FLCnt / 10.8;
+	float FLNow = 1.0 * FLCnt / UNKNOWN;
 	float FLPwm = PID_Cal(&FLPid, FLNow, goal_speed[0]);
 	Move(1, FLPwm);
 
@@ -93,7 +94,7 @@ void Update_Pwm()
 		FRCnt = FRCnt - 65535;
 	else
 		FRCnt = FRCnt - 0;
-	float FRNow = 1.0 * FRCnt / 10.8;
+	float FRNow = 1.0 * FRCnt / UNKNOWN;
 	float FRPwm = PID_Cal(&FRPid, FRNow, goal_speed[1]);
 	Move(2, FRPwm);
 
@@ -103,7 +104,7 @@ void Update_Pwm()
 		RLCnt = 65535 - RLCnt;
 	else
 		RLCnt = 0 - RLCnt;
-	float RLNow = 1.0 * RLCnt / 10.8;
+	float RLNow = 1.0 * RLCnt / UNKNOWN;
 	float RLPwm = PID_Cal(&RLPid, RLNow, goal_speed[2]);
 	Move(3, RLPwm);
 
@@ -113,7 +114,7 @@ void Update_Pwm()
 		RRCnt = RRCnt - 65535;
 	else
 		RRCnt = RRCnt - 0;
-	float RRNow = 1.0 * RRCnt / 10.8;
+	float RRNow = 1.0 * RRCnt / UNKNOWN;
 	float RRPwm = PID_Cal(&RRPid, RRNow, goal_speed[3]);
 	Move(4, RRPwm);
 
@@ -154,11 +155,12 @@ void Mecanum_Speed(float vx, float vy, float w)
     goal_speed[3] = RR;
 }
 
-void Mecanum_Pos(PosStr now, PosStr goal)
+void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
-	float vx = PID_Cal(&xPid, now.x, goal.x);
-	float vy = PID_Cal(&yPid, now.y, goal.y);
-	float w = GetYaw();
-	u1_printf("Yaw:%f\n", w);
+	float vx = PID_Cal(&xPid, now.posx, goal.posx);
+	float vy = PID_Cal(&yPid, now.posy, goal.posy);
+//	float w = GetYaw();
+	float w = 0;
+//	u1_printf("Yaw:%f\n", w);
 	Mecanum_Speed(vx, vy, w);
 }

@@ -1,12 +1,7 @@
 #include "zigbee_edc25.h"
 
-#include "jy62.h"
 #include "main.h"
 #include "usart.h"
-
-#define MAX_SINGLE_MSG 95 // 可修正
-#define MAX_MSG_LEN 150
-#define MAX_STATUS_LEN 150
 
 uint8_t zigbeeRaw[MAX_MSG_LEN];         // Raw zigbee data
 uint8_t zigbeeMessage[MAX_MSG_LEN * 2]; // Double the size to save a complete message
@@ -56,22 +51,6 @@ void zigbee_Init(UART_HandleTypeDef *huart)
     memset(gameStatusMessage, 0x00, MAX_STATUS_LEN);
     zigbee_huart = huart;
     HAL_UART_Receive_DMA(zigbee_huart, zigbeeRaw, MAX_MSG_LEN);
-}
-
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
-{
-	if (huart == &huart3)
-		jy62MessageRecord();
-    if (huart == zigbee_huart)
-    {
-        uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
-        uint8_t *rawPtr = &zigbeeRaw[0];
-        memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);
-        memPtr = modularAdd(MAX_MSG_LEN / 2, memPtr, MAX_MSG_LEN * 2);
-        zigbeeMessageRecord();
-        // zigbeeMessageRecord is completed almost instantly in the callback function.
-        // Please don't add u1_printf into the function.
-    }
 }
 
 uint8_t zigbeeMessageRecord()

@@ -4,6 +4,10 @@
 #include "stm32f1xx_hal.h"
 #include "string.h"
 
+#define MAX_SINGLE_MSG 95 // 可修正
+#define MAX_MSG_LEN 150
+#define MAX_STATUS_LEN 150
+
 typedef enum
 {
     READY,
@@ -17,6 +21,12 @@ typedef struct
     float posx;
     float posy;
 } Position_edc25;
+
+extern uint8_t zigbeeRaw[MAX_MSG_LEN];
+extern uint8_t zigbeeMessage[MAX_MSG_LEN * 2];
+extern int32_t memPtr;
+extern uint8_t gameStatusMessage[MAX_STATUS_LEN];
+extern UART_HandleTypeDef *zigbee_huart;
 
 void zigbee_Init(UART_HandleTypeDef *huart); // 初始化,开始接收消息
 uint8_t zigbeeMessageRecord();                  // 刷新消息
