@@ -51,8 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-PosStr now = {0, 0};
-PosStr goal = {0, 0};
+Position_edc25 now = {0, 0};
+Position_edc25 goal = {0, 0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,6 +103,7 @@ int main(void)
   MX_TIM6_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 	// Output PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
@@ -123,6 +124,8 @@ int main(void)
 	InitAngle();
 	Calibrate();
 	SleepOrAwake();
+	// zigbee
+	zigbee_Init(&huart4);
 	// PID
 	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
@@ -141,6 +144,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//		getPosition(&now);
+//		u1_printf("x:%f y:%f\n", now.posx, now.posy);
+		u1_printf("%d\n",getGameTime());
+//		u1_printf("%f\n",GetYaw());
+		HAL_Delay(100);
 	}
   /* USER CODE END 3 */
 }
@@ -185,14 +193,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim->Instance == TIM6)
-	{
-		Mecanum_Pos(now, goal);
-		Update_Pwm();
-	}
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	if (htim->Instance == TIM6)
+//	{
+//		Mecanum_Pos(now, goal);
+//		Update_Pwm();
+//	}
+//}
 /* USER CODE END 4 */
 
 /**

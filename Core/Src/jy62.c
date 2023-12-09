@@ -46,6 +46,7 @@ void jy62_Init(UART_HandleTypeDef *huart)
 //  }
 //  HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);    //吃完一次jy62Receive数组，继续吃下一个
 //}
+
 void jy62MessageRecord(void)
 {
   static uint8_t i = 0, sum = 0;

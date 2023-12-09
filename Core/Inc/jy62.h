@@ -24,6 +24,7 @@ void jy62_Init(UART_HandleTypeDef* huart);
 #define JY62_MESSAGE_LENGTH 11
 #define g 9.8   //定义重力加速度值
 
+extern UART_HandleTypeDef* jy62_huart;
 
 struct Acce
 {

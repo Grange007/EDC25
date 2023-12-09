@@ -2,14 +2,12 @@
  * move.h
  *
  *  Created on: Nov 25, 2023
- *      Author: 小土豆
+ *      Author: 蒟蒻是这样的
  */
 
 #ifndef INC_MOVE_H_
 #define INC_MOVE_H_
 #endif /* INC_MOVE_H_ */
-
-#include "main.h"
 
 #define MAX_IERR 1000
 #define MIN_IERR -1000
