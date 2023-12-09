@@ -21,9 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#include "jy62.h"
-#include "zigbee_edc25.h"
 
+#include "jy62.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -167,7 +166,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_uart4_rx);
 
     /* UART4 interrupt Init */
-    HAL_NVIC_SetPriority(UART4_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(UART4_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(UART4_IRQn);
   /* USER CODE BEGIN UART4_MspInit 1 */
 
@@ -196,9 +195,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* USART2 interrupt Init */
-    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
 
   /* USER CODE END USART2_MspInit 1 */
@@ -292,8 +288,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
 
-    /* USART2 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
   /* USER CODE END USART2_MspDeInit 1 */
@@ -334,21 +328,5 @@ void u1_printf(char* fmt, ...)
 	va_end(ap);
 	len = strlen((char*)buf);
 	HAL_UART_Transmit(&huart2, buf, len, HAL_MAX_DELAY);
-}
-
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
-{
-	if (huart == &huart3)
-		jy62MessageRecord();
-    if (huart == zigbee_huart)
-    {
-        uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
-        uint8_t *rawPtr = &zigbeeRaw[0];
-        memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);
-        memPtr = modularAdd(MAX_MSG_LEN / 2, memPtr, MAX_MSG_LEN * 2);
-        zigbeeMessageRecord();
-        // zigbeeMessageRecord is completed almost instantly in the callback function.
-        // Please don't add u1_printf into the function.
-    }
 }
 /* USER CODE END 1 */
