@@ -1,9 +1,16 @@
 #include "decision.h"
 #include "main.h"
 #include <math.h>
-int minWool=8;
-int bedMinHeight=16;
-Grid goalGrid={0,0},nowGrid={0,0};
+#define DIAMOND 1
+uint8_t minWool=8;
+uint8_t bedMinHeight=16;
+uint8_t emeraldCtrlLine=32;
+status stat;
+uint8_t gameMap[64];
+Grid goalGrid={0,0},nowGrid={0,0},homeGrid={0,0};
+Position_edc25 now = {0, 0};
+Position_edc25 goal = {0, 0};
+Grid nearestDiamond;
 uint8_t mhtDst(Grid from, Grid to){
     return abs(from.x-to.x)+abs(from.y-to.y);
 }
@@ -28,7 +35,7 @@ Position_edc25 grid2Pos(Grid grid){
     tmp.posy=grid.y;
     return tmp;
 }
-Grid nearestBlock(int type){
+Grid nearestBlock(uint8_t type){
     Grid nearest={0,0};
     uint8_t dst=255;
     for(int i=0;i<64;i++){
@@ -56,19 +63,82 @@ Grid getNext(Grid from, Grid to){
     }
     return from;
 }
-
-void protectBed(){
+void protect_bed_func(){
+    while(getEmeraldCount()>=2){
+        trade_id(3);
+    }
+    while(getHeightOfId(grid2No(homeGrid))<bedMinHeight&&getWoolCount()>minWool){
+        place_block_id(grid2No(homeGrid));
+    }
+    goalGrid=nearestDiamond;
+    stat=move;    
+}
+void mine_func(){
+    bool gotEnough=false;
+    bool conflict=false;
+    Position_edc25 posop;
+    while(!(gotEnough||conflict)){
+        gotEnough=getEmeraldCount()>emeraldCtrlLine;
+        getPositionOpponent(&posop);
+        conflict=pos2Grid(posop).x==nowGrid.x&&pos2Grid(posop).y==nowGrid.y;
+    }
+    goalGrid=homeGrid;
+    stat=move;
+}
+void destroy_bed_func(){
 
 }
-void seekMine(){
+void move_func(){
+    Grid nextGrid=getNext(nowGrid,goalGrid);
+    if(nextGrid.x==nowGrid.x&&nextGrid.y==nowGrid.y){
+        if(nowGrid.x==nearestDiamond.x&&nowGrid.y==nearestDiamond.y){
+            stat=mine;
+            return;
+        }
+        else if(nowGrid.x==homeGrid.x&&nowGrid.y==homeGrid.y){
+            stat=protect;
+            return;
+        }
+    }
+    if(getHeightOfId(grid2No(nextGrid))==0){
+        place_block_id(grid2No(nextGrid));
+    }
+    goal=grid2Pos(nextGrid);
+    Position_edc25 actualPos;
+    do{
+        getPosition(&actualPos);
+    }
+    while((fabs(actualPos.posx-nextGrid.x)+fabs(actualPos.posy-nextGrid.y))>0.1);
+}
+void init_func(){
+    nearestDiamond=nearestBlock(DIAMOND);
+    uint8_t diamondDst=mhtDst(nowGrid,nearestDiamond);
+    for(uint8_t i=0;i<8-diamondDst;i++){
+        place_block_id(grid2No(nowGrid));
+    }
+    goalGrid=nearestDiamond;
+    stat=move;
+}
+void attack_func(){
 
 }
-void destroyBed(){
-
-}
-void PauseWhileMoving(){
-
-}
-void initial(){
-
+void mainLoop(){
+    while(1){
+        getPosition(&now);
+        nowGrid=pos2Grid(now);
+        switch(stat){
+        case init:
+            init_func();
+            break;
+        case move:
+            move_func();
+            break;
+        case mine:
+            mine_func();
+            break;
+        case protect:
+            protect_bed_func();
+            break;
+        }
+    };
 }
