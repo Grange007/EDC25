@@ -51,8 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-Position_edc25 now = {0, 0};
-Position_edc25 goal = {0, 0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
