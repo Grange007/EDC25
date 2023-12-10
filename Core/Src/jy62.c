@@ -28,44 +28,44 @@ void jy62_Init(UART_HandleTypeDef *huart)
   HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);
 }
 
-//void jy62MessageRecord(void)
-//{
-//  int idx = 0;                              //接受数据位指针
-//  int i = 0;
-//  while(idx < JY62_MESSAGE_LENGTH){                    //在判断JY62_MESSAGE_LENGTH(200)的长度内进行查找
-//    while(jy62Receive[idx] != 0x55) idx++;                //接收数据为指针找到包头0x55
-//    uint8_t sum = 0;                          //计算校验位
-//    for(i = 0; i < 10; i++) sum += jy62Receive[idx + i];        //判断校验位正确与否
-//    if(sum == jy62Receive[idx + 10]){                  //校验位正确，认为收到正确包
-//      for(i = 0; i < 11; i++) jy62Message[i] = jy62Receive[idx + i];  //读入jy62Message中
-//      Decode();                           //解析
-//      idx += 11;                            //继续下一个包读入
-//    }else{
-//      idx++;                              //校验位错误，数据指针向后挪动，继续找到合理的数据包
-//    }
-//  }
-//  HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);    //吃完一次jy62Receive数组，继续吃下一个
-//}
-
 void jy62MessageRecord(void)
 {
-  static uint8_t i = 0, sum = 0;
-  for (int j = 0; j < JY62_MESSAGE_LENGTH; j++){
-    if (i == 0 && jy62Receive[j] != 0x55) continue;
-    if (i == 10){
-        if (sum == jy62Receive[j]){
-            jy62Message[i++] = jy62Receive[j];
-            Decode();
-        }
-        i = 0;
-        sum = 0;
-        continue;
+  int idx = 0;                              //接受数据位指针
+  int i = 0;
+  while(idx < JY62_MESSAGE_LENGTH){                    //在判断JY62_MESSAGE_LENGTH(200)的长度内进行查找
+    while(jy62Receive[idx] != 0x55) idx++;                //接收数据为指针找到包头0x55
+    uint8_t sum = 0;                          //计算校验位
+    for(i = 0; i < 10; i++) sum += jy62Receive[idx + i];        //判断校验位正确与否
+    if(sum == jy62Receive[idx + 10]){                  //校验位正确，认为收到正确包
+      for(i = 0; i < 11; i++) jy62Message[i] = jy62Receive[idx + i];  //读入jy62Message中
+      Decode();                           //解析
+      idx += 11;                            //继续下一个包读入
+    }else{
+      idx++;                              //校验位错误，数据指针向后挪动，继续找到合理的数据包
     }
-    sum += jy62Receive[j];
-    jy62Message[i++] = jy62Receive[j];
   }
-  HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);
+  HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);    //吃完一次jy62Receive数组，继续吃下一个
 }
+
+//void jy62MessageRecord(void)
+//{
+//  static uint8_t i = 0, sum = 0;
+//  for (int j = 0; j < JY62_MESSAGE_LENGTH; j++){
+//    if (i == 0 && jy62Receive[j] != 0x55) continue;
+//    if (i == 10){
+//        if (sum == jy62Receive[j]){
+//            jy62Message[i++] = jy62Receive[j];
+//            Decode();
+//        }
+//        i = 0;
+//        sum = 0;
+//        continue;
+//    }
+//    sum += jy62Receive[j];
+//    jy62Message[i++] = jy62Receive[j];
+//  }
+//  HAL_UART_Receive_DMA(jy62_huart, jy62Receive, JY62_MESSAGE_LENGTH);
+//}
 
 void SetBaud(int Baud)
 {

@@ -139,6 +139,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 	while (1)
 	{
     /* USER CODE END WHILE */
@@ -146,8 +147,9 @@ int main(void)
     /* USER CODE BEGIN 3 */
 //		getPosition(&now);
 //		u1_printf("x:%f y:%f\n", now.posx, now.posy);
-		u1_printf("%d\n",getGameTime());
-//		u1_printf("%f\n",GetYaw());
+//		u1_printf("%d\n",getGameTime());
+		float y = GetYaw();
+		u1_printf("%f\n", y);
 		HAL_Delay(100);
 	}
   /* USER CODE END 3 */
@@ -193,14 +195,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	if (htim->Instance == TIM6)
-//	{
-//		Mecanum_Pos(now, goal);
-//		Update_Pwm();
-//	}
-//}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM6)
+	{
+		Mecanum_Pos(now, goal);
+		Update_Pwm();
+	}
+}
 /* USER CODE END 4 */
 
 /**

@@ -82,6 +82,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
     if (huart == zigbee_huart)
     {
+    	u1_printf("zb\n");
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
         uint8_t *rawPtr = &zigbeeRaw[MAX_MSG_LEN / 2];
         memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);

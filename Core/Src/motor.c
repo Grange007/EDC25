@@ -160,7 +160,8 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 	float vx = PID_Cal(&xPid, now.posx, goal.posx);
 	float vy = PID_Cal(&yPid, now.posy, goal.posy);
 //	float w = GetYaw();
-	float w = 0;
 //	u1_printf("Yaw:%f\n", w);
-	Mecanum_Speed(vx, vy, w);
+//	Mecanum_Speed(vx, vy, w);
+	Mecanum_Speed(vx, vy, 0);
+//	Mecanum_Speed(5.0f, 0.0f, 0.0f);
 }
