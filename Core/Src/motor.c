@@ -127,10 +127,10 @@ void Update_Pwm()
 void Mecanum_Speed(float vx, float vy, float w)
 {
     float FL, FR, RL, RR;
-    FL = (vx - vy - (LX + LY) * w) / R;
-    FR = (vx + vy + (LX + LY) * w) / R;
-    RL = (vx + vy - (LX + LY) * w) / R;
-    RR = (vx - vy + (LX + LY) * w) / R;
+    FL = (vx - vy + (LX + LY) * w) / R;
+    FR = (vx + vy - (LX + LY) * w) / R;
+    RL = (vx + vy + (LX + LY) * w) / R;
+    RR = (vx - vy - (LX + LY) * w) / R;
 
     // 限制最大速度
     float max = fabs(FL);
@@ -159,9 +159,10 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
 	float vx = PID_Cal(&xPid, now.posx, goal.posx);
 	float vy = PID_Cal(&yPid, now.posy, goal.posy);
-//	float w = GetYaw();
-//	u1_printf("Yaw:%f\n", w);
-//	Mecanum_Speed(vx, vy, w);
-	Mecanum_Speed(vx, vy, 0);
+	float w = GetYaw();
+	if (w > 180)
+		w = w - 360;
+	u1_printf("Yaw:%f\n", w);
+	Mecanum_Speed(vx, vy, w);
 //	Mecanum_Speed(5.0f, 0.0f, 0.0f);
 }

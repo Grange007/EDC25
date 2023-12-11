@@ -52,7 +52,7 @@
 
 /* USER CODE BEGIN PV */
 Position_edc25 now = {0, 0};
-Position_edc25 goal = {0, 0};
+Position_edc25 goal = {5, 0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,8 +131,8 @@ int main(void)
 	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&xPid, 2.5f, 0.0f, 0.0f);
-	PID_Init(&yPid, 2.0f, 0.0f, 0.0f);
+	PID_Init(&xPid, 0.5f, 0.0f, 0.0f);
+	PID_Init(&yPid, 0.4f, 0.0f, 0.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
@@ -148,9 +148,9 @@ int main(void)
 //		getPosition(&now);
 //		u1_printf("x:%f y:%f\n", now.posx, now.posy);
 //		u1_printf("%d\n",getGameTime());
-		float y = GetYaw();
-		u1_printf("%f\n", y);
-		HAL_Delay(100);
+//		float y = GetYaw();
+//		u1_printf("YAW:%f\n", y);
+//		HAL_Delay(100);
 	}
   /* USER CODE END 3 */
 }
