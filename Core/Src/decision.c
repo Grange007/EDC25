@@ -2,6 +2,7 @@
 #include "main.h"
 #include <math.h>
 #define DIAMOND 1
+#define MAX_POS_ERROR 0.1
 uint8_t minWool=8;
 uint8_t bedMinHeight=16;
 uint8_t emeraldCtrlLine=32;
@@ -108,7 +109,7 @@ void move_func(){
     do{
         getPosition(&actualPos);
     }
-    while((fabs(actualPos.posx-nextGrid.x)+fabs(actualPos.posy-nextGrid.y))>0.1);
+    while((fabs(actualPos.posx-nextGrid.x)+fabs(actualPos.posy-nextGrid.y))>MAX_POS_ERROR);
 }
 void init_func(){
     nearestDiamond=nearestBlock(DIAMOND);
@@ -138,6 +139,12 @@ void mainLoop(){
             break;
         case protect:
             protect_bed_func();
+            break;
+        case destroy:
+            destroy_bed_func();
+            break;
+        case attack:
+            attack_func();
             break;
         }
     };
