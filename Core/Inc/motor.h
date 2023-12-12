@@ -15,8 +15,8 @@
 
 #define MAX_VELOCITY 60
 
-#define LX 0.173
-#define LY 0.181
+#define LX 1.73
+#define LY 1.81
 #define R 3
 
 extern float goal_speed[4];
