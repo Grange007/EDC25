@@ -22,6 +22,7 @@ typedef struct
 
 extern PidStr FLPid, FRPid, RLPid, RRPid;
 extern PidStr xPid, yPid;
+extern PidStr anglePid;
 
 void PID_Init(PidStr* a, float kp, float ki, float kd);
 float PID_Cal(PidStr* a, float cur, float goal);

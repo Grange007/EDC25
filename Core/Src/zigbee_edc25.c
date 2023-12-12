@@ -76,10 +76,8 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == jy62_huart)
-	{
-		u1_printf("jy\n");
 		jy62MessageRecord();
-	}
+
     if (huart == zigbee_huart)
     {
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];

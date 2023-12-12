@@ -29,6 +29,7 @@
 #include "motor.h"
 #include "pid.h"
 #include "zigbee_edc25.h"
+#include "decision.h"
 
 #include <math.h>
 /* USER CODE END Includes */
@@ -130,24 +131,22 @@ int main(void)
 	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&xPid, 2.5f, 0.0f, 0.0f);
-	PID_Init(&yPid, 2.0f, 0.0f, 0.0f);
+	PID_Init(&xPid, 0.5f, 0.0f, 0.0f);
+	PID_Init(&yPid, 0.4f, 0.0f, 0.0f);
+	PID_Init(&anglePid, 0.01f, 0.001f, 0.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 	while (1)
 	{
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		getPosition(&now);
-//		u1_printf("x:%f y:%f\n", now.posx, now.posy);
-		u1_printf("%d\n",getGameTime());
-//		u1_printf("%f\n",GetYaw());
-		HAL_Delay(100);
+
 	}
   /* USER CODE END 3 */
 }
@@ -192,14 +191,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	if (htim->Instance == TIM6)
-//	{
-//		Mecanum_Pos(now, goal);
-//		Update_Pwm();
-//	}
-//}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM6)
+	{
+		Mecanum_Pos(now, goal);
+		Update_Pwm();
+	}
+}
 /* USER CODE END 4 */
 
 /**
