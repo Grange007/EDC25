@@ -158,12 +158,12 @@ void Mecanum_Speed(float vx, float vy, float w)
 void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
 	float yaw = GetYaw();
-	u1_printf("preYaw:%f\n", yaw);
+//	u1_printf("preYaw:%f\n", yaw);
 	if (yaw > 180)
 		yaw = 360 - yaw;
 	else
 		yaw = 0 - yaw;
-	u1_printf("Yaw:%f\n", yaw);
+//	u1_printf("Yaw:%f\n", yaw);
 
 	float vx = PID_Cal(&xPid, now.posx, goal.posx);
 	float vy = PID_Cal(&yPid, now.posy, goal.posy);

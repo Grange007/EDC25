@@ -52,7 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+Position_edc25 tmp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,8 +131,8 @@ int main(void)
 	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&xPid, 0.5f, 0.0f, 0.0f);
-	PID_Init(&yPid, 0.4f, 0.0f, 0.0f);
+	PID_Init(&xPid, 5.0f, 0.0f, 0.0f);
+	PID_Init(&yPid, 5.0f, 0.0f, 0.0f);
 	PID_Init(&anglePid, 0.01f, 0.001f, 0.0f);
 
 	u1_printf("Hello\n");
@@ -146,7 +146,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
+		HAL_Delay(100);
+		getPosition(&tmp);
+		if (tmp.posx < -10000)
+			continue;
+		now = tmp;
+		u1_printf("now.x:%f now.y:%f\n", now.posx, now.posy);
+		u1_printf("goal.x:%f goal.y:%f\n", goal.posx, goal.posy);
+		u1_printf("time:%d\n",getGameTime());
 	}
   /* USER CODE END 3 */
 }
