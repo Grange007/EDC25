@@ -11,13 +11,12 @@
 
 #include "zigbee_edc25.h"
 
-// 单位：cm
 #define UNKNOWN 10.8
 
 #define MAX_VELOCITY 60
 
-#define LX 17.3
-#define LY 18.1
+#define LX 0.173
+#define LY 0.181
 #define R 3
 
 extern float goal_speed[4];

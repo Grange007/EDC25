@@ -15,9 +15,9 @@ uint8_t setVertical[3] = {0xFF, 0xAA, 0x66};
 uint8_t sleepAndAwake[3] = {0xFF, 0xAA, 0x60};
 UART_HandleTypeDef* jy62_huart;
 
-struct Acce Accelerate;                //储存加速度
-struct Velo Velocity;                //储存角速度
-struct Angl Angle;                  //储存角度值
+struct Acce Accelerate;                	//储存加速度
+struct Velo Velocity;               	//储存角速度
+struct Angl Angle;                  	//储存角度值
 struct Temp Temperature;                //储存温度值
 /***********************接口****************************/
 

@@ -13,7 +13,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 }
 
 3.在main.c中User Code 2 处使能中断
-
 void jy62_Init(UART_HandleTypeDef* huart); 
 
 4.之后可在主函数中调用下面的接口函数来获得相应值

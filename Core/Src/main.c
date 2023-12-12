@@ -133,6 +133,7 @@ int main(void)
 	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
 	PID_Init(&xPid, 0.5f, 0.0f, 0.0f);
 	PID_Init(&yPid, 0.4f, 0.0f, 0.0f);
+	PID_Init(&anglePid, 0.01f, 0.001f, 0.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
@@ -145,12 +146,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		getPosition(&now);
-//		u1_printf("x:%f y:%f\n", now.posx, now.posy);
-//		u1_printf("%d\n",getGameTime());
-//		float y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
-//		HAL_Delay(100);
+
 	}
   /* USER CODE END 3 */
 }
