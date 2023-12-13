@@ -127,10 +127,10 @@ void Update_Pwm()
 void Mecanum_Speed(float vx, float vy, float w)
 {
     float FL, FR, RL, RR;
-    FL = (vx - vy - (LX + LY) * w) / R;
-    FR = (vx + vy + (LX + LY) * w) / R;
-    RL = (vx + vy - (LX + LY) * w) / R;
-    RR = (vx - vy + (LX + LY) * w) / R;
+    FL = (vx + vy - (LX + LY) * w) / R;
+    FR = (vx - vy + (LX + LY) * w) / R;
+    RL = (vx - vy - (LX + LY) * w) / R;
+    RR = (vx + vy + (LX + LY) * w) / R;
 
     // 限制最大速度
     float max = fabs(FL);

@@ -9,7 +9,7 @@ status stat;
 uint8_t gameMap[64];
 Grid goalGrid={0,0},nowGrid={0,0},homeGrid={0,0};
 Position_edc25 now = {0, 0};
-Position_edc25 goal = {5, 0};
+Position_edc25 goal = {5, 5};
 Grid nearestDiamond;
 uint8_t mhtDst(Grid from, Grid to){
     return abs(from.x-to.x)+abs(from.y-to.y);
