@@ -10,7 +10,7 @@ PidStr FLPid, FRPid, RLPid, RRPid;
 PidStr xPid, yPid;
 PidStr anglePid;
 
-void PID_Init(PidStr* a, float kp, float ki, float kd)
+void PID_Init(PidStr* a, float kp, float ki, float kd, float max)
 {
 	a->err = 0;
 	a->iErr = 0;
@@ -25,10 +25,10 @@ float PID_Cal(PidStr* a, float cur, float goal)
 	a->err = goal - cur;
 	a->iErr += a->err;
 
-	if (a->iErr > MAX_IERR)
-		a->iErr = MAX_IERR;
-	if (a->iErr < MIN_IERR)
-		a->iErr = MIN_IERR;
+	if (a->iErr > a->max)
+		a->iErr = a->max;
+	if (a->iErr < -a->max)
+		a->iErr = -a->max;
 
 	float pwm = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
 	a->lErr = a->err;
