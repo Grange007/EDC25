@@ -14,3 +14,4 @@ typedef enum{
     destroy,
     attack
 } status;
+void mainLoop();
