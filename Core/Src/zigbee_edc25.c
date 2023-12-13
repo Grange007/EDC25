@@ -62,10 +62,13 @@ void zigbee_Init(UART_HandleTypeDef *huart)
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == jy62_huart)
+	{
+//		u1_printf("jy62\n");
 		jy62MessageRecord();
-	
+	}
     if (huart == zigbee_huart)
     {
+//    	u1_printf("zigb\n");
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
         uint8_t *rawPtr = &zigbeeRaw[0];
         memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);

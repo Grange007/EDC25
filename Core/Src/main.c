@@ -119,21 +119,21 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim6);
 	// jy62
 	jy62_Init(&huart3);
-	SetBaud(115200);
-	SetHorizontal();
 	InitAngle();
-	Calibrate();
-	SleepOrAwake();
+//	SetBaud(115200);
+//	SetHorizontal();
+//	Calibrate();
+//	SleepOrAwake();
 	// zigbee
 	zigbee_Init(&huart4);
 	// PID
-	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f, 1000.0f);
-	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f, 1000.0f);
-	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f, 1000.0f);
-	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f, 1000.0f);
-	PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 20.0f);
-	PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 20.0f);
-	PID_Init(&anglePid, 0.01f, 0.001f, 0.0f, 10.0f);
+	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
@@ -147,11 +147,12 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		HAL_Delay(100);
-		u1_printf("h\n");
+//		u1_printf("h\n");
 		getPosition(&now);
-		u1_printf("now.x:%f now.y:%f\n", now.posx, now.posy);
-		u1_printf("goal.x:%f goal.y:%f\n", goal.posx, goal.posy);
-		u1_printf("time:%d\n",getGameTime());
+//		u1_printf("now.x:%f now.y:%f\n", now.posx, now.posy);
+//		u1_printf("goal.x:%f goal.y:%f\n", goal.posx, goal.posy);
+//		u1_printf("yaw:%f\n",GetYaw());
+//		u1_printf("time:%d\n",getGameTime());
 	}
   /* USER CODE END 3 */
 }
@@ -200,6 +201,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM6)
 	{
+//		u1_printf("motor\n");
 		Mecanum_Pos(now, goal);
 		Update_Pwm();
 	}
