@@ -17,7 +17,7 @@
 
 #define LX 1.73
 #define LY 1.81
-#define R 3
+#define R 0.3
 
 extern float goal_speed[4];
 
