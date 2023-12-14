@@ -119,7 +119,7 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim6);
 	// jy62
 	jy62_Init(&huart3);
-	InitAngle();
+//	InitAngle();
 //	SetBaud(115200);
 //	SetHorizontal();
 //	Calibrate();
@@ -146,13 +146,37 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_Delay(100);
-//		u1_printf("h\n");
+//		HAL_Delay(100);
 		getPosition(&now);
-//		u1_printf("now.x:%f now.y:%f\n", now.posx, now.posy);
-//		u1_printf("goal.x:%f goal.y:%f\n", goal.posx, goal.posy);
-//		u1_printf("yaw:%f\n",GetYaw());
-//		u1_printf("time:%d\n",getGameTime());
+		getPosition(&op);
+		nowGrid = pos2Grid(now);
+		opGrid = pos2Grid(op);
+		if (getGameStage() == READY)
+			ready_func();
+		else if (getGameStage() == RUNNING)
+			switch (status)
+			{
+				case init:
+					init_func();
+					break;
+				case move:
+					move_func();
+					break;
+				case mine:
+					mine_func();
+					break;
+				case protect:
+					protect_bed_func();
+					break;
+				case destroy:
+					destroy_bed_func();
+					break;
+				case attack:
+					attack_func();
+					break;
+			}
+		else
+			;
 	}
   /* USER CODE END 3 */
 }
