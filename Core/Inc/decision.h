@@ -1,3 +1,6 @@
+#ifndef __DECISION_H
+#define __DECISION_H
+
 #include "zigbee_edc25.h"
 extern uint8_t gameMap[64];
 
@@ -62,3 +65,5 @@ void move_func();
 void protect_func();
 void destroy_func();
 void attack_func();
+
+#endif
