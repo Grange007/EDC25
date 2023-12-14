@@ -95,13 +95,6 @@ Grid getNext(Grid from, Grid to)
     return from;
 }
 
-void statusCheck()
-{
-	if (getHealth() == 0)
-		status = dead;
-	else if (getWoolCount() == 0)
-		status = poverty;
-}
 void ready_func()
 {
 	uint8_t redDis = mhtDst(nowGrid, redHomeGrid);
@@ -123,6 +116,17 @@ void ready_func()
 	goal = home;
 	goalGrid = homeGrid;
 	// upd map
+}
+void dead_func()
+{
+	goal = home;
+	goalGrid = homeGrid;
+	des = home;
+	desGrid = homeGrid;
+	if (getHealth() != 0)
+	{
+		if ()
+	}
 }
 void init_func()
 {

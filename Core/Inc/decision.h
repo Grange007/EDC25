@@ -52,10 +52,11 @@ Position_edc25 grid2Pos(Grid grid);
 Grid nearestBlock(uint8_t type);
 Grid getNext(Grid from, Grid to);
 
-void statusCheck();
-void init_func();
-void move_func();
 void ready_func();
+void init_func();
+void dead_func();
+void poverty_func();
+void move_func();
 void protect_func();
 void mine_func();
 void destroy_func();

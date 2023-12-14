@@ -161,13 +161,19 @@ int main(void)
 			ready_func();
 		else if (getGameStage() == RUNNING)
 		{
-			statusCheck();
 			switch (status)
 			{
 				case init:
 					u1_printf("init\n");
 					init_func();
 					break;
+				case dead:
+					u1_printf("dead\n");
+					dead_func();
+					break;
+//				case poverty:
+//					poverty_func();
+//					break;
 				case move:
 					u1_printf("move\n");
 					move_func();
@@ -176,20 +182,20 @@ int main(void)
 					u1_printf("mine\n");
 					mine_func();
 					break;
-				case protect:
-					u1_printf("protect\n");
-					protect_func();
-					break;
-				case destroy:
-					u1_printf("destroy\n");
-					destroy_func();
-					break;
-				case attack:
-					u1_printf("attack\n");
-					attack_func();
-					break;
-				default:
-					break;
+//				case protect:
+//					u1_printf("protect\n");
+//					protect_func();
+//					break;
+//				case destroy:
+//					u1_printf("destroy\n");
+//					destroy_func();
+//					break;
+//				case attack:
+//					u1_printf("attack\n");
+//					attack_func();
+//					break;
+//				default:
+//					break;
 			}
 		}
 		else
