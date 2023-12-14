@@ -1,3 +1,6 @@
+#ifndef __DECISION_H
+#define __DECISION_H
+
 #include "zigbee_edc25.h"
 extern uint8_t gameMap[64];
 
@@ -57,6 +60,8 @@ Position_edc25 grid2Pos(Grid grid);
 Grid nearestBlock(uint8_t type);
 Grid getNext(Grid from, Grid to);
 
+Grid bellmanford(Grid source, Grid target, int *needBlock);
+
 void statusChange();
 void ready_func();
 void init_func();
@@ -67,3 +72,9 @@ void Pdestroy_func();
 void Nmove_func();
 void Nprotect_func();
 void Ndestroy_func();
+void move_func();
+void protect_func();
+void destroy_func();
+void attack_func();
+
+#endif
