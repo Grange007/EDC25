@@ -192,7 +192,7 @@ void getPositionOpponent(Position_edc25 *Pos)
     Pos->posy = changeFloatData(gameStatusMessage + 83);
 }
 
-uint8_t getAglity()
+uint8_t getAgility()
 {
     return gameStatusMessage[87];
 }

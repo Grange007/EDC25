@@ -19,13 +19,14 @@ MapType gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 3,
 
 Status status = init;
 
-uint8_t team;
-uint8_t minWool = 8;
-uint8_t bedMinHeight = 16;
-uint8_t emeraldCtrlLine = 32;
+uint8_t agility;
 uint8_t health;
 uint8_t wool;
 uint8_t emerald;
+uint8_t time;
+
+int8_t team;
+int8_t lastTime = -16;
 
 Grid nowGrid;
 Grid goalGrid;
@@ -44,6 +45,12 @@ Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
 Position_edc25 opHome = {0, 0};
+
+int dis[8][8];
+int pre_pos[8][8][2];
+int dx[4] = {0, 0, 1, -1};
+int dy[4] = {1, -1, 0, 0};
+int inf = 0x3f3f3f3f;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -102,11 +109,6 @@ Grid getNext(Grid from, Grid to)
 	return from;
 }
 
-int dis[8][8];
-int pre_pos[8][8][2];
-int dx[4] = {0, 0, 1, -1};
-int dy[4] = {1, -1, 0, 0};
-int inf = 0x3f3f3f3f;
 Grid bellmanford(Grid source, Grid target, int *needBlock)
 {
     memset(dis, 63, sizeof(dis));
@@ -155,7 +157,7 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
     Grid cur = target;
     while (cur.x != source.x || cur.y != source.y)
     {
-        if (height[cur.x * 8 + cur.y] == 0)
+        if (getHeightOfId(grid2No((Grid){cur.x, cur.y})) == 0)
         {
             (*needBlock)++;
         }
@@ -179,30 +181,54 @@ void statusChange()
 		status = dead;
 	else
 	{
-		if (wool > 2 * mhtDst(nowGrid, opHomeGrid) - 2)
+		if (hasBedOpponent())
 		{
-			if (team == RED_TEAM)
+			if (wool > 2 * mhtDst(nowGrid, opHomeGrid) - 2
+			 && time - lastTime > agility)
 			{
-				desGrid.x = opHomeGrid.x - 1;
-				desGrid.y = opHomeGrid.y - 1;
+				if (team == RED_TEAM)
+				{
+					desGrid.x = opHomeGrid.x - 1;
+					desGrid.y = opHomeGrid.y - 1;
+				}
+				if (team == BLUE_TEAM)
+				{
+					desGrid.x = opHomeGrid.x + 1;
+					desGrid.y = opHomeGrid.y + 1;
+				}
+				status = Pmove;
 			}
+			else if (emerald > MAX_EMERALD)
+				status = Pprotect;
 			else
 			{
-				desGrid.x = opHomeGrid.x + 1;
-				desGrid.y = opHomeGrid.y + 1;
+				nearestDiamond = nearestBlock(diamond);
+				if (wool > 2 * mhtDst(nowGrid, nearestDiamond))
+					desGrid = nearestDiamond;
+				else
+					desGrid = homeGrid;
+				status = Pmove;
 			}
-			status = move;
 		}
-		else if (emerald > MAX_EMERALD)
-			status = protect;
 		else
 		{
-			nearestDiamond = nearestBlock(diamond);
-			if (wool > 2 * mhtDst(nowGrid, nearestDiamond))
-				desGrid = nearestDiamond;
+			if (emerald > 64)
+				status = Nprotect;
+			else if (wool > 2 * mhtDst(nowGrid, opGrid) - 2
+				  && time - lastTime > agility)
+			{
+				desGrid = opGrid;
+				status = Nmove;
+			}
 			else
-				desGrid = homeGrid;
-			status = move;
+			{
+				nearestDiamond = nearestBlock(diamond);
+				if (wool > 2 * mhtDst(nowGrid, nearestDiamond))
+					desGrid = nearestDiamond;
+				else
+					desGrid = homeGrid;
+				status = Nmove;
+			}
 		}
 	}
 }
@@ -236,7 +262,7 @@ void init_func()
 	if (health == 0)
 		status = dead;
 	else
-		status = protect;
+		status = Pprotect;
 }
 void dead_func()
 {
@@ -244,21 +270,15 @@ void dead_func()
 	goalGrid = homeGrid;
 	statusChange();
 }
-void move_func()
+void Pmove_func()
 {
 	goalGrid = getNext(nowGrid, desGrid);
 	if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
 	{
-		if (gameMap[grid2No(nowGrid)] == diamond)
-		{
-			status = mine;
-			return;
-		}
-		else if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-		{
-			status = protect;
-			return;
-		}
+		if ((team == RED_TEAM && nowGrid.x == opHomeGrid.x - 1 && nowGrid.y == opHomeGrid.y - 1)
+		 || (team == BLUE_TEAM && nowGrid.x == opHomeGrid.x + 1 && nowGrid.y == opHomeGrid.y + 1))
+			status = Pdestroy;
+		return;
 	}
 	if (getHeightOfId(grid2No(goalGrid)) == 0)
 	{
@@ -266,16 +286,47 @@ void move_func()
 		HAL_Delay(300);
 	}
 	goal = grid2Pos(goalGrid);
+	statusChange();
 }
-void protect_func()
+void Pprotect_func()
 {
 	if (emerald >= 2)
 		trade_id(3);
 	statusChange();
 }
-void destroy_func()
+void Pdestroy_func()
 {
+	attack_id(grid2No(opHomeGrid));
+	statusChange();
 }
-void attack_func()
+void Nmove_func()
 {
+	goalGrid = getNext(nowGrid, desGrid);
+	if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
+	{
+		if (nowGrid.x == opGrid.x && nowGrid.y == opGrid.y)
+			status = Ndestroy;
+		return;
+	}
+	if(getHeightOfId(grid2No(goalGrid)) == 0)
+	{
+		place_block_id(grid2No(goalGrid));
+		HAL_Delay(300);
+	}
+	goal = grid2Pos(goalGrid);
+	statusChange();
 }
+void Nprotect_func()
+{
+	if (emerald >= 64)
+		trade_id(/*攻击力*/0);
+    if (emerald >= 2)
+        trade_id(3);
+    statusChange();
+}
+void Ndestroy_func()
+{
+	attack_id(grid2No(opGrid));
+	statusChange();
+}
+

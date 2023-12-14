@@ -21,19 +21,22 @@ typedef enum
 {
     init = 0,
 	dead,
-	poverty,
-	move,
-    mine,
-    protect,
-    destroy,
-    attack
+	Pmove,
+    Pprotect,
+    Pdestroy,
+	Nmove,
+	Nprotect,
+	Ndestroy
+
 } Status;
 
 extern Status status;
 
+extern uint8_t agility;
 extern uint8_t health;
 extern uint8_t wool;
 extern uint8_t emerald;
+extern uint8_t time;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -57,10 +60,18 @@ Position_edc25 grid2Pos(Grid grid);
 Grid nearestBlock(uint8_t type);
 Grid getNext(Grid from, Grid to);
 
+Grid bellmanford(Grid source, Grid target, int *needBlock);
+
 void statusChange();
 void ready_func();
 void init_func();
 void dead_func();
+void Pmove_func();
+void Pprotect_func();
+void Pdestroy_func();
+void Nmove_func();
+void Nprotect_func();
+void Ndestroy_func();
 void move_func();
 void protect_func();
 void destroy_func();
