@@ -40,11 +40,11 @@ Position_edc25 opHome = {0, 0};
 
 uint8_t mhtDst(Grid from, Grid to)
 {
-    return abs(from.x-to.x)+abs(from.y-to.y);
+    return abs(from.x - to.x) + abs(from.y - to.y);
 }
 uint8_t grid2No(Grid grid)
 {
-    return grid.x+8*grid.y;
+    return 8 * grid.x + grid.y;
 }
 Grid no2Grid(uint8_t no)
 {
@@ -70,18 +70,16 @@ Position_edc25 grid2Pos(Grid grid)
 Grid nearestBlock(MapType type)
 {
     Grid nearest = {0, 0};
-    uint8_t dst=255;
-    for(int i=0;i<64;i++)
-    {
+    uint8_t dst = 255;
+    for(int i = 0 ; i < 64 ; i++)
         if(gameMap[i] == type)
         {
-            if(mhtDst(nowGrid,no2Grid(i))<dst)
+            if(mhtDst(nowGrid, no2Grid(i)) < dst)
             {
-                nearest=no2Grid(i);
-                dst=mhtDst(nowGrid,no2Grid(i));
+                nearest = no2Grid(i);
+                dst = mhtDst(nowGrid,no2Grid(i));
             }
         }
-    }
     return nearest;
 }
 Grid getNext(Grid from, Grid to)
@@ -97,6 +95,13 @@ Grid getNext(Grid from, Grid to)
     return from;
 }
 
+void statusCheck()
+{
+	if (getHealth() == 0)
+		status = dead;
+	else if (getWoolCount() == 0)
+		status = poverty;
+}
 void ready_func()
 {
 	uint8_t redDis = mhtDst(nowGrid, redHomeGrid);
@@ -122,26 +127,19 @@ void ready_func()
 void init_func()
 {
 	InitAngle();
-    nearestDiamond = nearestBlock(diamond);
-    uint8_t diamondDst = mhtDst(nowGrid, nearestDiamond);
-    for(uint8_t i = 0; i < 8 - diamondDst; i++)
-    {
-        place_block_id(grid2No(nowGrid));
-    }
-    desGrid = nearestDiamond;
-    status = move;
+    status = protect;
 }
 void move_func()
 {
 	goalGrid = getNext(nowGrid, desGrid);
-	if(goalGrid.x == nowGrid.x && goalGrid.y == nowGrid.y)
+	if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
 	{
-		if(nowGrid.x == nearestDiamond.x && nowGrid.y == nearestDiamond.y)
+		if (gameMap[grid2No(nowGrid)] == diamond)
 		{
 			status = mine;
 			return;
 		}
-		else if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+		else if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 		{
 			status = protect;
 			return;
@@ -150,24 +148,9 @@ void move_func()
 	if(getHeightOfId(grid2No(goalGrid)) == 0)
 	{
 		place_block_id(grid2No(goalGrid));
+		HAL_Delay(300);
 	}
 	goal = grid2Pos(goalGrid);
-}
-void protect_bed_func()
-{
-    if (getEmeraldCount() >= 2)
-    {
-        trade_id(3);
-    }
-    if (getHeightOfId(grid2No(homeGrid)) < bedMinHeight && getWoolCount() > minWool)
-    {
-        place_block_id(grid2No(homeGrid));
-    }
-    else
-    {
-    	desGrid = nearestDiamond;
-    	status = move;
-    }
 }
 void mine_func()
 {
@@ -177,7 +160,19 @@ void mine_func()
 		status = move;
 	}
 }
-void destroy_bed_func()
+void protect_func()
+{
+    if (getEmeraldCount() >= 2)
+        trade_id(3);
+    if (getHeightOfId(grid2No(homeGrid)) < bedMinHeight && getWoolCount() > minWool)
+        place_block_id(grid2No(homeGrid));
+    else
+    {
+    	desGrid = nearestBlock(diamond);
+    	status = move;
+    }
+}
+void destroy_func()
 {
 
 }

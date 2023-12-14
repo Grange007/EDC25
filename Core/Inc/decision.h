@@ -17,7 +17,8 @@ typedef enum
 typedef enum
 {
     init = 0,
-	place,
+	dead,
+	poverty,
 	move,
     mine,
     protect,
@@ -51,12 +52,12 @@ Position_edc25 grid2Pos(Grid grid);
 Grid nearestBlock(uint8_t type);
 Grid getNext(Grid from, Grid to);
 
+void statusCheck();
 void init_func();
-void place_func();
 void move_func();
 void ready_func();
-void protect_bed_func();
+void protect_func();
 void mine_func();
-void destroy_bed_func();
+void destroy_func();
 void attack_func();
 void mainLoop();

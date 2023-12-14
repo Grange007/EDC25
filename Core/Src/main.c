@@ -160,6 +160,8 @@ int main(void)
 		if (getGameStage() == READY)
 			ready_func();
 		else if (getGameStage() == RUNNING)
+		{
+			statusCheck();
 			switch (status)
 			{
 				case init:
@@ -176,17 +178,20 @@ int main(void)
 					break;
 				case protect:
 					u1_printf("protect\n");
-					protect_bed_func();
+					protect_func();
 					break;
 				case destroy:
 					u1_printf("destroy\n");
-					destroy_bed_func();
+					destroy_func();
 					break;
 				case attack:
 					u1_printf("attack\n");
 					attack_func();
 					break;
+				default:
+					break;
 			}
+		}
 		else
 			;
 	}
