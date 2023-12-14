@@ -5,11 +5,9 @@
 
 #define MAX_POS_ERROR 0.1
 
-Status status = init;
-
 uint8_t minWool=8;
 uint8_t bedMinHeight=16;
-uint8_t emeraldCtrlLine=32;
+uint8_t emeraldCtrlLine = 32;
 MapType gameMap[64]
 				= {1, 0, 0, 0, 0, 0, 0, 3,
 				   0, 0, 0, 0, 0, 0, 0, 0,
@@ -20,20 +18,25 @@ MapType gameMap[64]
 				   0, 0, 0, 0, 0, 0, 0, 0,
 				   3, 0, 0, 0, 0, 0, 0, 1};
 
-Grid goalGrid = {0, 0};
-Grid nowGrid = {0, 0};
-Grid homeGrid = {0, 0};
-Grid opHomeGrid = {0, 0};
-Grid desGrid = {0, 0};
-Grid opGrid = {0, 0};
+Status status = init;
+
+Grid nowGrid;
+Grid goalGrid;
+Grid desGrid;
+Grid opGrid;
+Grid homeGrid;
+Grid opHomeGrid;
+Grid redHomeGrid = {0, 0};
+Grid blueHomeGrid = {7, 7};
+
 Grid nearestDiamond;
 
 Position_edc25 now = {0, 0};
 Position_edc25 goal = {0, 0};
-Position_edc25 home = {0, 0};
-Position_edc25 opHome = {0, 0};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
+Position_edc25 home = {0, 0};
+Position_edc25 opHome = {0, 0};
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -46,15 +49,15 @@ uint8_t grid2No(Grid grid)
 Grid no2Grid(uint8_t no)
 {
     Grid tmp;
-    tmp.x=no%8;
-    tmp.y=no/8;
+    tmp.x = no % 8;
+    tmp.y = no / 8;
     return tmp;
 }
 Grid pos2Grid(Position_edc25 pos)
 {
     Grid tmp;
-    tmp.x=pos.posx+0.5;
-    tmp.y=pos.posy+0.5;
+    tmp.x = (uint8_t)pos.posx;
+    tmp.y = (uint8_t)pos.posy;
     return tmp;
 }
 Position_edc25 grid2Pos(Grid grid)
@@ -96,23 +99,24 @@ Grid getNext(Grid from, Grid to)
 
 void ready_func()
 {
-	goal = now;
-	goalGrid = nowGrid;
-
-	home = now;
-	homeGrid = nowGrid;
-
-	if (homeGrid.x == 0)
+	uint8_t redDis = mhtDst(nowGrid, redHomeGrid);
+	uint8_t blueDis = mhtDst(nowGrid, blueHomeGrid);
+	if (redDis < blueDis)
 	{
-		opHomeGrid.x = 7;
-		opHomeGrid.y = 7;
+		homeGrid = redHomeGrid;
+		home = grid2Pos(redHomeGrid);
+		opHomeGrid = blueHomeGrid;
+		opHome = grid2Pos(blueHomeGrid);
 	}
 	else
 	{
-		opHomeGrid.x = 0;
-		opHomeGrid.y = 0;
+		homeGrid = blueHomeGrid;
+		home = grid2Pos(blueHomeGrid);
+		opHomeGrid = redHomeGrid;
+		opHome = grid2Pos(redHomeGrid);
 	}
-	opHome = grid2Pos(opHomeGrid);
+	goal = home;
+	goalGrid = homeGrid;
 	// upd map
 }
 void init_func()

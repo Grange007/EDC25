@@ -146,32 +146,44 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		HAL_Delay(100);
+		HAL_Delay(100);
 		getPosition(&now);
-		getPosition(&op);
 		nowGrid = pos2Grid(now);
+		getPosition(&op);
 		opGrid = pos2Grid(op);
+
+		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
+		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
+		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
+//		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+
 		if (getGameStage() == READY)
 			ready_func();
 		else if (getGameStage() == RUNNING)
 			switch (status)
 			{
 				case init:
+					u1_printf("init\n");
 					init_func();
 					break;
 				case move:
+					u1_printf("move\n");
 					move_func();
 					break;
 				case mine:
+					u1_printf("mine\n");
 					mine_func();
 					break;
 				case protect:
+					u1_printf("protect\n");
 					protect_bed_func();
 					break;
 				case destroy:
+					u1_printf("destroy\n");
 					destroy_bed_func();
 					break;
 				case attack:
+					u1_printf("attack\n");
 					attack_func();
 					break;
 			}
