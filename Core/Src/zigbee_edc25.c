@@ -1,3 +1,4 @@
+#include "jy62.h"
 #include "zigbee_edc25.h"
 
 #include "main.h"
@@ -10,6 +11,7 @@
 uint8_t zigbeeRaw[MAX_MSG_LEN];         // Raw zigbee data
 uint8_t zigbeeMessage[MAX_MSG_LEN * 2]; // Double the size to save a complete message
 int32_t memPtr = 0;
+uint8_t cutavoid[4];//In case bytenum or time be wrong
 // We separate the message in memory into 4 sections, with each length MAX_MSG_LEN/2.
 // In each DMA half/full CpltCallback, memPtr will be updated and the data will be transferred
 // from zigbeeRaw into the correct section in zigbeeMessage.
@@ -47,7 +49,7 @@ static float changeFloatData(uint8_t *dat)
     return float_data;
 }
 
-// 接口函数
+
 void zigbee_Init(UART_HandleTypeDef *huart)
 {
     memset(zigbeeMessage, 0x00, MAX_MSG_LEN);
@@ -59,8 +61,14 @@ void zigbee_Init(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
+	if (huart == jy62_huart)
+	{
+//		u1_printf("jy62\n");
+		jy62MessageRecord();
+	}
     if (huart == zigbee_huart)
     {
+//    	u1_printf("zigb\n");
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
         uint8_t *rawPtr = &zigbeeRaw[0];
         memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);
@@ -100,7 +108,12 @@ uint8_t zigbeeMessageRecord()
         if (tempZigbeeMessage[msgIndex] == 0x55 &&
             tempZigbeeMessage[modularAdd(msgIndex, 1, MAX_MSG_LEN * 2)] == 0xAA)
         {
-            byteNum = *((int16_t *)(&tempZigbeeMessage[modularAdd(msgIndex, 2, MAX_MSG_LEN * 2)]));
+            
+            
+            cutavoid[0] = tempZigbeeMessage[modularAdd(msgIndex, 2, MAX_MSG_LEN * 2)];
+            cutavoid[1] = tempZigbeeMessage[modularAdd(msgIndex, 3, MAX_MSG_LEN * 2)];
+            byteNum = *((int16_t*)(cutavoid));
+            
             uint8_t tmpchecksum;
             tmpchecksum = calculateChecksum(tempZigbeeMessage, modularAdd(msgIndex, 5, MAX_MSG_LEN * 2), byteNum);
             if (tmpchecksum == tempZigbeeMessage[modularAdd(msgIndex, 4, MAX_MSG_LEN * 2)])
@@ -117,7 +130,11 @@ uint8_t zigbeeMessageRecord()
     
     int32_t prevTime, newTime;
     prevTime = getGameTime();
-    newTime = *((int32_t *)(&tempZigbeeMessage[modularAdd(msgIndex, 5 + 1, MAX_MSG_LEN * 2)]));
+    for(int32_t i = 0;i < 4;i++)
+    {
+        cutavoid[i] =  tempZigbeeMessage[modularAdd(msgIndex, 5 + 1 + i, MAX_MSG_LEN * 2)];
+    }
+    newTime = *((int32_t *)(cutavoid));
     if (newTime >= prevTime && newTime <= prevTime + 1000)
     {
         memset(gameStatusMessage, 0x00, MAX_STATUS_LEN);
@@ -207,18 +224,18 @@ uint8_t getWoolCount()
 
 void attack_id(uint8_t chunk_id)
 {
-    uint8_t slaver_msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, chunk_id, 0x00, chunk_id};
-    HAL_UART_Transmit(zigbee_huart, slaver_msg, 8, HAL_MAX_DELAY);
+    uint8_t slaver_msg[7] = {0x55, 0xAA, 0x02, 0x00, (uint8_t)(0^chunk_id), 0, chunk_id};
+    HAL_UART_Transmit(zigbee_huart, slaver_msg, 7, HAL_MAX_DELAY);
 }
 
 void place_block_id(uint8_t chunk_id)
 {
-    uint8_t slaver_msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x01 ^ chunk_id), 0x01, chunk_id};
-    HAL_UART_Transmit(zigbee_huart, slaver_msg, 8, HAL_MAX_DELAY);
+    uint8_t slaver_msg[7] = {0x55, 0xAA, 0x02, 0x00, (uint8_t)(1^chunk_id), 1, chunk_id};
+    HAL_UART_Transmit(zigbee_huart, slaver_msg, 7, HAL_MAX_DELAY);
 }
 
 void trade_id(uint8_t item_id)
 {
-    uint8_t slaver_msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x02 ^ item_id), 0x02, item_id};
-    HAL_UART_Transmit(zigbee_huart, slaver_msg, 8, HAL_MAX_DELAY);
+    uint8_t slaver_msg[7] = {0x55, 0xAA, 0x02, 0x00, (uint8_t)(2^item_id), 2, item_id};
+    HAL_UART_Transmit(zigbee_huart, slaver_msg, 7, HAL_MAX_DELAY);
 }

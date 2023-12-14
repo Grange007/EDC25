@@ -18,58 +18,58 @@ typedef struct
     float posy;
 } Position_edc25;
 
-void zigbee_Init(UART_HandleTypeDef *huart); // ³õÊ¼»¯,¿ªÊ¼½ÓÊÕÏûÏ¢
-uint8_t zigbeeMessageRecord();                  // Ë¢ĞÂÏûÏ¢
+void zigbee_Init(UART_HandleTypeDef *huart); // åˆå§‹åŒ–,å¼€å§‹æ¥æ”¶æ¶ˆæ¯
+uint8_t zigbeeMessageRecord();                  // åˆ·æ–°æ¶ˆæ¯
 
-// »ñÈ¡ÓÎÏ·Ê±¼ä
+// è·å–æ¸¸æˆæ—¶é—´
 int32_t getGameTime();
 
-// »ñÈ¡ÓÎÏ·½×¶Î
+// è·å–æ¸¸æˆé˜¶æ®µ
 GameStage_edc25 getGameStage();
 
-// »ñÈ¡ËùÓĞ¿éµÄ¸ß¶ÈĞÅÏ¢
+// è·å–æ‰€æœ‰å—çš„é«˜åº¦ä¿¡æ¯
 void getHeightOfAllChunks(uint8_t *dest);
 
-// ¸ù¾İID»ñÈ¡¿éµÄ¸ß¶È
+// æ ¹æ®IDè·å–å—çš„é«˜åº¦
 uint8_t getHeightOfId(uint8_t id);
 
-// ¼ì²éÍæ¼ÒÊÇ·ñÓĞ´²
+// æ£€æŸ¥ç©å®¶æ˜¯å¦æœ‰åºŠ
 bool hasBed();
 
-// ¼ì²é¶ÔÊÖÊÇ·ñÓĞ´²
+// æ£€æŸ¥å¯¹æ‰‹æ˜¯å¦æœ‰åºŠ
 bool hasBedOpponent();
 
-// »ñÈ¡Íæ¼ÒÎ»ÖÃ
+// è·å–ç©å®¶ä½ç½®
 void getPosition(Position_edc25 *Pos);
 
-// »ñÈ¡¶ÔÊÖÎ»ÖÃ
+// è·å–å¯¹æ‰‹ä½ç½®
 void getPositionOpponent(Position_edc25 *Pos);
 
-// »ñÈ¡Ãô½İ
+// è·å–æ•æ·
 uint8_t getAgility();
 
-// »ñÈ¡µ±Ç°ÉúÃü
+// è·å–å½“å‰ç”Ÿå‘½
 uint8_t getHealth();
 
-// »ñÈ¡×î´óÉúÃü
+// è·å–æœ€å¤§ç”Ÿå‘½
 uint8_t getMaxHealth();
 
-// »ñÈ¡Á¦Á¿
+// è·å–åŠ›é‡
 uint8_t getStrength();
 
-// »ñÈ¡ÂÌ±¦Ê¯ÊıÁ¿
+// è·å–ç»¿å®çŸ³æ•°é‡
 uint8_t getEmeraldCount();
 
-// »ñÈ¡ÑòÃ«ÊıÁ¿
+// è·å–ç¾Šæ¯›æ•°é‡
 uint8_t getWoolCount();
 
-// ¹¥»÷Ö¸¶¨IDµÄÎ»ÖÃ
+// æ”»å‡»æŒ‡å®šIDçš„ä½ç½®
 void attack_id(uint8_t chunk_id);
 
-// ÔÚÖ¸¶¨IDµÄ¿éÉÏ·ÅÖÃ·½¿é
+// åœ¨æŒ‡å®šIDçš„å—ä¸Šæ”¾ç½®æ–¹å—
 void place_block_id(uint8_t chunk_id);
 
-// Ö¸¶¨IDµÄÎïÆ·½»Ò×
+// æŒ‡å®šIDçš„ç‰©å“äº¤æ˜“
 void trade_id(uint8_t item_id);
 
 #endif

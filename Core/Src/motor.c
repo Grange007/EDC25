@@ -2,14 +2,15 @@
  * motor.c
  *
  *  Created on: Dec 2, 2023
- *      Author: 小土豆
+ *      Author: 蒟蒻是这样的
  */
+
+
+#include "motor.h"
+#include "jy62.h"
+#include "pid.h"
 #include "tim.h"
 #include "usart.h"
-
-#include "jy62.h"
-#include "motor.h"
-#include "pid.h"
 
 #include <math.h>
 
@@ -75,31 +76,16 @@ void Move(uint8_t id, float pwm)
 	}
 }
 
-void Update_Pwm(PosStr now, PosStr goal)
+void Update_Pwm()
 {
-
-	float xVel = PID_Cal(&xPid, now.x, goal.x);
-	float yVel = PID_Cal(&yPid, now.y, goal.y);
-//	if (xVel > MAX_VELOCITY)
-//		xVel = MAX_VELOCITY;
-//	if (xVel < MIN_VELOCITY)
-//		xVel = MIN_VELOCITY;
-//	if (yVel > MAX_VELOCITY)
-//		yVel = MAX_VELOCITY;
-//	if (yVel < MIN_VELOCITY)
-//		yVel = MIN_VELOCITY;
-
-//	u1_printf("xVel=%f, yVel=%f\n", xVel, yVel)
-
-
 	int FLCnt = __HAL_TIM_GET_COUNTER(&htim2);
 	__HAL_TIM_SetCounter(&htim2, 0);
 	if (FLCnt > 32767)
 		FLCnt = 65535 - FLCnt;
 	else
 		FLCnt = 0 - FLCnt;
-	float FLNow = 1.0 * FLCnt / 10.8;
-	float FLPwm = PID_Cal(&FLPid, FLNow, xVel - yVel);
+	float FLNow = 1.0 * FLCnt / UNKNOWN;
+	float FLPwm = PID_Cal(&FLPid, FLNow, goal_speed[0]);
 	Move(1, FLPwm);
 
 	int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
@@ -108,8 +94,8 @@ void Update_Pwm(PosStr now, PosStr goal)
 		FRCnt = FRCnt - 65535;
 	else
 		FRCnt = FRCnt - 0;
-	float FRNow = 1.0 * FRCnt / 10.8;
-	float FRPwm = PID_Cal(&FRPid, FRNow, xVel + yVel);
+	float FRNow = 1.0 * FRCnt / UNKNOWN;
+	float FRPwm = PID_Cal(&FRPid, FRNow, goal_speed[1]);
 	Move(2, FRPwm);
 
 	int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
@@ -118,8 +104,8 @@ void Update_Pwm(PosStr now, PosStr goal)
 		RLCnt = 65535 - RLCnt;
 	else
 		RLCnt = 0 - RLCnt;
-	float RLNow = 1.0 * RLCnt / 10.8;
-	float RLPwm = PID_Cal(&RLPid, RLNow, xVel + yVel);
+	float RLNow = 1.0 * RLCnt / UNKNOWN;
+	float RLPwm = PID_Cal(&RLPid, RLNow, goal_speed[2]);
 	Move(3, RLPwm);
 
 	int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
@@ -128,8 +114,8 @@ void Update_Pwm(PosStr now, PosStr goal)
 		RRCnt = RRCnt - 65535;
 	else
 		RRCnt = RRCnt - 0;
-	float RRNow = 1.0 * RRCnt / 10.8;
-	float RRPwm = PID_Cal(&RRPid, RRNow, xVel - yVel);
+	float RRNow = 1.0 * RRCnt / UNKNOWN;
+	float RRPwm = PID_Cal(&RRPid, RRNow, goal_speed[3]);
 	Move(4, RRPwm);
 
 //	u1_printf("FLNow=%f FLPwm=%f ", FLNow, FLPwm);
@@ -141,10 +127,13 @@ void Update_Pwm(PosStr now, PosStr goal)
 void Mecanum_Speed(float vx, float vy, float w)
 {
     float FL, FR, RL, RR;
-    FL = (vx - vy - (LX + LY) * w) / R;
     FL = (vx + vy + (LX + LY) * w) / R;
-    FL = (vx + vy - (LX + LY) * w) / R;
-    FL = (vx - vy + (LX + LY) * w) / R;
+    FR = (vx - vy - (LX + LY) * w) / R;
+    RL = (vx - vy + (LX + LY) * w) / R;
+    RR = (vx + vy - (LX + LY) * w) / R;
+
+//    u1_printf("vx:%f vy:%f w:%f\n", vx, vy, w);
+//    u1_printf("FL:%f FR:%f RL:%f RR:%f\n", FL, FR, RL, RR);
 
     // 限制最大速度
     float max = fabs(FL);
@@ -162,16 +151,6 @@ void Mecanum_Speed(float vx, float vy, float w)
         RR = RR / max * MAX_VELOCITY;
     }
 
-    // 限制最小速度
-    if (FL < MIN_VELOCITY)
-        FL = MIN_VELOCITY;
-    if (FR < MIN_VELOCITY)
-        FR = MIN_VELOCITY;
-    if (RL < MIN_VELOCITY)
-        RL = MIN_VELOCITY;
-    if (RR < MIN_VELOCITY)
-        RR = MIN_VELOCITY;
-
     // 更新电机速度
     goal_speed[0] = FL;
     goal_speed[1] = FR;
@@ -179,10 +158,20 @@ void Mecanum_Speed(float vx, float vy, float w)
     goal_speed[3] = RR;
 }
 
-void Mecanum_Pos(PosStr now, PosStr goal)
+void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
-	float vx = PID_Cal(&xPid, now.x, goal.x);
-	float vy = PID_Cal(&yPid, now.y, goal.y);
-	float w = 0;
+	float yaw = GetYaw();
+//	u1_printf("preYaw:%f\n", yaw);
+	if (yaw > 180)
+		yaw = 360 - yaw;
+	else
+		yaw = 0 - yaw;
+	u1_printf("%f\n", yaw);
+
+	float vx = PID_Cal(&xPid, now.posx, goal.posx);
+	float vy = PID_Cal(&yPid, now.posy, goal.posy);
+	float w = PID_Cal(&anglePid, yaw, 0);
+
 	Mecanum_Speed(vx, vy, w);
+//	Mecanum_Speed(50.0f, 0.0f, w);
 }

@@ -28,6 +28,8 @@
 #include "jy62.h"
 #include "motor.h"
 #include "pid.h"
+#include "zigbee_edc25.h"
+#include "decision.h"
 
 #include <math.h>
 /* USER CODE END Includes */
@@ -50,8 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-PosStr now = {0, 0};
-PosStr goal = {0, 0};
+Position_edc25 tmp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +103,7 @@ int main(void)
   MX_TIM6_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 	// Output PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
@@ -117,34 +119,64 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim6);
 	// jy62
 	jy62_Init(&huart3);
-	SetBaud(115200);
-	SetHorizontal();
-	InitAngle();
-	Calibrate();
-	SleepOrAwake();
+//	InitAngle();
+//	SetBaud(115200);
+//	SetHorizontal();
+//	Calibrate();
+//	SleepOrAwake();
+	// zigbee
+	zigbee_Init(&huart4);
 	// PID
-	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f);
-	PID_Init(&xPid, 2.5f, 0.021f, 5.0f);
-	PID_Init(&yPid, 2.0f, 0.015f, 4.5f);
+	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
 	u1_printf("Hello\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 	while (1)
 	{
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//		u1_printf("hello\n");
 //		HAL_Delay(100);
-//		float y = 250.0;
-//		y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
+		getPosition(&now);
+		getPosition(&op);
+		nowGrid = pos2Grid(now);
+		opGrid = pos2Grid(op);
+		if (getGameStage() == READY)
+			ready_func();
+		else if (getGameStage() == RUNNING)
+			switch (status)
+			{
+				case init:
+					init_func();
+					break;
+				case move:
+					move_func();
+					break;
+				case mine:
+					mine_func();
+					break;
+				case protect:
+					protect_bed_func();
+					break;
+				case destroy:
+					destroy_bed_func();
+					break;
+				case attack:
+					attack_func();
+					break;
+			}
+		else
+			;
 	}
   /* USER CODE END 3 */
 }
@@ -193,10 +225,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM6)
 	{
-//		float y = 250.0;
-//		y = GetYaw();
-//		u1_printf("YAW:%f\n", y);
-		Update_Pwm(now, goal);
+//		u1_printf("motor\n");
+		Mecanum_Pos(now, goal);
+		Update_Pwm();
 	}
 }
 /* USER CODE END 4 */
