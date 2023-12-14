@@ -104,6 +104,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
 	// Output PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
@@ -151,6 +152,10 @@ int main(void)
 		nowGrid = pos2Grid(now);
 		getPosition(&op);
 		opGrid = pos2Grid(op);
+
+		health = getHealth();
+		wool = getWoolCount();
+		emerald = getEmeraldCount();
 
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
