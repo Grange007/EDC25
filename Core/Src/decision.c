@@ -39,8 +39,8 @@ Grid blueHomeGrid = {7, 7};
 
 Grid nearestDiamond;
 
-Position_edc25 now = {0, 0};
-Position_edc25 goal = {0, 0};
+Position_edc25 now = {0.5f, 0.5f};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
@@ -180,7 +180,6 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 
 void statusChange()
 {
-//	u1_printf("health:%d\n", health);
 	if (health == 0)
 		status = dead;
 	else
@@ -202,9 +201,15 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald > MAX_EMERALD)
+			else if (emerald > 3)
 			{
-				status = Pprotect;
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+					status = Pprotect;
+				else
+				{
+					desGrid = homeGrid;
+					status = Pmove;
+				}
 			}
 			else
 			{
@@ -221,7 +226,15 @@ void statusChange()
 		{
 			bellmanford(nowGrid, opGrid, &needWool);
 			if (emerald > 64)
-				status = Nprotect;
+			{
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+					status = Nprotect;
+				else{
+					desGrid = homeGrid;
+					status = Nmove;
+				}
+			}
+
 			else if (wool > needWool && time - lastTime > agility)
 			{
 				desGrid = opGrid;
@@ -300,8 +313,8 @@ void Pmove_func()
 }
 void Pprotect_func()
 {
-//	if (emerald >= 2)
-//		trade_id(3);
+	if (emerald >= 2)
+		trade_id(3);
 	statusChange();
 }
 void Pdestroy_func()
@@ -332,7 +345,7 @@ void Nmove_func()
 void Nprotect_func()
 {
 	if (emerald >= 64)
-		trade_id(/*攻击力*/0);
+		trade_id(2);
     if (emerald >= 2)
         trade_id(3);
     statusChange();
