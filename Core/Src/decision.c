@@ -202,8 +202,15 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald > MAX_EMERALD)
-				status = Pprotect;
+			else if (emerald > MAX_EMERALD){
+				if(nowGrid.x==homeGrid.x&&nowGrid.y==homeGrid.y){
+					status = Pprotect;
+				}
+				else{
+					desGrid=homeGrid;
+					status=Pmove;
+				}
+			}
 			else
 			{
 				nearestDiamond = nearestBlock(diamond);
@@ -218,8 +225,16 @@ void statusChange()
 		else
 		{
 			bellmanford(nowGrid, opGrid, &needWool);
-			if (emerald > 64)
-				status = Nprotect;
+			if (emerald > 64){
+				if(nowGrid.x==homeGrid.x&&nowGrid.y==homeGrid.y){
+					status = Nprotect;
+				}
+				else{
+					desGrid = homeGrid;
+					status = Nmove;
+				}
+			}
+
 			else if (wool > needWool && time - lastTime > agility)
 			{
 				desGrid = opGrid;

@@ -50,21 +50,6 @@ while(lengthcount<400):#找白色mask
                 wmaskh=blob.h()
         lengthcount+=1
 lengthcount=0
-while(lengthcount<400):#找标准standh和standw
-    clock.tick()                    # Update the FPS clock.
-    img = sensor.snapshot()         # Take a picture and return the image.
-    for blob in img.find_blobs(thresholds,x_stride=1,y_stride=1,pixels_threshold=10,area_threshold=10,merge=False):
-        if blob.code()==4:
-           if blob.w()>=10:
-              wcount+=1
-              wsum+=blob.w()
-           if blob.h()>=10:
-              hcount+=1
-              hsum+=blob.h()
-        lengthcount+=1
-standw=wsum/wcount
-standh=hsum/hcount
-
 while(True):
     clock.tick()                    # Update the FPS clock.
     img = sensor.snapshot()         # Take a picture and return the image.
@@ -84,7 +69,7 @@ while(True):
                 img.draw_cross(blob.cx(),blob.cy())
                 img.draw_string(blob.x()+2,blob.y()+2,"yellow")
 
-                print(7-y-a,',',x+i,',','yellow')
+                print(7-y,',',x,',','yellow')
                 print('home1x:',home1x,'home1y:',home1y)
                 print('home2x:',home2x,'home2y:',home2y)
                 print('standw:',standw,'standh:',standh)
@@ -98,7 +83,7 @@ while(True):
                 img.draw_rectangle(blob.rect())
                 img.draw_cross(blob.cx(),blob.cy())
                 img.draw_string(blob.x()+2,blob.y()+2,"blue")
-                print(7-y-a,',',x+i,',','blue')
+                print(7-y,',',x,',','blue')
                 print('home1x:',home1x,'home1y:',home1y)
                 print('home2x:',home2x,'home2y:',home2y)
                 print('standw:',standw,'standh:',standh)
@@ -124,16 +109,7 @@ while(True):
                 img.draw_rectangle(blob.rect())
                 img.draw_cross(blob.cx(),blob.cy())
                 img.draw_string(blob.x()+2,blob.y()+2,"g")
-            if  blob.x()>=home2x and blob.x()<=home1x and blob.y()>=home1y and blob.y()<=home2y:
-                x=math.floor((blob.x()-home2x)/standw+0.5)
-                y=math.floor((blob.y()-home1y)/standh+0.5)
 
-                for i in range(int(blob.w()/standw+0.5)):
-                    for a in range(int(blob.h()/standh+0.5)):
-                        print(7-y-a,',',x+i,',','g')
-                        print('home1x:',home1x,'home1y:',home1y)
-                        print('home2x:',home2x,'home2y:',home2y)
-                        print('standw:',standw,'standh:',standh)
-                        print('blobw:',blob.w(),'blobh:',blob.h())
+
 
 
