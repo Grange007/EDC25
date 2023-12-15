@@ -115,6 +115,7 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 {
     memset(dis, 63, sizeof(dis));
 	memset(pre_pos, 0, sizeof(pre_pos));
+	needBlock = 0;
     dis[source.x][source.y] = 0;
     int flag; // 判断一轮循环过程中是否发生松弛操作
     for (int i = 0; i < 64; i++)
@@ -179,14 +180,13 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 
 void statusChange()
 {
-	u1_printf("health:%d\n", health);
+//	u1_printf("health:%d\n", health);
 	if (health == 0)
 		status = dead;
 	else
 	{
 		if (hasBedOpponent())
 		{
-			u1_printf("opBed\n");
 			bellmanford(nowGrid, opHomeGrid, &needWool);
 			if (wool > needWool && time - lastTime > agility)
 			{
@@ -203,7 +203,9 @@ void statusChange()
 				status = Pmove;
 			}
 			else if (emerald > MAX_EMERALD)
+			{
 				status = Pprotect;
+			}
 			else
 			{
 				nearestDiamond = nearestBlock(diamond);
@@ -298,8 +300,8 @@ void Pmove_func()
 }
 void Pprotect_func()
 {
-	if (emerald >= 2)
-		trade_id(3);
+//	if (emerald >= 2)
+//		trade_id(3);
 	statusChange();
 }
 void Pdestroy_func()

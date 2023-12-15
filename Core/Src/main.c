@@ -162,7 +162,8 @@ int main(void)
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
 		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
-//		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
 		if (getGameStage() == READY)
 			ready_func();
