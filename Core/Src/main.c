@@ -104,6 +104,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
 	// Output PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
@@ -152,6 +153,12 @@ int main(void)
 		getPosition(&op);
 		opGrid = pos2Grid(op);
 
+		agility = getAgility();
+		health = getHealth();
+		wool = getWoolCount();
+		emerald = getEmeraldCount();
+		time = getGameTime();
+
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
 		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
@@ -174,28 +181,32 @@ int main(void)
 //				case poverty:
 //					poverty_func();
 //					break;
-				case move:
-					u1_printf("move\n");
-					move_func();
+				case Pmove:
+					u1_printf("Pmove\n");
+					Pmove_func();
 					break;
-				case mine:
-					u1_printf("mine\n");
-					mine_func();
+				case Pprotect:
+					u1_printf("Pprotect\n");
+					Pprotect_func();
 					break;
-//				case protect:
-//					u1_printf("protect\n");
-//					protect_func();
-//					break;
-//				case destroy:
-//					u1_printf("destroy\n");
-//					destroy_func();
-//					break;
-//				case attack:
-//					u1_printf("attack\n");
-//					attack_func();
-//					break;
-//				default:
-//					break;
+				case Pdestroy:
+					u1_printf("Pdestroy\n");
+					Pdestroy_func();
+					break;
+				case Nmove:
+					u1_printf("Nmove\n");
+					Nmove_func();
+					break;
+				case Nprotect:
+					u1_printf("Nprotect\n");
+					Nprotect_func();
+					break;
+				case Ndestroy:
+					u1_printf("Ndestroy\n");
+					Ndestroy_func();
+					break;
+				default:
+					break;
 			}
 		}
 		else
