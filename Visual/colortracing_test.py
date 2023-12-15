@@ -121,6 +121,7 @@ while(True):
                 img.draw_cross(blob.cx(),blob.cy())
                 img.draw_string(blob.x()+2,blob.y()+2,"g")
 
-
+uart_A.deinit()
+del uart_A
 
 
