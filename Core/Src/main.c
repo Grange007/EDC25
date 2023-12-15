@@ -178,9 +178,6 @@ int main(void)
 					u1_printf("dead\n");
 					dead_func();
 					break;
-//				case poverty:
-//					poverty_func();
-//					break;
 				case Pmove:
 					u1_printf("Pmove\n");
 					Pmove_func();

@@ -46,6 +46,7 @@ Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
 Position_edc25 opHome = {0, 0};
 
+int needWool;
 int dis[8][8];
 int pre_pos[8][8][2];
 int dx[4] = {0, 0, 1, -1};
@@ -96,18 +97,19 @@ Grid nearestBlock(MapType type)
 		}
 	return nearest;
 }
-Grid getNext(Grid from, Grid to)
-{
-	if (from.x < to.x)
-		from.x += 1;
-	else if (from.x > to.x)
-		from.x -= 1;
-	else if (from.y < to.y)
-		from.y += 1;
-	else if (from.y > to.y)
-		from.y -= 1;
-	return from;
-}
+
+//Grid getNext(Grid from, Grid to)
+//{
+//	if (from.x < to.x)
+//		from.x += 1;
+//	else if (from.x > to.x)
+//		from.x -= 1;
+//	else if (from.y < to.y)
+//		from.y += 1;
+//	else if (from.y > to.y)
+//		from.y -= 1;
+//	return from;
+//}
 
 Grid bellmanford(Grid source, Grid target, int *needBlock)
 {
@@ -177,14 +179,16 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 
 void statusChange()
 {
+	u1_printf("health:%d\n", health);
 	if (health == 0)
 		status = dead;
 	else
 	{
 		if (hasBedOpponent())
 		{
-			if (wool > 2 * mhtDst(nowGrid, opHomeGrid) - 2
-			 && time - lastTime > agility)
+			u1_printf("opBed\n");
+			bellmanford(nowGrid, opHomeGrid, &needWool);
+			if (wool > needWool && time - lastTime > agility)
 			{
 				if (team == RED_TEAM)
 				{
@@ -203,7 +207,8 @@ void statusChange()
 			else
 			{
 				nearestDiamond = nearestBlock(diamond);
-				if (wool > 2 * mhtDst(nowGrid, nearestDiamond))
+				bellmanford(nowGrid, nearestDiamond, &needWool);
+				if (wool > needWool)
 					desGrid = nearestDiamond;
 				else
 					desGrid = homeGrid;
@@ -212,18 +217,19 @@ void statusChange()
 		}
 		else
 		{
+			bellmanford(nowGrid, opGrid, &needWool);
 			if (emerald > 64)
 				status = Nprotect;
-			else if (wool > 2 * mhtDst(nowGrid, opGrid) - 2
-				  && time - lastTime > agility)
+			else if (wool > needWool && time - lastTime > agility)
 			{
 				desGrid = opGrid;
 				status = Nmove;
 			}
 			else
 			{
+				bellmanford(nowGrid, nearestDiamond, &needWool);
 				nearestDiamond = nearestBlock(diamond);
-				if (wool > 2 * mhtDst(nowGrid, nearestDiamond))
+				if (wool > needWool)
 					desGrid = nearestDiamond;
 				else
 					desGrid = homeGrid;
@@ -272,13 +278,15 @@ void dead_func()
 }
 void Pmove_func()
 {
-	goalGrid = getNext(nowGrid, desGrid);
+	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
 	if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
 	{
 		if ((team == RED_TEAM && nowGrid.x == opHomeGrid.x - 1 && nowGrid.y == opHomeGrid.y - 1)
 		 || (team == BLUE_TEAM && nowGrid.x == opHomeGrid.x + 1 && nowGrid.y == opHomeGrid.y + 1))
+		{
 			status = Pdestroy;
-		return;
+			return;
+		}
 	}
 	if (getHeightOfId(grid2No(goalGrid)) == 0)
 	{
@@ -297,16 +305,19 @@ void Pprotect_func()
 void Pdestroy_func()
 {
 	attack_id(grid2No(opHomeGrid));
+	lastTime = time;
 	statusChange();
 }
 void Nmove_func()
 {
-	goalGrid = getNext(nowGrid, desGrid);
+	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
 	if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
 	{
 		if (nowGrid.x == opGrid.x && nowGrid.y == opGrid.y)
+		{
 			status = Ndestroy;
-		return;
+			return;
+		}
 	}
 	if(getHeightOfId(grid2No(goalGrid)) == 0)
 	{
@@ -327,6 +338,7 @@ void Nprotect_func()
 void Ndestroy_func()
 {
 	attack_id(grid2No(opGrid));
+	lastTime = time;
 	statusChange();
 }
 
