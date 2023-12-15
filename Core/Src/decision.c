@@ -125,7 +125,7 @@ void dead_func()
 	desGrid = homeGrid;
 	if (getHealth() != 0)
 	{
-		if ()
+//		if ()
 	}
 }
 void init_func()
