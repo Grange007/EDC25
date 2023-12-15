@@ -30,7 +30,7 @@
 #include "pid.h"
 #include "zigbee_edc25.h"
 #include "decision.h"
-
+#include "visual.h"
 #include <math.h>
 /* USER CODE END Includes */
 
@@ -135,8 +135,9 @@ int main(void)
 	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
-
+  decode_init(gameMap);
 	u1_printf("Hello\n");
+  visual_receive();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -164,6 +165,7 @@ int main(void)
 		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 
+
 		if (getGameStage() == READY)
 			ready_func();
 		else if (getGameStage() == RUNNING)
@@ -178,6 +180,9 @@ int main(void)
 					u1_printf("dead\n");
 					dead_func();
 					break;
+//				case poverty:
+//					poverty_func();
+//					break;
 				case Pmove:
 					u1_printf("Pmove\n");
 					Pmove_func();
