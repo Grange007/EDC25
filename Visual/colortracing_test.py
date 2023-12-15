@@ -3,6 +3,12 @@
 # Welcome to the CanMV IDE! Click on the green run arrow button below to run the script!
 
 import sensor, image, time, math
+from machine import UART
+from fpioa_manager import fm
+
+fm.register(10, fm.fpioa.UART1_TX, force=True)
+fm.register(11, fm.fpioa.UART1_RX, force=True)
+uart_A = UART(UART.UART1, 115200, 8, 0, 0, timeout=1000, read_buf_len=4096)
 #更改阈值
 thresholds=[(42, 98, -106, 110, -128, 16),(43, 99, -63, 109, 10, 122),(0, 99, -4, 127, -62, -18),(2, 25, -127, 32, -117, 112)]#42开头是白色 43开头是黄色 0开头是蓝色 2开头是灰色
                   # Clear lcd screen.
@@ -53,6 +59,7 @@ lengthcount=0
 while(True):
     clock.tick()                    # Update the FPS clock.
     img = sensor.snapshot()         # Take a picture and return the image.
+    write_str = ''
     for blob in img.find_blobs(thresholds,x_stride=1,y_stride=1,pixels_threshold=100,area_threshold=100,merge=False):            # Note: CanMV Cam runs about half as fast when connected
         if blob.code()==1:
            img.draw_rectangle(blob.rect())
@@ -70,6 +77,8 @@ while(True):
                 img.draw_string(blob.x()+2,blob.y()+2,"yellow")
 
                 print(7-y,',',x,',','yellow')
+                write_str = str(7-y)+','+str(x)+','+ str(2) +'\n'
+                uart_A.write(write_str)
                 print('home1x:',home1x,'home1y:',home1y)
                 print('home2x:',home2x,'home2y:',home2y)
                 print('standw:',standw,'standh:',standh)
@@ -84,6 +93,8 @@ while(True):
                 img.draw_cross(blob.cx(),blob.cy())
                 img.draw_string(blob.x()+2,blob.y()+2,"blue")
                 print(7-y,',',x,',','blue')
+                write_str = str(7-y)+','+str(x)+','+ str(3) +'\n'
+                uart_A.write(write_str)
                 print('home1x:',home1x,'home1y:',home1y)
                 print('home2x:',home2x,'home2y:',home2y)
                 print('standw:',standw,'standh:',standh)
