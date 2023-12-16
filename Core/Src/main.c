@@ -135,9 +135,10 @@ int main(void)
 	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
-  decode_init(gameMap);
+
 	u1_printf("Hello\n");
-  visual_receive();
+//	decode_init(gameMap);
+//	visual_receive();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -159,11 +160,14 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
-
+//		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
+//		u1_printf("now:(%f,%f)\n", now.posx, now.posy);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
-		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
+//		u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
+//		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+//		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
 
 		if (getGameStage() == READY)

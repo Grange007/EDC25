@@ -2,20 +2,16 @@
 #define __DECISION_H
 
 #include "zigbee_edc25.h"
-extern uint8_t gameMap[64];
+
+#define	blank 0
+#define	iron 1
+#define gold 2
+#define diamond 3
 
 typedef struct{
     uint8_t x;
     uint8_t y;
 } Grid;
-
-typedef enum
-{
-	blank = 0,
-	iron,
-	gold,
-	diamond
-} MapType;
 
 typedef enum
 {
@@ -30,6 +26,7 @@ typedef enum
 
 } Status;
 
+extern uint8_t gameMap[64];
 extern Status status;
 
 extern uint8_t agility;

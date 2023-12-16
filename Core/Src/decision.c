@@ -8,7 +8,7 @@
 #define RED_TEAM 1
 #define BLUE_TEAM 2
 
-MapType gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 3,
+uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 3,
 					   0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 2, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 1, 0, 0, 0,
@@ -39,8 +39,8 @@ Grid blueHomeGrid = {7, 7};
 
 Grid nearestDiamond;
 
-Position_edc25 now = {0, 0};
-Position_edc25 goal = {0, 0};
+Position_edc25 now = {0.5f, 0.5f};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
@@ -82,7 +82,7 @@ Position_edc25 grid2Pos(Grid grid)
 	tmp.posy = (float)grid.y + 0.5;
 	return tmp;
 }
-Grid nearestBlock(MapType type)
+Grid nearestBlock(uint8_t type)
 {
 	Grid nearest = {0, 0};
 	uint8_t dst = 255;
@@ -115,6 +115,7 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 {
     memset(dis, 63, sizeof(dis));
 	memset(pre_pos, 0, sizeof(pre_pos));
+	(*needBlock) = 0;
     dis[source.x][source.y] = 0;
     int flag; // 判断一轮循环过程中是否发生松弛操作
     for (int i = 0; i < 64; i++)
@@ -179,15 +180,14 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 
 void statusChange()
 {
-	u1_printf("health:%d\n", health);
 	if (health == 0)
 		status = dead;
 	else
 	{
 		if (hasBedOpponent())
 		{
-			u1_printf("opBed\n");
 			bellmanford(nowGrid, opHomeGrid, &needWool);
+			u1_printf("needWool1:%d", needWool);
 			if (wool > needWool && time - lastTime > agility)
 			{
 				if (team == RED_TEAM)
@@ -202,13 +202,14 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald > MAX_EMERALD){
-				if(nowGrid.x==homeGrid.x&&nowGrid.y==homeGrid.y){
+			else if (emerald > 3)
+			{
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Pprotect;
-				}
-				else{
-					desGrid=homeGrid;
-					status=Pmove;
+				else
+				{
+					desGrid = homeGrid;
+					status = Pmove;
 				}
 			}
 			else
@@ -225,10 +226,10 @@ void statusChange()
 		else
 		{
 			bellmanford(nowGrid, opGrid, &needWool);
-			if (emerald > 64){
-				if(nowGrid.x==homeGrid.x&&nowGrid.y==homeGrid.y){
+			if (emerald > 64)
+			{
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Nprotect;
-				}
 				else{
 					desGrid = homeGrid;
 					status = Nmove;
@@ -314,7 +315,10 @@ void Pmove_func()
 void Pprotect_func()
 {
 	if (emerald >= 2)
+	{
 		trade_id(3);
+		HAL_Delay(300);
+	}
 	statusChange();
 }
 void Pdestroy_func()
@@ -345,9 +349,15 @@ void Nmove_func()
 void Nprotect_func()
 {
 	if (emerald >= 64)
-		trade_id(/*攻击力*/0);
+	{
+		trade_id(2);
+		HAL_Delay(300);
+	}
     if (emerald >= 2)
-        trade_id(3);
+    {
+		trade_id(3);
+		HAL_Delay(300);
+	}
     statusChange();
 }
 void Ndestroy_func()
