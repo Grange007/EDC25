@@ -22,8 +22,8 @@ typedef enum
     Pdestroy,
 	Nmove,
 	Nprotect,
-	Ndestroy
-
+	Ndestroy,
+	recover
 } Status;
 
 extern uint8_t gameMap[64];
@@ -31,6 +31,7 @@ extern Status status;
 
 extern uint8_t agility;
 extern uint8_t health;
+extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;
 extern uint8_t time;
@@ -59,6 +60,7 @@ Grid getNext(Grid from, Grid to);
 
 Grid bellmanford(Grid source, Grid target, int *needBlock);
 
+void homeProtect();
 void statusChange();
 void ready_func();
 void init_func();
@@ -69,9 +71,6 @@ void Pdestroy_func();
 void Nmove_func();
 void Nprotect_func();
 void Ndestroy_func();
-void move_func();
-void protect_func();
-void destroy_func();
-void attack_func();
+void recover_func();
 
 #endif

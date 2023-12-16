@@ -3,10 +3,10 @@
 #include "main.h"
 #include <math.h>
 #include <string.h>
-#define MAX_POS_ERROR 0.1
-#define MAX_EMERALD 40
+
 #define RED_TEAM 1
 #define BLUE_TEAM 2
+#define HOME_HEIGHT 4
 
 uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 3,
 					   0, 0, 0, 0, 0, 0, 0, 0,
@@ -21,6 +21,7 @@ Status status = init;
 
 uint8_t agility;
 uint8_t health;
+uint8_t maxHealth;
 uint8_t wool;
 uint8_t emerald;
 uint8_t time;
@@ -47,6 +48,7 @@ Position_edc25 home = {0, 0};
 Position_edc25 opHome = {0, 0};
 
 int needWool;
+
 int dis[8][8];
 int pre_pos[8][8][2];
 int dx[4] = {0, 0, 1, -1};
@@ -178,17 +180,22 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
     }
 }
 
+
+void homeProtect()
+{
+
+}
 void statusChange()
 {
 	if (health == 0)
 		status = dead;
-	else
+	else if (health == maxHealth)
 	{
 		if (hasBedOpponent())
 		{
 			bellmanford(nowGrid, opHomeGrid, &needWool);
-			u1_printf("needWool1:%d", needWool);
-			if (wool > needWool && time - lastTime > agility)
+//			u1_printf("needWool1:%d", needWool);
+			if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
 			{
 				if (team == RED_TEAM)
 				{
@@ -202,7 +209,7 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald > 3)
+			else if (emerald >= 2)
 			{
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Pprotect;
@@ -226,7 +233,7 @@ void statusChange()
 		else
 		{
 			bellmanford(nowGrid, opGrid, &needWool);
-			if (emerald > 64)
+			if (emerald >= 64)
 			{
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Nprotect;
@@ -235,8 +242,7 @@ void statusChange()
 					status = Nmove;
 				}
 			}
-
-			else if (wool > needWool && time - lastTime > agility)
+			else if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
 			{
 				desGrid = opGrid;
 				status = Nmove;
@@ -251,6 +257,29 @@ void statusChange()
 					desGrid = homeGrid;
 				status = Nmove;
 			}
+		}
+	}
+	else
+	{
+		if (emerald >= 4)
+		{
+			if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+				status = recover;
+			else
+			{
+				desGrid = homeGrid;
+				status = Pmove;
+			}
+		}
+		else
+		{
+			nearestDiamond = nearestBlock(diamond);
+			bellmanford(nowGrid, nearestDiamond, &needWool);
+			if (wool > needWool)
+				desGrid = nearestDiamond;
+			else
+				desGrid = homeGrid;
+			status = Pmove;
 		}
 	}
 }
@@ -314,16 +343,14 @@ void Pmove_func()
 }
 void Pprotect_func()
 {
-	if (emerald >= 2)
-	{
-		trade_id(3);
-		HAL_Delay(300);
-	}
+	trade_id(3);
+	HAL_Delay(300);
 	statusChange();
 }
 void Pdestroy_func()
 {
 	attack_id(grid2No(opHomeGrid));
+	HAL_Delay(300);
 	lastTime = time;
 	statusChange();
 }
@@ -363,7 +390,13 @@ void Nprotect_func()
 void Ndestroy_func()
 {
 	attack_id(grid2No(opGrid));
+	HAL_Delay(300);
 	lastTime = time;
 	statusChange();
 }
-
+void recover_func()
+{
+	trade_id(4);
+	HAL_Delay(300);
+	statusChange();
+}
