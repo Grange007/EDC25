@@ -195,7 +195,7 @@ void statusChange()
 		{
 			bellmanford(nowGrid, opHomeGrid, &needWool);
 //			u1_printf("needWool1:%d", needWool);
-			if (wool > needWool && time - lastTime > agility)
+			if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
 			{
 				if (team == RED_TEAM)
 				{
@@ -209,7 +209,7 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald > 3)
+			else if (emerald >= 2)
 			{
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Pprotect;
@@ -242,8 +242,7 @@ void statusChange()
 					status = Nmove;
 				}
 			}
-
-			else if (wool > needWool && time - lastTime > agility)
+			else if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
 			{
 				desGrid = opGrid;
 				status = Nmove;

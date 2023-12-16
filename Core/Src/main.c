@@ -173,7 +173,7 @@ int main(void)
 
 		if (getGameStage() == READY)
 			ready_func();
-		else if (getGameStage() == RUNNING)
+		else if (getGameStage() != FINISHED)
 		{
 			switch (status)
 			{
@@ -212,12 +212,11 @@ int main(void)
 				case recover:
 					u1_printf("recover\n");
 					recover_func();
+					break;
 				default:
 					break;
 			}
 		}
-		else
-			;
 	}
   /* USER CODE END 3 */
 }
