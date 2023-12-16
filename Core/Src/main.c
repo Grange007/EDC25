@@ -137,8 +137,8 @@ int main(void)
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
 	u1_printf("Hello\n");
-//	decode_init(gameMap);
-//	visual_receive();
+	decode_init(gameMap);
+	visual_receive();
   /* USER CODE END 2 */
 
   /* Infinite loop */
