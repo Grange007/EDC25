@@ -162,10 +162,10 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
 	float yaw = GetYaw();
 	if (yaw > 180)
-		yaw = 360 - yaw;
+		yaw = yaw - 360;
 	else
-		yaw = 0 - yaw;
-//	u1_printf("%f\n", yaw);
+		yaw = yaw - 0;
+	u1_printf("%f\n", yaw);
 
 	float vx = PID_Cal(&xPid, now.posx, goal.posx);
 	float vy = PID_Cal(&yPid, now.posy, goal.posy);
