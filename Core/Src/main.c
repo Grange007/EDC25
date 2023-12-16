@@ -157,6 +157,7 @@ int main(void)
 
 		agility = getAgility();
 		health = getHealth();
+		maxHealth = getMaxHealth();
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
@@ -184,9 +185,6 @@ int main(void)
 					u1_printf("dead\n");
 					dead_func();
 					break;
-//				case poverty:
-//					poverty_func();
-//					break;
 				case Pmove:
 					u1_printf("Pmove\n");
 					Pmove_func();
@@ -211,6 +209,9 @@ int main(void)
 					u1_printf("Ndestroy\n");
 					Ndestroy_func();
 					break;
+				case recover:
+					u1_printf("recover\n");
+					recover_func();
 				default:
 					break;
 			}
