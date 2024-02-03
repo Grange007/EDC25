@@ -120,18 +120,18 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim6);
 	// jy62
 	jy62_Init(&huart3);
-//	InitAngle();
-//	SetBaud(115200);
-//	SetHorizontal();
-//	Calibrate();
-//	SleepOrAwake();
 	// zigbee
 	zigbee_Init(&huart4);
 	// PID
-	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+
 	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
@@ -139,7 +139,7 @@ int main(void)
 	u1_printf("Hello\n");
 //	decode_init(gameMap);
 //	visual_receive();
-	HAL_Delay(2000);
+	HAL_Delay(1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -151,10 +151,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		HAL_Delay(100);
-		getPosition(&now);
-		nowGrid = pos2Grid(now);
-		getPositionOpponent(&op);
-		opGrid = pos2Grid(op);
+//		getPosition(&now);
+//		nowGrid = pos2Grid(now);
+//		getPositionOpponent(&op);
+//		opGrid = pos2Grid(op);
 
 		agility = getAgility();
 		health = getHealth();
