@@ -19,11 +19,10 @@ typedef struct
 	float max;
 }PidStr;
 
-extern PidStr FLPid, FRPid, RLPid, RRPid;
+extern PidStr FLP_Pid, FRP_Pid, RLP_Pid, RRP_Pid;
+extern PidStr FLN_Pid, FRN_Pid, RLN_Pid, RRN_Pid;
 extern PidStr xPid, yPid;
 extern PidStr anglePid;
 
 void PID_Init(PidStr* a, float kp, float ki, float kd, float max);
 float PID_Cal(PidStr* a, float cur, float goal);
-
-

@@ -8,20 +8,20 @@
 #define BLUE_TEAM 2
 #define HOME_HEIGHT 4
 
-uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 3,
+uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
-					   0, 0, 2, 0, 0, 0, 0, 0,
-					   0, 0, 0, 0, 1, 0, 0, 0,
-					   0, 0, 0, 1, 0, 0, 0, 0,
-					   0, 0, 0, 0, 0, 2, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
-					   3, 0, 0, 0, 0, 0, 0, 1};
+					   0, 3, 0, 0, 0, 0, 0, 0,
+					   0, 0, 0, 0, 0, 0, 0, 0,
+					   0, 0, 0, 0, 0, 0, 0, 0,
+					   0, 0, 0, 0, 3, 0, 0, 0,
+					   0, 0, 0, 0, 0, 0, 0, 1};
 
 Status status = init;
 
 uint8_t agility;
 uint8_t health;
-uint8_t maxHealth;
+uint8_t maxHealth = 20;
 uint8_t wool;
 uint8_t emerald;
 uint8_t time;
@@ -61,7 +61,7 @@ uint8_t mhtDst(Grid from, Grid to)
 }
 uint8_t grid2No(Grid grid)
 {
-	return 8 * grid.x + grid.y;
+	return grid.x + 8 * grid.y;
 }
 Grid no2Grid(uint8_t no)
 {
@@ -189,13 +189,12 @@ void statusChange()
 {
 	if (health == 0)
 		status = dead;
-	else if (health == maxHealth)
+	else
 	{
 		if (hasBedOpponent())
 		{
 			bellmanford(nowGrid, opHomeGrid, &needWool);
-//			u1_printf("needWool1:%d", needWool);
-			if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
+			if (wool > needWool && time - lastTime > agility)
 			{
 				if (team == RED_TEAM)
 				{
@@ -209,7 +208,7 @@ void statusChange()
 				}
 				status = Pmove;
 			}
-			else if (emerald >= 2)
+			else if (emerald > 2)
 			{
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Pprotect;
@@ -233,7 +232,7 @@ void statusChange()
 		else
 		{
 			bellmanford(nowGrid, opGrid, &needWool);
-			if (emerald >= 64)
+			if (emerald > 64)
 			{
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
 					status = Nprotect;
@@ -242,7 +241,7 @@ void statusChange()
 					status = Nmove;
 				}
 			}
-			else if (wool > needWool && time - lastTime > 15 * (8.5 - 0.5 * agility))
+			else if (wool > needWool && time - lastTime > agility)
 			{
 				desGrid = opGrid;
 				status = Nmove;
@@ -259,29 +258,29 @@ void statusChange()
 			}
 		}
 	}
-	else
-	{
-		if (emerald >= 4)
-		{
-			if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-				status = recover;
-			else
-			{
-				desGrid = homeGrid;
-				status = Pmove;
-			}
-		}
-		else
-		{
-			nearestDiamond = nearestBlock(diamond);
-			bellmanford(nowGrid, nearestDiamond, &needWool);
-			if (wool > needWool)
-				desGrid = nearestDiamond;
-			else
-				desGrid = homeGrid;
-			status = Pmove;
-		}
-	}
+//	else
+//	{
+//		if (emerald >= 4)
+//		{
+//			if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+//				status = recover;
+//			else
+//			{
+//				desGrid = homeGrid;
+//				status = Pmove;
+//			}
+//		}
+//		else
+//		{
+//			nearestDiamond = nearestBlock(diamond);
+//			bellmanford(nowGrid, nearestDiamond, &needWool);
+//			if (wool > needWool)
+//				desGrid = nearestDiamond;
+//			else
+//				desGrid = homeGrid;
+//			status = Pmove;
+//		}
+//	}
 }
 void ready_func()
 {
@@ -343,8 +342,11 @@ void Pmove_func()
 }
 void Pprotect_func()
 {
-	trade_id(3);
-	HAL_Delay(300);
+	if (emerald > 2)
+	{
+		trade_id(3);
+		HAL_Delay(300);
+	}
 	statusChange();
 }
 void Pdestroy_func()
@@ -396,7 +398,10 @@ void Ndestroy_func()
 }
 void recover_func()
 {
-	trade_id(4);
-	HAL_Delay(300);
+	if (emerald > 4)
+	{
+		trade_id(4);
+		HAL_Delay(300);
+	}
 	statusChange();
 }

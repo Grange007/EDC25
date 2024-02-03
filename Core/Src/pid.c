@@ -6,7 +6,8 @@
  */
 #include "pid.h"
 
-PidStr FLPid, FRPid, RLPid, RRPid;
+PidStr FLP_Pid, FRP_Pid, RLP_Pid, RRP_Pid;
+PidStr FLN_Pid, FRN_Pid, RLN_Pid, RRN_Pid;
 PidStr xPid, yPid;
 PidStr anglePid;
 

@@ -85,7 +85,11 @@ void Update_Pwm()
 	else
 		FLCnt = 0 - FLCnt;
 	float FLNow = 1.0 * FLCnt / UNKNOWN;
-	float FLPwm = PID_Cal(&FLPid, FLNow, goal_speed[0]);
+	float FLPwm;
+	if (goal_speed[0] >= 0)
+		FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
+	else
+		FLPwm = PID_Cal(&FLN_Pid, FLNow, goal_speed[0]);
 	Move(1, FLPwm);
 
 	int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
@@ -95,7 +99,11 @@ void Update_Pwm()
 	else
 		FRCnt = FRCnt - 0;
 	float FRNow = 1.0 * FRCnt / UNKNOWN;
-	float FRPwm = PID_Cal(&FRPid, FRNow, goal_speed[1]);
+	float FRPwm;
+	if (goal_speed[1] >= 0)
+		FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
+	else
+		FRPwm = PID_Cal(&FRN_Pid, FRNow, goal_speed[1]);
 	Move(2, FRPwm);
 
 	int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
@@ -105,7 +113,11 @@ void Update_Pwm()
 	else
 		RLCnt = 0 - RLCnt;
 	float RLNow = 1.0 * RLCnt / UNKNOWN;
-	float RLPwm = PID_Cal(&RLPid, RLNow, goal_speed[2]);
+	float RLPwm;
+	if (goal_speed[2] >= 0)
+		RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
+	else
+		RLPwm = PID_Cal(&RLN_Pid, RLNow, goal_speed[2]);
 	Move(3, RLPwm);
 
 	int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
@@ -115,7 +127,11 @@ void Update_Pwm()
 	else
 		RRCnt = RRCnt - 0;
 	float RRNow = 1.0 * RRCnt / UNKNOWN;
-	float RRPwm = PID_Cal(&RRPid, RRNow, goal_speed[3]);
+	float RRPwm;
+	if (goal_speed[3] >= 0)
+		RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
+	else
+		RRPwm = PID_Cal(&RRN_Pid, RRNow, goal_speed[3]);
 	Move(4, RRPwm);
 
 //	u1_printf("FLNow=%f FLPwm=%f ", FLNow, FLPwm);

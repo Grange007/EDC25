@@ -120,25 +120,26 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim6);
 	// jy62
 	jy62_Init(&huart3);
-//	InitAngle();
-//	SetBaud(115200);
-//	SetHorizontal();
-//	Calibrate();
-//	SleepOrAwake();
 	// zigbee
 	zigbee_Init(&huart4);
 	// PID
-	PID_Init(&FLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLPid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRPid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+	PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+
 	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
 	u1_printf("Hello\n");
-	decode_init(gameMap);
-	visual_receive();
+//	decode_init(gameMap);
+//	visual_receive();
+	HAL_Delay(1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,10 +151,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		HAL_Delay(100);
-		getPosition(&now);
-		nowGrid = pos2Grid(now);
-		getPosition(&op);
-		opGrid = pos2Grid(op);
+//		getPosition(&now);
+//		nowGrid = pos2Grid(now);
+//		getPositionOpponent(&op);
+//		opGrid = pos2Grid(op);
 
 		agility = getAgility();
 		health = getHealth();
@@ -161,11 +162,12 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
+
 //		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
-//		u1_printf("now:(%f,%f)\n", now.posx, now.posy);
+		u1_printf("now:(%f,%f)\n", now.posx, now.posy);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
-//		u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
+		u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
 //		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
@@ -209,14 +211,16 @@ int main(void)
 					u1_printf("Ndestroy\n");
 					Ndestroy_func();
 					break;
-				case recover:
-					u1_printf("recover\n");
-					recover_func();
-					break;
+//				case recover:
+//					u1_printf("recover\n");
+//					recover_func();
+//					break;
 				default:
 					break;
 			}
 		}
+		else
+			;
 	}
   /* USER CODE END 3 */
 }
