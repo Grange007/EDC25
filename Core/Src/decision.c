@@ -37,7 +37,6 @@ Grid homeGrid;
 Grid opHomeGrid;
 Grid redHomeGrid = {0, 0};
 Grid blueHomeGrid = {7, 7};
-Grid optimalMineGrid;
 Grid nearestDiamond;
 
 Position_edc25 now = {0.5f, 0.5f};
@@ -48,7 +47,6 @@ Position_edc25 home = {0, 0};
 Position_edc25 opHome = {0, 0};
 
 int needWool;
-
 int dis[8][8];
 int pre_pos[8][8][2];
 int dx[4] = {0, 0, 1, -1};
@@ -168,10 +166,6 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
 }
 
 
-void homeProtect()
-{
-
-}
 void statusChange()
 {
 	if (health == 0)
@@ -226,29 +220,39 @@ void protect_func(){
 	// protect the bed
 }
 void destroy_func(){
-	desGrid=opHomeGrid;
+	if (team == RED_TEAM)
+	{
+		desGrid.x = opHomeGrid.x - 1;
+		desGrid.y = opHomeGrid.y - 1;
+	}
+	if (team == BLUE_TEAM)
+	{
+		desGrid.x = opHomeGrid.x + 1;
+		desGrid.y = opHomeGrid.y + 1;
+	}
 	if (desGrid.x != nowGrid.x || desGrid.y != nowGrid.y)
 	{
 		place_and_move();
 		return;
 	}
-	// destroy op bed
+	attack_id(grid2No(opHomeGrid));
+	HAL_Delay(300);
 }
 void attack_func(){
 	desGrid=opGrid;
-	if (desGrid.x != nowGrid.x || desGrid.y != nowGrid.y)
+	if (abs(desGrid.x-nowGrid.x)>1||abs(desGrid.y-nowGrid.y)>1)
 	{
 		place_and_move();
 		return;
-	}	
+	}
+	attack_id(grid2No(opGrid));
+	HAL_Delay(300);
 }
 void mine_func(){
-	find_optimal_mine();
-	desGrid=optimalMineGrid;
+	desGrid=find_optimal_mine();
 	if (desGrid.x != nowGrid.x || desGrid.y != nowGrid.y)
 	{
 		place_and_move();
-		return;
 	}
 }
 void get_wool_func(){
@@ -258,6 +262,11 @@ void get_wool_func(){
 		place_and_move();
 		return;
 	}
+	if (emerald >= 2||wool<16)
+	{
+		trade_id(3);
+		HAL_Delay(300);
+	}
 }
 void get_enhanced_func(){
 	desGrid=homeGrid;
@@ -266,6 +275,11 @@ void get_enhanced_func(){
 		place_and_move();
 		return;
 	}
+	if (emerald >= 64||wool<16)
+	{
+		trade_id(find_optimal_enhancement());
+		HAL_Delay(300);
+	}	
 }
 
 void place_and_move()
@@ -282,10 +296,12 @@ void place_and_move()
 	}
 	goal = grid2Pos(goalGrid);
 }
-void find_optimal_mine(){
+Grid find_optimal_mine(){
 
 }
+int find_optimal_enhancement(){
 
+}
 
 // void homeProtect()
 // {
