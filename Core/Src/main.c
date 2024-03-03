@@ -177,6 +177,7 @@ int main(void)
 			ready_func();
 		else if (getGameStage() != FINISHED)
 		{
+      statusChange();
 			switch (status)
 			{
 				case init:
@@ -187,34 +188,30 @@ int main(void)
 					u1_printf("dead\n");
 					dead_func();
 					break;
-				case Pmove:
-					u1_printf("Pmove\n");
-					Pmove_func();
+				case protect:
+					u1_printf("protect\n");
+					protect_func();
 					break;
-				case Pprotect:
-					u1_printf("Pprotect\n");
-					Pprotect_func();
+				case destroy:
+					u1_printf("destroy\n");
+					destroy_func();
 					break;
-				case Pdestroy:
-					u1_printf("Pdestroy\n");
-					Pdestroy_func();
+				case attack:
+					u1_printf("attack\n");
+					attack_func();
 					break;
-				case Nmove:
-					u1_printf("Nmove\n");
-					Nmove_func();
+				case mine:
+					u1_printf("mine\n");
+					mine_func();
 					break;
-				case Nprotect:
-					u1_printf("Nprotect\n");
-					Nprotect_func();
+				case get_wool:
+					u1_printf("get wool\n");
+					get_wool_func();
 					break;
-				case Ndestroy:
-					u1_printf("Ndestroy\n");
-					Ndestroy_func();
+				case get_enhanced:
+					u1_printf("get enhanced\n");
+					get_enhanced_func();
 					break;
-//				case recover:
-//					u1_printf("recover\n");
-//					recover_func();
-//					break;
 				default:
 					break;
 			}

@@ -17,13 +17,12 @@ typedef enum
 {
     init = 0,
 	dead,
-	Pmove,
-    Pprotect,
-    Pdestroy,
-	Nmove,
-	Nprotect,
-	Ndestroy,
-	recover
+	protect,
+    destroy,
+    attack,
+	mine,
+	get_wool,
+	get_enhanced,
 } Status;
 
 extern uint8_t gameMap[64];
@@ -65,12 +64,14 @@ void statusChange();
 void ready_func();
 void init_func();
 void dead_func();
-void Pmove_func();
-void Pprotect_func();
-void Pdestroy_func();
-void Nmove_func();
-void Nprotect_func();
-void Ndestroy_func();
-void recover_func();
 
+void protect_func();
+void destroy_func();
+void attack_func();
+void mine_func();
+void get_wool_func();
+void get_enhanced_func();
+
+void place_and_move();
+void find_optimal_mine();
 #endif
