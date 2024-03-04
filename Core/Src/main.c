@@ -151,10 +151,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		HAL_Delay(100);
-//		getPosition(&now);
-//		nowGrid = pos2Grid(now);
-//		getPositionOpponent(&op);
-//		opGrid = pos2Grid(op);
+		getPosition(&now);
+		nowGrid = pos2Grid(now);
+		getPositionOpponent(&op);
+		opGrid = pos2Grid(op);
 
 		agility = getAgility();
 		health = getHealth();
@@ -163,6 +163,8 @@ int main(void)
 		emerald = getEmeraldCount();
 		time = getGameTime();
 
+    update_mine();
+    
 //		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("now:(%f,%f)\n", now.posx, now.posy);

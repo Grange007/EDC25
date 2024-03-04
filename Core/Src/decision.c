@@ -8,14 +8,27 @@
 #define BLUE_TEAM 2
 #define HOME_HEIGHT 4
 
-uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
+#define MAX_MINE 32
+
+#define AGILITY 0
+#define HEALTH 1
+#define STRENGTH 2
+#define WOOL 3
+#define HEALING 4
+
+#define IRON 0
+#define GOLD 1
+#define DIAMOND 2
+#define EMPTY 3
+
+uint8_t gameMap[64] = {0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
-					   0, 3, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
-					   0, 0, 0, 0, 3, 0, 0, 0,
-					   0, 0, 0, 0, 0, 0, 0, 1};
+					   0, 0, 0, 0, 0, 0, 0, 0,
+					   0, 0, 0, 0, 0, 0, 0, 0,
+					   0, 0, 0, 0, 0, 0, 0, 0};
 
 Status status = init;
 
@@ -24,7 +37,7 @@ uint8_t health;
 uint8_t maxHealth = 20;
 uint8_t wool;
 uint8_t emerald;
-uint8_t time;
+uint32_t time;
 
 int8_t team;
 int8_t lastTime = -16;
@@ -38,6 +51,9 @@ Grid opHomeGrid;
 Grid redHomeGrid = {0, 0};
 Grid blueHomeGrid = {7, 7};
 Grid nearestDiamond;
+
+Mine mineList[MAX_MINE];
+uint8_t mineNum=0;
 
 Position_edc25 now = {0.5f, 0.5f};
 Position_edc25 goal = {0.5f, 0.5f};
@@ -197,6 +213,15 @@ void ready_func()
 	}
 	goal = home;
 	goalGrid = homeGrid;
+	for (int i = 0; i < 64; i++){
+		gameMap[i]=getTypeOfId(i);
+		if(getTypeOfId(i)!=3&&mineNum<MAX_MINE){
+			mineList[mineNum].grid=no2Grid(i);
+			mineList[mineNum].type=getTypeOfId(i);
+			mineList[mineNum].last_visit_tick=0;
+			mineNum++;
+		}
+	}
 	// upd map
 }
 void init_func()
@@ -299,10 +324,27 @@ void place_and_move()
 Grid find_optimal_mine(){
 
 }
-int find_optimal_enhancement(){
+uint8_t find_optimal_enhancement(){
 
 }
-
+void update_mine(){
+	for(int i=0;i<mineNum;i++){
+		if((mineList[i].grid.x==nowGrid.x&&mineList[i].grid.y==nowGrid.y)||(mineList[i].grid.x==opGrid.x&&mineList[i].grid.y==opGrid.y)){
+			mineList[i].store=0;
+			mineList[i].last_visit_tick=time;
+		}
+		else{
+			uint8_t base=1;
+			if(mineList[i].type==1){
+				base=4;
+			}
+			else if(mineList[i].type==2){
+				base=16;
+			}
+			mineList[i].store=base*(time/200-mineList[i].last_visit_tick/200);
+		}
+	}
+}
 // void homeProtect()
 // {
 

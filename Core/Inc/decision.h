@@ -12,7 +12,12 @@ typedef struct{
     uint8_t x;
     uint8_t y;
 } Grid;
-
+typedef struct{
+    Grid grid;
+    uint8_t type;
+    uint32_t store;
+    uint32_t last_visit_tick;
+} Mine;
 typedef enum
 {
     init = 0,
@@ -33,7 +38,7 @@ extern uint8_t health;
 extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;
-extern uint8_t time;
+extern uint32_t time;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -73,5 +78,7 @@ void get_wool_func();
 void get_enhanced_func();
 
 void place_and_move();
-void find_optimal_mine();
+Grid find_optimal_mine();
+uint8_t find_optimal_enhancement();
+void update_mine();
 #endif

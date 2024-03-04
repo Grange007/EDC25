@@ -167,7 +167,12 @@ void getHeightOfAllChunks(uint8_t *dest)
 
 uint8_t getHeightOfId(uint8_t id)
 {
-    return gameStatusMessage[5 + id];
+    return gameStatusMessage[5 + id]%16;
+}
+
+uint8_t getTypeOfId(uint8_t id)
+{
+    return gameStatusMessage[5 + id]/16;
 }
 
 bool hasBed()

@@ -33,6 +33,9 @@ void getHeightOfAllChunks(uint8_t *dest);
 // 根据ID获取块的高度
 uint8_t getHeightOfId(uint8_t id);
 
+// 根据ID获取块的高度
+uint8_t getTypeOfId(uint8_t id);
+
 // 检查玩家是否有床
 bool hasBed();
 
