@@ -35,6 +35,7 @@ extern Status status;
 
 extern uint8_t agility;
 extern uint8_t health;
+extern uint8_t strength;
 extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;

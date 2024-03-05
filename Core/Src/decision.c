@@ -6,16 +6,20 @@
 
 #define RED_TEAM 1
 #define BLUE_TEAM 2
+
 #define HOME_HEIGHT 4
 
+// possible max number of mines on the map
 #define MAX_MINE 32
 
+// enhancements
 #define AGILITY 0
 #define HEALTH 1
 #define STRENGTH 2
 #define WOOL 3
 #define HEALING 4
 
+// mine types
 #define IRON 0
 #define GOLD 1
 #define DIAMOND 2
@@ -32,8 +36,10 @@ uint8_t gameMap[64] = {0, 0, 0, 0, 0, 0, 0, 0,
 
 Status status = init;
 
+// maintained in the main loop
 uint8_t agility;
 uint8_t health;
+uint8_t strength;
 uint8_t maxHealth = 20;
 uint8_t wool;
 uint8_t emerald;
@@ -62,6 +68,7 @@ Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
 Position_edc25 opHome = {0, 0};
 
+// used by bellmanford function
 int needWool;
 int dis[8][8];
 int pre_pos[8][8][2];
@@ -113,7 +120,6 @@ Grid nearestBlock(uint8_t type)
 		}
 	return nearest;
 }
-
 Grid bellmanford(Grid source, Grid target, int *needBlock)
 {
     memset(dis, 63, sizeof(dis));
@@ -181,7 +187,7 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
     }
 }
 
-
+// calculate the weight of each normal status and choose the best
 void statusChange()
 {
 	if (health == 0)
@@ -191,6 +197,8 @@ void statusChange()
 		
 	}
 }
+
+// special status funcs
 void ready_func()
 {
 	uint8_t redDis = mhtDst(nowGrid, redHomeGrid);
@@ -235,12 +243,17 @@ void dead_func()
 	statusChange();
 }
 
+// normal status funcs
 void protect_func(){
 	desGrid=homeGrid;
 	if (desGrid.x != nowGrid.x || desGrid.y != nowGrid.y)
 	{
 		place_and_move();
 		return;
+	}
+	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT){
+		place_block_id(grid2No(homeGrid));
+		HAL_Delay(300);
 	}
 	// protect the bed
 }
@@ -322,11 +335,31 @@ void place_and_move()
 	goal = grid2Pos(goalGrid);
 }
 Grid find_optimal_mine(){
-
+	int32_t best_score=-50;
+	int8_t best_mine=0;
+	for(int i=0;i<mineNum;i++){
+		if(mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid)>best_score){
+			best_score=mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid);
+			best_mine=i;
+		}
+	}
+	return mineList[best_mine].grid;
 }
 uint8_t find_optimal_enhancement(){
-
+	if(strength<9){
+		return STRENGTH;
+	}
+	else if(agility<32){
+		return AGILITY;
+	}
+	else if(strength<17){
+		return STRENGTH;
+	}
+	else{
+		return HEALTH;
+	}
 }
+// calculate the value accumulated on each mine
 void update_mine(){
 	for(int i=0;i<mineNum;i++){
 		if((mineList[i].grid.x==nowGrid.x&&mineList[i].grid.y==nowGrid.y)||(mineList[i].grid.x==opGrid.x&&mineList[i].grid.y==opGrid.y)){
@@ -345,227 +378,3 @@ void update_mine(){
 		}
 	}
 }
-// void homeProtect()
-// {
-
-// }
-// void statusChange()
-// {
-// 	if (health == 0)
-// 		status = dead;
-// 	else
-// 	{
-// 		if (hasBedOpponent())
-// 		{
-// 			bellmanford(nowGrid, opHomeGrid, &needWool);
-// 			if (wool > needWool && time - lastTime > agility)
-// 			{
-// 				if (team == RED_TEAM)
-// 				{
-// 					desGrid.x = opHomeGrid.x - 1;
-// 					desGrid.y = opHomeGrid.y - 1;
-// 				}
-// 				if (team == BLUE_TEAM)
-// 				{
-// 					desGrid.x = opHomeGrid.x + 1;
-// 					desGrid.y = opHomeGrid.y + 1;
-// 				}
-// 				status = Pmove;
-// 			}
-// 			else if (emerald > 2)
-// 			{
-// 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-// 					status = Pprotect;
-// 				else
-// 				{
-// 					desGrid = homeGrid;
-// 					status = Pmove;
-// 				}
-// 			}
-// 			else
-// 			{
-// 				nearestDiamond = nearestBlock(diamond);
-// 				bellmanford(nowGrid, nearestDiamond, &needWool);
-// 				if (wool > needWool)
-// 					desGrid = nearestDiamond;
-// 				else
-// 					desGrid = homeGrid;
-// 				status = Pmove;
-// 			}
-// 		}
-// 		else
-// 		{
-// 			bellmanford(nowGrid, opGrid, &needWool);
-// 			if (emerald > 64)
-// 			{
-// 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-// 					status = Nprotect;
-// 				else{
-// 					desGrid = homeGrid;
-// 					status = Nmove;
-// 				}
-// 			}
-// 			else if (wool > needWool && time - lastTime > agility)
-// 			{
-// 				desGrid = opGrid;
-// 				status = Nmove;
-// 			}
-// 			else
-// 			{
-// 				bellmanford(nowGrid, nearestDiamond, &needWool);
-// 				nearestDiamond = nearestBlock(diamond);
-// 				if (wool > needWool)
-// 					desGrid = nearestDiamond;
-// 				else
-// 					desGrid = homeGrid;
-// 				status = Nmove;
-// 			}
-// 		}
-// 	}
-// //	else
-// //	{
-// //		if (emerald >= 4)
-// //		{
-// //			if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-// //				status = recover;
-// //			else
-// //			{
-// //				desGrid = homeGrid;
-// //				status = Pmove;
-// //			}
-// //		}
-// //		else
-// //		{
-// //			nearestDiamond = nearestBlock(diamond);
-// //			bellmanford(nowGrid, nearestDiamond, &needWool);
-// //			if (wool > needWool)
-// //				desGrid = nearestDiamond;
-// //			else
-// //				desGrid = homeGrid;
-// //			status = Pmove;
-// //		}
-// //	}
-// }
-// void ready_func()
-// {
-// 	uint8_t redDis = mhtDst(nowGrid, redHomeGrid);
-// 	uint8_t blueDis = mhtDst(nowGrid, blueHomeGrid);
-// 	if (redDis < blueDis)
-// 	{
-// 		homeGrid = redHomeGrid;
-// 		home = grid2Pos(redHomeGrid);
-// 		opHomeGrid = blueHomeGrid;
-// 		opHome = grid2Pos(blueHomeGrid);
-// 		team = RED_TEAM;
-// 	}
-// 	else
-// 	{
-// 		homeGrid = blueHomeGrid;
-// 		home = grid2Pos(blueHomeGrid);
-// 		opHomeGrid = redHomeGrid;
-// 		opHome = grid2Pos(redHomeGrid);
-// 		team = BLUE_TEAM;
-// 	}
-// 	goal = home;
-// 	goalGrid = homeGrid;
-// 	// upd map
-// }
-// void init_func()
-// {
-// 	InitAngle();
-// 	if (health == 0)
-// 		status = dead;
-// 	else
-// 		status = Pprotect;
-// }
-// void dead_func()
-// {
-// 	goal = home;
-// 	goalGrid = homeGrid;
-// 	statusChange();
-// }
-// void Pmove_func()
-// {
-// 	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
-// 	if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
-// 	{
-// 		if ((team == RED_TEAM && nowGrid.x == opHomeGrid.x - 1 && nowGrid.y == opHomeGrid.y - 1)
-// 		 || (team == BLUE_TEAM && nowGrid.x == opHomeGrid.x + 1 && nowGrid.y == opHomeGrid.y + 1))
-// 		{
-// 			status = Pdestroy;
-// 			return;
-// 		}
-// 	}
-// 	if (getHeightOfId(grid2No(goalGrid)) == 0)
-// 	{
-// 		place_block_id(grid2No(goalGrid));
-// 		HAL_Delay(300);
-// 	}
-// 	goal = grid2Pos(goalGrid);
-// 	statusChange();
-// }
-// void Pprotect_func()
-// {
-// 	if (emerald > 2)
-// 	{
-// 		trade_id(3);
-// 		HAL_Delay(300);
-// 	}
-// 	statusChange();
-// }
-// void Pdestroy_func()
-// {
-// 	attack_id(grid2No(opHomeGrid));
-// 	HAL_Delay(300);
-// 	lastTime = time;
-// 	statusChange();
-// }
-// void Nmove_func()
-// {
-// 	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
-// 	if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
-// 	{
-// 		if (nowGrid.x == opGrid.x && nowGrid.y == opGrid.y)
-// 		{
-// 			status = Ndestroy;
-// 			return;
-// 		}
-// 	}
-// 	if(getHeightOfId(grid2No(goalGrid)) == 0)
-// 	{
-// 		place_block_id(grid2No(goalGrid));
-// 		HAL_Delay(300);
-// 	}
-// 	goal = grid2Pos(goalGrid);
-// 	statusChange();
-// }
-// void Nprotect_func()
-// {
-// 	if (emerald >= 64)
-// 	{
-// 		trade_id(2);
-// 		HAL_Delay(300);
-// 	}
-//     if (emerald >= 2)
-//     {
-// 		trade_id(3);
-// 		HAL_Delay(300);
-// 	}
-//     statusChange();
-// }
-// void Ndestroy_func()
-// {
-// 	attack_id(grid2No(opGrid));
-// 	HAL_Delay(300);
-// 	lastTime = time;
-// 	statusChange();
-// }
-// void recover_func()
-// {
-// 	if (emerald > 4)
-// 	{
-// 		trade_id(4);
-// 		HAL_Delay(300);
-// 	}
-// 	statusChange();
-// }

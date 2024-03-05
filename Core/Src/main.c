@@ -158,12 +158,13 @@ int main(void)
 
 		agility = getAgility();
 		health = getHealth();
+    strength=getStrength();
 		maxHealth = getMaxHealth();
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
 
-    update_mine();
+    
     
 //		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
@@ -179,6 +180,7 @@ int main(void)
 			ready_func();
 		else if (getGameStage() != FINISHED)
 		{
+      update_mine();
       statusChange();
 			switch (status)
 			{
