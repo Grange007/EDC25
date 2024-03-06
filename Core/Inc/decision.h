@@ -8,6 +8,9 @@
 #define gold 2
 #define diamond 3
 
+// possible max numbers
+#define MAX_MINE 32
+
 typedef struct{
     uint8_t x;
     uint8_t y;
@@ -32,6 +35,7 @@ typedef enum
 
 extern uint8_t gameMap[64];
 extern Status status;
+extern float weight[10];
 
 extern uint8_t agility;
 extern uint8_t health;
@@ -47,6 +51,9 @@ extern Grid desGrid;
 extern Grid opGrid;
 extern Grid homeGrid;
 extern Grid opHomeGrid;
+
+extern Mine mineList[MAX_MINE];
+extern uint8_t mineNum=0;
 
 extern Position_edc25 now;
 extern Position_edc25 des;
@@ -78,8 +85,16 @@ void mine_func();
 void get_wool_func();
 void get_enhanced_func();
 
+float calculate_weight_protect();
+float calculate_weight_destroy();
+float calculate_weight_attack();
+float calculate_weight_mine();
+float calculate_weight_get_wool();
+float calculate_weight_get_enhanced();
+
+Status best_status();
 void place_and_move();
-Grid find_optimal_mine();
+Mine find_optimal_mine();
 uint8_t find_optimal_enhancement();
 void update_mine();
 #endif

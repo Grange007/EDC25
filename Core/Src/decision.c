@@ -9,9 +9,6 @@
 
 #define HOME_HEIGHT 4
 
-// possible max number of mines on the map
-#define MAX_MINE 32
-
 // enhancements
 #define AGILITY 0
 #define HEALTH 1
@@ -35,6 +32,7 @@ uint8_t gameMap[64] = {0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0};
 
 Status status = init;
+float weight[10]={0};
 
 // maintained in the main loop
 uint8_t agility;
@@ -194,7 +192,34 @@ void statusChange()
 		status = dead;
 	else
 	{
-		
+
+		weight[protect]=calculate_weight_protect();
+		weight[destroy]=calculate_weight_destroy();
+		weight[attack]=calculate_weight_attack();
+		weight[mine]=calculate_weight_mine();
+		weight[get_wool]=calculate_weight_get_wool();
+		weight[get_enhanced]=calculate_weight_get_enhanced();
+		Status best=best_status(protect,get_enhanced);
+		switch(best){
+			case protect:
+			protect_func();
+			break;
+			case destroy:
+			destroy_func();
+			break;
+			case attack:
+			attack_func();
+			break;
+			case mine:
+			mine_func();
+			break;
+			case get_wool:
+			get_wool_func();
+			break;
+			case get_enhanced:
+			get_enhanced_func();
+			break;
+		}
 	}
 }
 
@@ -287,7 +312,7 @@ void attack_func(){
 	HAL_Delay(300);
 }
 void mine_func(){
-	desGrid=find_optimal_mine();
+	desGrid=find_optimal_mine().grid;
 	if (desGrid.x != nowGrid.x || desGrid.y != nowGrid.y)
 	{
 		place_and_move();
@@ -300,7 +325,7 @@ void get_wool_func(){
 		place_and_move();
 		return;
 	}
-	if (emerald >= 2||wool<16)
+	if (emerald >= 2&&wool<32)
 	{
 		trade_id(3);
 		HAL_Delay(300);
@@ -313,13 +338,70 @@ void get_enhanced_func(){
 		place_and_move();
 		return;
 	}
-	if (emerald >= 64||wool<16)
+	if (emerald >= 64)
 	{
 		trade_id(find_optimal_enhancement());
 		HAL_Delay(300);
 	}	
 }
 
+float calculate_weight_protect(){
+	float weight=1;
+	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT&&wool>8){
+		weight=5;
+	}
+	return weight;
+}
+float calculate_weight_destroy(){
+	float weight=1;
+	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y&&getHeightOfId(grid2No(opHomeGrid))<2){
+		weight=2.5;
+	}
+	return weight;
+}
+float calculate_weight_attack(){
+	float weight=1;
+	if(mhtDst(nowGrid,opGrid)<=3){
+		weight=4;
+	}
+	return weight;
+}
+float calculate_weight_mine(){
+	float weight=1;
+	return weight;
+}
+float calculate_weight_get_wool(){
+	float weight=1;
+	if(emerald<2){
+		weight=0;
+	}
+	else if(wool<16&&emerald>16){
+		weight=3;
+	}
+	return weight;
+}
+float calculate_weight_get_enhanced(){
+	float weight=1;
+	if(emerald<64){
+		weight=0;
+	}
+	else if(emerald>128){
+		weight=2;
+	}
+	return weight;
+}
+
+Status best_status(Status from,Status to){
+	int max=0;
+	Status best;
+	for(Status i=from;i<=to;i++){
+		if(weight[i]>max){
+			best=i;
+			max=weight[i];
+		}
+	}
+	return best;
+}
 void place_and_move()
 {
 	if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
@@ -334,7 +416,7 @@ void place_and_move()
 	}
 	goal = grid2Pos(goalGrid);
 }
-Grid find_optimal_mine(){
+Mine find_optimal_mine(){
 	int32_t best_score=-50;
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
@@ -343,7 +425,7 @@ Grid find_optimal_mine(){
 			best_mine=i;
 		}
 	}
-	return mineList[best_mine].grid;
+	return mineList[best_mine];
 }
 uint8_t find_optimal_enhancement(){
 	if(strength<9){
