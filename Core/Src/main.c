@@ -69,6 +69,14 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
+ /*目前策略：
+	绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
+	中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
+	三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
+	未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
+	时刻保证身上携带有至少16个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
+	如果在采矿时碰到对方，也攻击，直接进入进攻节点
+*/
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -160,6 +168,7 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
+    strength=getStrength();
 
 //		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
@@ -188,9 +197,9 @@ int main(void)
 					u1_printf("Pmove\n");
 					Pmove_func();
 					break;
-				case Pprotect:
-					u1_printf("Pprotect\n");
-					Pprotect_func();
+				case Ppurchase:
+					u1_printf("Ppurchase\n");
+					purchase_wool_func();
 					break;
 				case Pdestroy:
 					u1_printf("Pdestroy\n");
@@ -208,6 +217,14 @@ int main(void)
 					u1_printf("Ndestroy\n");
 					Ndestroy_func();
 					break;
+        case Protecthome:
+          u1_printf("homeprotect\n");
+          homeProtect();
+          break;
+        case Upgrade:
+          u1_printf("upgrade\n");
+          Upgrade_func();
+          break;
 //				case recover:
 //					u1_printf("recover\n");
 //					recover_func();
