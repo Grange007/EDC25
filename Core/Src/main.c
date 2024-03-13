@@ -30,7 +30,6 @@
 #include "pid.h"
 #include "zigbee_edc25.h"
 #include "decision.h"
-#include "visual.h"
 #include <math.h>
 /* USER CODE END Includes */
 
@@ -71,12 +70,12 @@ void SystemClock_Config(void);
   * @retval int
   */
  /*目前策略：
-	绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
-	中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
-	三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
-	未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
-	时刻保证身上携带有至少16个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
-	如果在采矿时碰到对方，也攻击，直接进入进攻节点
+    绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
+    中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
+    三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
+    未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
+    时刻保证身上携带有至少16个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
+    如果在采矿时碰到对方，也攻击，直接进入进攻节点
 */
 int main(void)
 {
@@ -114,131 +113,125 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-	// Output PWM
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //FR
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); //RL
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); //RR
-	// Measure
-	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); //FL
-	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); //FR
-	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); //RL
-	HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); //RR
-	// Update PWM
-	HAL_TIM_Base_Start_IT(&htim6);
-	// jy62
-	jy62_Init(&huart3);
-	// zigbee
-	zigbee_Init(&huart4);
-	// PID
-	PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    // Output PWM
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //FR
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); //RL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); //RR
+    // Measure
+    HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); //FL
+    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); //FR
+    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); //RL
+    HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); //RR
+    // Update PWM
+    HAL_TIM_Base_Start_IT(&htim6);
+    // jy62
+    jy62_Init(&huart3);
+    // zigbee
+    zigbee_Init(&huart4);
+    // PID
+    PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
 
-	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
+    PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+    PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
-	u1_printf("Hello\n");
-//	decode_init(gameMap);
-//	visual_receive();
-	HAL_Delay(1000);
+    u1_printf("Hello\n");
+
+    HAL_Delay(1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	while (1)
-	{
+    while (1)
+    {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_Delay(100);
-//		getPosition(&now);
-//		nowGrid = pos2Grid(now);
-//		getPositionOpponent(&op);
-//		opGrid = pos2Grid(op);
+        HAL_Delay(100);
+//        getPosition(&now);
+//        nowGrid = pos2Grid(now);
+//        getPositionOpponent(&op);
+//        opGrid = pos2Grid(op);
 
-		agility = getAgility();
-		health = getHealth();
-		maxHealth = getMaxHealth();
-		wool = getWoolCount();
-		emerald = getEmeraldCount();
-		time = getGameTime();
-    strength=getStrength();
+        agility = getAgility();
+        health = getHealth();
+        maxHealth = getMaxHealth();
+        wool = getWoolCount();
+        emerald = getEmeraldCount();
+        time = getGameTime();
+        strength = getStrength();
 
-//		u1_printf("yaw:%f\n",GetYaw());
-		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
-		u1_printf("now:(%f,%f)\n", now.posx, now.posy);
-		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
-		u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
-//		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
-//		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
-//		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
+//        u1_printf("yaw:%f\n",GetYaw());
+        u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
+        u1_printf("now:(%f,%f)\n", now.posx, now.posy);
+        u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
+        u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
+//        u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
+//        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+//        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
-
-		if (getGameStage() == READY)
-			ready_func();
-		else if (getGameStage() != FINISHED)
-		{
-			switch (status)
-			{
-				case init:
-					u1_printf("init\n");
-					init_func();
-					break;
-				case dead:
-					u1_printf("dead\n");
-					dead_func();
-					break;
-				case Pmove:
-					u1_printf("Pmove\n");
-					Pmove_func();
-					break;
-				case Ppurchase:
-					u1_printf("Ppurchase\n");
-					purchase_wool_func();
-					break;
-				case Pdestroy:
-					u1_printf("Pdestroy\n");
-					Pdestroy_func();
-					break;
-				case Nmove:
-					u1_printf("Nmove\n");
-					Nmove_func();
-					break;
-				case Nprotect:
-					u1_printf("Nprotect\n");
-					Nprotect_func();
-					break;
-				case Ndestroy:
-					u1_printf("Ndestroy\n");
-					Ndestroy_func();
-					break;
-        case Protecthome:
-          u1_printf("homeprotect\n");
-          homeProtect();
-          break;
-        case Upgrade:
-          u1_printf("upgrade\n");
-          Upgrade_func();
-          break;
-//				case recover:
-//					u1_printf("recover\n");
-//					recover_func();
-//					break;
-				default:
-					break;
-			}
-		}
-		else
-			;
-	}
+        if (getGameStage() == READY)
+            ready_func();
+        else if (getGameStage() != FINISHED)
+        {
+            switch (status)
+            {
+                case init:
+                    u1_printf("init\n");
+                    init_func();
+                    break;
+                case dead:
+                    u1_printf("dead\n");
+                    dead_func();
+                    break;
+                case Pmove:
+                    u1_printf("Pmove\n");
+                    Pmove_func();
+                    break;
+                case Ppurchase:
+                    u1_printf("Ppurchase\n");
+                    purchase_wool_func();
+                    break;
+                case Pdestroy:
+                    u1_printf("Pdestroy\n");
+                    Pdestroy_func();
+                    break;
+                case Nmove:
+                    u1_printf("Nmove\n");
+                    Nmove_func();
+                    break;
+                case Ndestroy:
+                    u1_printf("Ndestroy\n");
+                    Ndestroy_func();
+                    break;
+                case Protecthome:
+                    u1_printf("homeprotect\n");
+                    homeProtect();
+                    break;
+                case Upgrade:
+                    u1_printf("upgrade\n");
+                    Upgrade_func();
+                    break;
+//                case recover:
+//                    u1_printf("recover\n");
+//                    recover_func();
+//                    break;
+                default:
+                    break;
+            }
+        }
+        else
+            ;
+    }
   /* USER CODE END 3 */
 }
 
@@ -284,12 +277,12 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Instance == TIM6)
-	{
-//		u1_printf("motor\n");
-		Mecanum_Pos(now, goal);
-		Update_Pwm();
-	}
+    if (htim->Instance == TIM6)
+    {
+//      u1_printf("motor\n");
+        Mecanum_Pos(now, goal);
+        Update_Pwm();
+    }
 }
 /* USER CODE END 4 */
 
