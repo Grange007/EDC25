@@ -58,12 +58,16 @@ uint8_t grid2No(Grid grid);
 Grid no2Grid(uint8_t no);
 Grid pos2Grid(Position_edc25 pos);
 Position_edc25 grid2Pos(Grid grid);
+
 Grid nearestBlock(uint8_t type);
 Grid getNext(Grid from, Grid to);
 
 Grid bellmanford(Grid source, Grid target, int *needBlock);
 
-void homeProtect();
+uint8_t getStuck();
+uint8_t if_op_inAttack();
+uint8_t if_op_aroundHome();
+
 void statusChange();
 void ready_func();
 void init_func();
@@ -72,8 +76,9 @@ void Pmove_func();
 void purchase_wool_func();
 void Pdestroy_func();
 void Nmove_func();
-void Nprotect_func();
 void Ndestroy_func();
 void recover_func();
+void homeProtect();
+void Upgrade_func();
 
 #endif
