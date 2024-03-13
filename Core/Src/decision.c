@@ -7,7 +7,14 @@
 #define RED_TEAM 1
 #define BLUE_TEAM 2
 #define HOME_HEIGHT 4
-
+/*目前策略：
+	绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
+	中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
+	三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
+	未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
+	时刻保证身上携带有至少8个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
+	如果在采矿时碰到对方，也攻击，直接进入进攻节点
+*/
 uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
 					   0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,26 +26,26 @@ uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
 
 Status status = init;
 
-uint8_t agility;
-uint8_t health;
+uint8_t agility;//急迫值
+uint8_t health;//当前生命
 uint8_t maxHealth = 20;
 uint8_t wool;
-uint8_t emerald;
-uint8_t time;
-
-int8_t team;
-int8_t lastTime = -16;
+uint8_t emerald;//绿宝石
+uint8_t time;//目前时间
+uint8_t strength;//攻击力
+int8_t team;//代表哪一方
+int8_t lastTime = -16;//
 
 Grid nowGrid;
-Grid goalGrid;
-Grid desGrid;
-Grid opGrid;
-Grid homeGrid;
-Grid opHomeGrid;
+Grid goalGrid;//当前向哪走
+Grid desGrid;//最终的目标
+Grid opGrid;//op是对面
+Grid homeGrid;//家的位置
+Grid opHomeGrid;//对面家的位置
 Grid redHomeGrid = {0, 0};
 Grid blueHomeGrid = {7, 7};
 
-Grid nearestDiamond;
+Grid nearestDiamond;//最近钻石矿
 
 Position_edc25 now = {0.5f, 0.5f};
 Position_edc25 goal = {0.5f, 0.5f};
@@ -113,7 +120,7 @@ Grid nearestBlock(uint8_t type)
 //	return from;
 //}
 
-Grid bellmanford(Grid source, Grid target, int *needBlock)
+Grid bellmanford(Grid source, Grid target, int *needBlock)//找到从source到target的花费最少的路，needBlock是花费羊毛数
 {
     memset(dis, 63, sizeof(dis));
 	memset(pre_pos, 0, sizeof(pre_pos));
@@ -179,46 +186,94 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
         }
     }
 }
+bool getStuck(){
+	if(getHeightOfId(grid2No((Grid){nowGrid.x-1,nowGrid.y})) == 0&&getHeightOfId(grid2No((Grid){nowGrid.x+1,nowGrid.y})) == 0&&getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y-1})) == 0&&getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y+1})) == 0&&wool==0)
+	return true;
 
-
-void homeProtect()
-{
-
+	return false;
 }
+
+
 void statusChange()
-{
+{	
+	if(getStuck()){
+		status=dead;
+		return;
+	}
+
 	if (health == 0)
 		status = dead;
 	else
 	{
-		if (hasBedOpponent())
+		if (health==29||strength/agility==2||strength/agility==17||if_op_inAttack())//攻击节点：生命力提升至29或DPS达到2和17或遇到对方
 		{
-			bellmanford(nowGrid, opHomeGrid, &needWool);
-			if (wool > needWool && time - lastTime > agility)
-			{
-				if (team == RED_TEAM)
-				{
-					desGrid.x = opHomeGrid.x - 1;
-					desGrid.y = opHomeGrid.y - 1;
-				}
-				if (team == BLUE_TEAM)
-				{
-					desGrid.x = opHomeGrid.x + 1;
-					desGrid.y = opHomeGrid.y + 1;
-				}
-				status = Pmove;
-			}
-			else if (emerald > 2)
-			{
+			if(health<20){//检查状态怎样，补充生命和羊毛
+				bellmanford(nowGrid, opGrid, &needWool);
 				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-					status = Pprotect;
+					status=recover;
+				else {
+					desGrid = homeGrid;
+					status = Pmove;
+				}
+			}
+			else if(wool<16){
+				bellmanford(nowGrid, opGrid, &needWool);
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+					status=Ppurchase;
+				else {
+					desGrid = homeGrid;
+					status = Pmove;
+				}
+			}
+			else if(health>=20&&wool>=16){//状态完备，再去攻击
+				if(getHeightOfId(grid2No(opHomeGrid))>0){//有家先干家
+					bellmanford(nowGrid, opHomeGrid, &needWool);
+					if (wool > needWool && time - lastTime > agility)
+					{
+					if (team == RED_TEAM)
+					{
+						desGrid.x = opHomeGrid.x - 1;
+						desGrid.y = opHomeGrid.y - 1;
+					}
+					if (team == BLUE_TEAM)
+					{
+						desGrid.x = opHomeGrid.x + 1;
+						desGrid.y = opHomeGrid.y + 1;
+					}
+					status = Pmove;
+			}
+			}//去干家
+			else {// 对面没家就干人
+				bellmanford(nowGrid, opGrid, &needWool);
+				if(wool > needWool && time - lastTime > agility){
+				desGrid = opGrid;
+				status = Nmove;
+				}
+			}
+			}
+			}
+			else if(if_op_aroundHome()){//敌人在家附近去保护家
+				bellmanford(nowGrid, opGrid, &needWool);
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+					status=Protecthome;
+				else {
+					desGrid = homeGrid;
+					status = Pmove;
+				}
+			}
+			else if (emerald >=120-wool)
+			{
+				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y){
+					if(wool<32)status=Ppurchase;
+					else status=Upgrade;
+				}	
 				else
 				{
 					desGrid = homeGrid;
 					status = Pmove;
 				}
 			}
-			else
+			else//没钱就去采矿
 			{
 				nearestDiamond = nearestBlock(diamond);
 				bellmanford(nowGrid, nearestDiamond, &needWool);
@@ -229,34 +284,7 @@ void statusChange()
 				status = Pmove;
 			}
 		}
-		else
-		{
-			bellmanford(nowGrid, opGrid, &needWool);
-			if (emerald > 64)
-			{
-				if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-					status = Nprotect;
-				else{
-					desGrid = homeGrid;
-					status = Nmove;
-				}
-			}
-			else if (wool > needWool && time - lastTime > agility)
-			{
-				desGrid = opGrid;
-				status = Nmove;
-			}
-			else
-			{
-				bellmanford(nowGrid, nearestDiamond, &needWool);
-				nearestDiamond = nearestBlock(diamond);
-				if (wool > needWool)
-					desGrid = nearestDiamond;
-				else
-					desGrid = homeGrid;
-				status = Nmove;
-			}
-		}
+
 	}
 //	else
 //	{
@@ -281,6 +309,20 @@ void statusChange()
 //			status = Pmove;
 //		}
 //	}
+}
+bool if_op_inAttack(){
+	if(abs(opGrid.x-nowGrid.x)<=1){
+		if(abs(opGrid.y-nowGrid.y)<=1)
+			return true;
+	}
+	return false;
+}
+bool if_op_aroundHome(){
+	if(abs(opGrid.x-homeGrid.x)<=1){
+		if(abs(opGrid.y-homeGrid.y)<=1)
+			return true;
+	}
+	return false;
 }
 void ready_func()
 {
@@ -312,7 +354,7 @@ void init_func()
 	if (health == 0)
 		status = dead;
 	else
-		status = Pprotect;
+		status = Ppurchase;
 }
 void dead_func()
 {
@@ -320,7 +362,7 @@ void dead_func()
 	goalGrid = homeGrid;
 	statusChange();
 }
-void Pmove_func()
+void Pmove_func()//打床||移动
 {
 	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
 	if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
@@ -340,23 +382,25 @@ void Pmove_func()
 	goal = grid2Pos(goalGrid);
 	statusChange();
 }
-void Pprotect_func()
+void purchase_wool_func()
 {
-	if (emerald > 2)
-	{
+	while(wool<32&&emerald>2){
 		trade_id(3);
 		HAL_Delay(300);
 	}
 	statusChange();
 }
-void Pdestroy_func()
+void Pdestroy_func()//干床
 {
-	attack_id(grid2No(opHomeGrid));
-	HAL_Delay(300);
-	lastTime = time;
+	while(getHeightOfId(grid2No(opHomeGrid)) >0){
+		attack_id(grid2No(opHomeGrid));
+		HAL_Delay(300);
+		HAL_Delay(agility);
+		lastTime = time;
+	}
 	statusChange();
 }
-void Nmove_func()
+void Nmove_func()//打人||移动
 {
 	goalGrid = bellmanford(nowGrid, desGrid, &needWool);
 	if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
@@ -375,21 +419,7 @@ void Nmove_func()
 	goal = grid2Pos(goalGrid);
 	statusChange();
 }
-void Nprotect_func()
-{
-	if (emerald >= 64)
-	{
-		trade_id(2);
-		HAL_Delay(300);
-	}
-    if (emerald >= 2)
-    {
-		trade_id(3);
-		HAL_Delay(300);
-	}
-    statusChange();
-}
-void Ndestroy_func()
+void Ndestroy_func()//干人
 {
 	attack_id(grid2No(opGrid));
 	HAL_Delay(300);
@@ -398,9 +428,37 @@ void Ndestroy_func()
 }
 void recover_func()
 {
-	if (emerald > 4)
+	while (health<20&&emerald > 4)
 	{
 		trade_id(4);
+		HAL_Delay(300);
+	}
+	statusChange();
+}
+void homeProtect()
+{
+	while(getHeightOfId(grid2No(homeGrid))<4&&wool>0){
+		place_block_id(grid2No(homeGrid));
+		HAL_Delay(300);
+	}
+	while(wool<8&&emerald>2){
+		trade_id(3);
+		HAL_Delay(300);
+	}
+	desGrid=opGrid;
+	status=Nmove;
+}
+void Upgrade_func(){
+	if(maxHealth<29){
+		trade_id(1);
+		HAL_Delay(300);
+	}
+	else if(strength<17){
+		trade_id(2);
+		HAL_Delay(300);
+	}
+	else {
+		trade_id(0);
 		HAL_Delay(300);
 	}
 	statusChange();

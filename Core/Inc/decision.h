@@ -18,12 +18,14 @@ typedef enum
     init = 0,
 	dead,
 	Pmove,
-    Pprotect,
+    Ppurchase,
     Pdestroy,
 	Nmove,
 	Nprotect,
 	Ndestroy,
-	recover
+	recover,
+	Protecthome,
+	Upgrade
 } Status;
 
 extern uint8_t gameMap[64];
@@ -35,6 +37,7 @@ extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;
 extern uint8_t time;
+extern uint8_t strength;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -66,7 +69,7 @@ void ready_func();
 void init_func();
 void dead_func();
 void Pmove_func();
-void Pprotect_func();
+void purchase_wool_func();
 void Pdestroy_func();
 void Nmove_func();
 void Nprotect_func();
