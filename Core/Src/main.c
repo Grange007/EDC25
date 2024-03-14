@@ -150,13 +150,14 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//    int cnt = 1;
 
     while (1)
     {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-        HAL_Delay(100);
+        HAL_Delay(200);
 //        getPosition(&now);
 //        nowGrid = pos2Grid(now);
 //        getPositionOpponent(&op);
@@ -171,10 +172,34 @@ int main(void)
         strength = getStrength();
 
 //        u1_printf("yaw:%f\n",GetYaw());
-        u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
-        u1_printf("now:(%f,%f)\n", now.posx, now.posy);
-        u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
-        u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
+//        cnt ++;
+//        cnt = cnt % 100000;
+//        if ((cnt % 20) / 5 == 0)
+//        {
+//            goal.posx = 3.0;
+//            goal.posy = 0.5;
+//        }
+//        else if ((cnt % 20) / 5 == 1)
+//        {
+//            goal.posx = -3.0;
+//            goal.posy = 0.5;
+//        }
+//        else if ((cnt % 20) / 5 == 2)
+//        {
+//            goal.posy = -3.0;
+//            goal.posx = 0.5;
+//        }
+//        else if ((cnt % 20) / 5 == 3)
+//        {
+//            goal.posy = 3.0;
+//            goal.posx = 0.5;
+//        }
+
+
+        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
+        u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
+        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
+        u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //        u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
