@@ -30,8 +30,14 @@ GameStage_edc25 getGameStage();
 // 获取所有块的高度信息
 void getHeightOfAllChunks(uint8_t *dest);
 
+//获取所有块的矿物种类
+void getOreKindOfAllChunks(uint8_t *dest);
+
 // 根据ID获取块的高度
 uint8_t getHeightOfId(uint8_t id);
+
+//根据ID获取块的矿物种类
+uint8_t getOreKindOfId(uint8_t id);
 
 // 检查玩家是否有床
 bool hasBed();
