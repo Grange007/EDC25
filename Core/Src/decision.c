@@ -234,7 +234,7 @@ void statusChange()
          || strength / agility == 17
          || if_op_inAttack())//攻击节点：生命力提升至29或DPS达到2和17或遇到对方
         {
-            if(health<20)//检查状态怎样，补充生命和羊毛
+            if(health < 20)//检查状态怎样，补充生命和羊毛
             {
                 bellmanford(nowGrid, opGrid, &needWool);
                 if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
@@ -297,10 +297,11 @@ void statusChange()
                 status = Pmove;
             }
         }
-        else if (emerald >= 120-wool)
+        else if (emerald >= 120 - wool)
         {
-            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y){
-                if(wool<32)
+            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+            {
+                if(wool < 32)
                     status=Ppurchase;
                 else
                     status=Upgrade;
@@ -371,6 +372,8 @@ void ready_func()
     goal = home;
     goalGrid = homeGrid;
     // upd map
+    for (uint8_t i = 0; i < 64; i++)
+        gameMap[i] = getOreKindOfId(i);
 }
 void init_func()
 {
@@ -386,7 +389,7 @@ void dead_func()
     goalGrid = homeGrid;
     statusChange();
 }
-void Pmove_func()//打床||移动
+void Pmove_func()//打床；移动
 {
     goalGrid = bellmanford(nowGrid, desGrid, &needWool);
     if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
@@ -406,9 +409,10 @@ void Pmove_func()//打床||移动
     goal = grid2Pos(goalGrid);
     statusChange();
 }
-void purchase_wool_func()
+void Ppurchase_func()
 {
-    while(wool<32&&emerald>2){
+    while(wool < 32 && emerald > 2)
+    {
         trade_id(3);
         HAL_Delay(300);
     }
