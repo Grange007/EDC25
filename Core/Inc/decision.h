@@ -25,7 +25,7 @@ typedef enum
 	Ndestroy,
 	recover,
 	Protecthome,
-	Upgrade
+	upgrade
 } Status;
 
 extern uint8_t gameMap[64];
@@ -79,7 +79,7 @@ void Nmove_func();
 void Ndestroy_func();
 void recover_func();
 void homeProtect();
-void Upgrade_func();
+void upgrade_func();
 
 #endif
 

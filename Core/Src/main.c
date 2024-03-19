@@ -210,9 +210,9 @@ int main(void)
                     u1_printf("homeprotect\n");
                     homeProtect();
                     break;
-                case Upgrade:
+                case upgrade:
                     u1_printf("upgrade\n");
-                    Upgrade_func();
+                    upgrade_func();
                     break;
 //                case recover:
 //                    u1_printf("recover\n");

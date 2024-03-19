@@ -19,10 +19,10 @@
 uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 3, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 3, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 1};
 
 Status status = init;
@@ -190,42 +190,26 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)//找到从source到ta
 
 uint8_t getStuck()
 {
-    if (getHeightOfId(grid2No((Grid){nowGrid.x-1,nowGrid.y})) == 0
-     && getHeightOfId(grid2No((Grid){nowGrid.x+1,nowGrid.y})) == 0
-     && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y-1})) == 0
-     && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y+1})) == 0
-     && wool == 0)
-    return 1;
-
-    return 0;
+    return getHeightOfId(grid2No((Grid){nowGrid.x-1,nowGrid.y})) == 0
+        && getHeightOfId(grid2No((Grid){nowGrid.x+1,nowGrid.y})) == 0
+        && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y-1})) == 0
+        && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y+1})) == 0
+        && wool == 0;
 }
 uint8_t if_op_inAttack()
 {
-    if (abs(opGrid.x - nowGrid.x) <= 1
-     || abs(opGrid.y - nowGrid.y) <= 1)
-    {
-        return 1;
-    }
-    return 0;
+    return abs(opGrid.x - nowGrid.x) <= 1
+        || abs(opGrid.y - nowGrid.y) <= 1;
 }
 uint8_t if_op_aroundHome()
 {
-    if (abs(opGrid.x - homeGrid.x) <= 1
-     || abs(opGrid.y - homeGrid.y) <= 1)
-    {
-        return 1;
-    }
-    return 0;
+    return abs(opGrid.x - homeGrid.x) <= 1
+        || abs(opGrid.y - homeGrid.y) <= 1;
 }
 
 void statusChange()
 {
-    if (getStuck())
-    {
-        status = dead;
-        return;
-    }
-    if (health == 0)
+    if (health == 0 || getStuck())
         status = dead;
     else
     {
@@ -238,27 +222,30 @@ void statusChange()
             {
                 bellmanford(nowGrid, opGrid, &needWool);
                 if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-                    status=recover;
+                    status = recover;
                 else
                 {
                     desGrid = homeGrid;
                     status = Pmove;
                 }
             }
-            else if(wool<16)
+            else if(wool < 16)
             {
                 bellmanford(nowGrid, opGrid, &needWool);
                 if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-                    status=Ppurchase;
+                {
+                    status = Ppurchase;
+                    u1_printf("stuck1");
+                }
                 else
                 {
                     desGrid = homeGrid;
                     status = Pmove;
                 }
             }
-            else if(health>=20&&wool>=16)//状态完备，再去攻击
+            else if(health >= 20 && wool >= 16)//状态完备，再去攻击
             {
-                if(getHeightOfId(grid2No(opHomeGrid))>0)//有家先干家
+                if(getHeightOfId(grid2No(opHomeGrid)) > 0)//有家先干家
                 {
                     bellmanford(nowGrid, opHomeGrid, &needWool);
                     if (wool > needWool && time - lastTime > agility)
@@ -302,9 +289,9 @@ void statusChange()
             if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
             {
                 if(wool < 32)
-                    status=Ppurchase;
+                    status = Ppurchase;
                 else
-                    status=Upgrade;
+                    status = upgrade;
             }
             else
             {
@@ -411,7 +398,7 @@ void Pmove_func()//打床；移动
 }
 void Ppurchase_func()
 {
-    while(wool < 32 && emerald > 2)
+    if (wool < 32 && emerald > 2)
     {
         trade_id(3);
         HAL_Delay(300);
@@ -478,7 +465,7 @@ void homeProtect()
     desGrid = opGrid;
     status = Nmove;
 }
-void Upgrade_func()
+void upgrade_func()
 {
     if(maxHealth < 29)
     {
