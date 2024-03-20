@@ -168,7 +168,8 @@ int main(void)
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
 //        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
         u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
-//        u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
+//        u1_printf("op:(%f, %f)\n", op.posx, op.posy);
+        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
@@ -186,13 +187,13 @@ int main(void)
                     u1_printf("dead\n");
                     dead_func();
                     break;
-                case Pmove:
-                    u1_printf("Pmove\n");
-                    Pmove_func();
-                    break;
                 case Ppurchase:
                     u1_printf("Ppurchase\n");
                     Ppurchase_func();
+                    break;
+                case Pmove:
+                    u1_printf("Pmove\n");
+                    Pmove_func();
                     break;
                 case Pdestroy:
                     u1_printf("Pdestroy\n");
