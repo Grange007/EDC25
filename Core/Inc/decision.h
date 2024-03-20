@@ -53,7 +53,7 @@ extern Grid homeGrid;
 extern Grid opHomeGrid;
 
 extern Mine mineList[MAX_MINE];
-extern uint8_t mineNum=0;
+extern uint8_t mineNum;
 
 extern Position_edc25 now;
 extern Position_edc25 des;
@@ -92,7 +92,7 @@ float calculate_weight_mine();
 float calculate_weight_get_wool();
 float calculate_weight_get_enhanced();
 
-Status best_status();
+Status best_status(Status from,Status to);
 void place_and_move();
 Mine find_optimal_mine();
 uint8_t find_optimal_enhancement();
