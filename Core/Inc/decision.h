@@ -25,7 +25,7 @@ typedef enum
 	Ndestroy,
 	recover,
 	Protecthome,
-	Upgrade
+	upgrade
 } Status;
 
 extern uint8_t gameMap[64];
@@ -73,12 +73,21 @@ void ready_func();
 void init_func();
 void dead_func();
 void Pmove_func();
-void purchase_wool_func();
+void Ppurchase_func();
 void Pdestroy_func();
 void Nmove_func();
 void Ndestroy_func();
 void recover_func();
 void homeProtect();
-void Upgrade_func();
+void upgrade_func();
 
 #endif
+
+/*目前策略：
+    绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
+    中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
+    三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
+    未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
+    时刻保证身上携带有至少16个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
+    如果在采矿时碰到对方，也攻击，直接进入进攻节点
+*/

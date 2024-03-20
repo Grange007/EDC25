@@ -69,14 +69,7 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
- /*目前策略：
-    绿宝石的使用：先将生命值提升至29点，再升DPS（较优路线），剩2分钟时，继续升生命值
-    中间设置三个进攻节点：到达这三个节点时，出发尝试杀死对方并毁掉对方的家
-    三个进攻节点：生命力提升到29点时；DPS达到2时；DPS达到17时。
-    未达到三个节点时，如果绿宝石不够就去采矿，绿宝石足够就回来升级
-    时刻保证身上携带有至少16个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
-    如果在采矿时碰到对方，也攻击，直接进入进攻节点
-*/
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -158,10 +151,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
         HAL_Delay(200);
-//        getPosition(&now);
-//        nowGrid = pos2Grid(now);
-//        getPositionOpponent(&op);
-//        opGrid = pos2Grid(op);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
 
         agility = getAgility();
         health = getHealth();
@@ -171,34 +164,9 @@ int main(void)
         time = getGameTime();
         strength = getStrength();
 
-//        u1_printf("yaw:%f\n",GetYaw());
-//        cnt ++;
-//        cnt = cnt % 100000;
-//        if ((cnt % 20) / 5 == 0)
-//        {
-//            goal.posx = 3.0;
-//            goal.posy = 0.5;
-//        }
-//        else if ((cnt % 20) / 5 == 1)
-//        {
-//            goal.posx = -3.0;
-//            goal.posy = 0.5;
-//        }
-//        else if ((cnt % 20) / 5 == 2)
-//        {
-//            goal.posy = -3.0;
-//            goal.posx = 0.5;
-//        }
-//        else if ((cnt % 20) / 5 == 3)
-//        {
-//            goal.posy = 3.0;
-//            goal.posx = 0.5;
-//        }
-
-
-        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
+//        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
-        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
+//        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
         u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //        u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
@@ -224,7 +192,7 @@ int main(void)
                     break;
                 case Ppurchase:
                     u1_printf("Ppurchase\n");
-                    purchase_wool_func();
+                    Ppurchase_func();
                     break;
                 case Pdestroy:
                     u1_printf("Pdestroy\n");
@@ -242,9 +210,9 @@ int main(void)
                     u1_printf("homeprotect\n");
                     homeProtect();
                     break;
-                case Upgrade:
+                case upgrade:
                     u1_printf("upgrade\n");
-                    Upgrade_func();
+                    upgrade_func();
                     break;
 //                case recover:
 //                    u1_printf("recover\n");
