@@ -105,128 +105,129 @@ int main(void)
   MX_USART3_UART_Init();
   MX_UART4_Init();
   MX_UART5_Init();
-  /* USER CODE BEGIN 2 */
-  // Output PWM
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
-  // Measure
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
-  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
-  // Update PWM
-  HAL_TIM_Base_Start_IT(&htim6);
-  // jy62
-  jy62_Init(&huart3);
-  // zigbee
-  zigbee_Init(&huart4);
-  // PID
-  PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-  PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    /* USER CODE BEGIN 2 */
+    // Output PWM
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
+    // Measure
+    HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
+    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
+    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
+    HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
+    // Update PWM
+    HAL_TIM_Base_Start_IT(&htim6);
+    // jy62
+    jy62_Init(&huart3);
+    // zigbee
+    zigbee_Init(&huart4);
+    // PID
+    PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
 
-  PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-  PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-  PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
+    PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
+    PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
-  u1_printf("Hello\n");
+    u1_printf("Hello\n");
 
-  HAL_Delay(1000);
-  /* USER CODE END 2 */
+    HAL_Delay(1000);
+    /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   //    int cnt = 1;
 
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-    HAL_Delay(200);
-    getPosition(&now);
-    nowGrid = pos2Grid(now);
-    getPositionOpponent(&op);
-    opGrid = pos2Grid(op);
-
-    agility = getAgility();
-    health = getHealth();
-    maxHealth = getMaxHealth();
-    wool = getWoolCount();
-    emerald = getEmeraldCount();
-    time = getGameTime();
-    strength = getStrength();
-
-    //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
-    u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
-    //        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
-    u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
-    //        u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
-    //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
-    //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
-
-    if (getGameStage() == READY)
-      ready_func();
-    else if (getGameStage() != FINISHED)
+    while (1)
     {
-      switch (status)
-      {
-      case init:
-        u1_printf("init\n");
-        init_func();
-        break;
-      case dead:
-        u1_printf("dead\n");
-        dead_func();
-        break;
-      case Pmove:
-        u1_printf("Pmove\n");
-        Pmove_func();
-        break;
-      case Ppurchase:
-        u1_printf("Ppurchase\n");
-        Ppurchase_func();
-        break;
-      case Pdestroy:
-        u1_printf("Pdestroy\n");
-        Pdestroy_func();
-        break;
-      case Nmove:
-        u1_printf("Nmove\n");
-        Nmove_func();
-        break;
-      case Ndestroy:
-        u1_printf("Ndestroy\n");
-        Ndestroy_func();
-        break;
-      case Protecthome:
-        u1_printf("homeprotect\n");
-        homeProtect();
-        break;
-      case upgrade:
-        u1_printf("upgrade\n");
-        upgrade_func();
-        break;
-        //                case recover:
-        //                    u1_printf("recover\n");
-        //                    recover_func();
-        //                    break;
-      default:
-        break;
-      }
+        /* USER CODE END WHILE */
+
+        /* USER CODE BEGIN 3 */
+        HAL_Delay(200);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
+
+        agility = getAgility();
+        health = getHealth();
+        maxHealth = getMaxHealth();
+        wool = getWoolCount();
+        emerald = getEmeraldCount();
+        time = getGameTime();
+        strength = getStrength();
+
+//        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
+        u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
+//        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
+        u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
+//        u1_printf("op:(%f, %f)\n", op.posx, op.posy);
+        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
+//        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+//        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
+
+        if (getGameStage() == READY)
+            ready_func();
+        else if (getGameStage() != FINISHED)
+        {
+            switch (status)
+            {
+                case init:
+                    u1_printf("init\n");
+                    init_func();
+                    break;
+                case dead:
+                    u1_printf("dead\n");
+                    dead_func();
+                    break;
+                case Ppurchase:
+                    u1_printf("Ppurchase\n");
+                    Ppurchase_func();
+                    break;
+                case Pmove:
+                    u1_printf("Pmove\n");
+                    Pmove_func();
+                    break;
+                case Pdestroy:
+                    u1_printf("Pdestroy\n");
+                    Pdestroy_func();
+                    break;
+                case Nmove:
+                    u1_printf("Nmove\n");
+                    Nmove_func();
+                    break;
+                case Ndestroy:
+                    u1_printf("Ndestroy\n");
+                    Ndestroy_func();
+                    break;
+                case Protecthome:
+                    u1_printf("homeprotect\n");
+                    homeProtect();
+                    break;
+                case upgrade:
+                    u1_printf("upgrade\n");
+                    upgrade_func();
+                    break;
+//                case recover:
+//                    u1_printf("recover\n");
+//                    recover_func();
+//                    break;
+                default:
+                    break;
+            }
+        }
+        else
+            ;
     }
-    else
-      ;
-  }
-  /* USER CODE END 3 */
 }
+/* USER CODE END 3 */
 
 /**
  * @brief System Clock Configuration
