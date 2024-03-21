@@ -27,26 +27,27 @@ uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
 
 Status status = init;
 
-uint8_t agility;//急迫值
-uint8_t health;//当前生命
+uint8_t agility; // 急迫值
+uint8_t health;  // 当前生命
 uint8_t maxHealth = 20;
 uint8_t wool;
-uint8_t emerald;//绿宝石
-uint8_t time;//目前时间
-uint8_t strength;//攻击力
-int8_t team;//代表哪一方
-int8_t lastTime = -16;//
+uint8_t emerald;       // 绿宝石
+uint8_t time;          // 目前时间
+uint8_t strength;      // 攻击力
+int8_t team;           // 代表哪一方
+int8_t lastTime = -16; //
 
 Grid nowGrid;
-Grid goalGrid;//当前向哪走
-Grid desGrid;//最终的目标
-Grid opGrid;//op是对面
-Grid homeGrid;//家的位置
-Grid opHomeGrid;//对面家的位置
+Grid goalGrid;   // 当前向哪走
+Grid desGrid;    // 最终的目标
+Grid opGrid;     // op是对面
+Grid homeGrid;   // 家的位置
+Grid opHomeGrid; // 对面家的位置
 Grid redHomeGrid = {0, 0};
 Grid blueHomeGrid = {7, 7};
 
-Grid nearestDiamond;//最近钻石矿
+Grid nearestDiamond;  // 最近钻石矿
+Grid mostValuableOre; // 最有价值的矿物
 
 Position_edc25 now = {0.5f, 0.5f};
 Position_edc25 goal = {0.5f, 0.5f};
@@ -62,6 +63,14 @@ int pre_pos[8][8][2];
 int dx[4] = {0, 0, 1, -1};
 int dy[4] = {1, -1, 0, 0};
 int inf = 0x3f3f3f3f;
+
+struct OreInfo
+{
+    Grid pos;
+    uint8_t type;
+};
+OreInfo ore[64];
+int oreNum = 0;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -100,7 +109,7 @@ Grid nearestBlock(uint8_t type)
         if (gameMap[i] == type)
         {
             if (mhtDst(nowGrid, no2Grid(i)) < dst)
-	    {
+            {
                 nearest = no2Grid(i);
                 dst = mhtDst(nowGrid, no2Grid(i));
             }
@@ -108,20 +117,90 @@ Grid nearestBlock(uint8_t type)
     return nearest;
 }
 
-//Grid getNext(Grid from, Grid to)
-//{
-//    if (from.x < to.x)
-//        from.x += 1;
-//    else if (from.x > to.x)
-//        from.x -= 1;
-//    else if (from.y < to.y)
-//        from.y += 1;
-//    else if (from.y > to.y)
-//        from.y -= 1;
-//    return from;
-//}
+// TODO:The number of ore that one orepos has accumulated
+int getAccumulatedNumberOfOre(Grid OrePos)
+{
+    return 1;
+}
 
-Grid bellmanford(Grid source, Grid target, int *needBlock)//找到从source到target的花费最少的路，needBlock是花费羊毛数
+void getPositionOfAllOre()
+{
+    for (int i = 0; i < 64; i++)
+    {
+        if (gameMap[i] == iron)
+        {
+            ore[oreNum].pos = no2Grid(i);
+            ore[oreNum].type = iron;
+            oreNum++;
+        }
+        else if (gameMap[i] == gold)
+        {
+            ore[oreNum].pos = no2Grid(i);
+            ore[oreNum].type = gold;
+            oreNum++;
+        }
+        else if (gameMap[i] == diamond)
+        {
+            ore[oreNum].pos = no2Grid(i);
+            ore[oreNum].type = diamond;
+            oreNum++;
+        }
+    }
+    oreNum--;
+}
+
+Grid findMostValuableBlock(Grid source)
+{
+    int mostValueBlockIndex = 0;
+    int needBlock;
+    int money;
+    float totalValue;
+    int maxnValue = -1;
+    int maxnIndex = 0;
+    for (int i = 0; i < oreNum; i++)
+    {
+        int distance = bellmanford_distance(source, ore[i].pos, &needBlock);
+        switch (ore[i].type)
+        {
+        case iron:
+            money = 1;
+            break;
+
+        case gold:
+            money = 4;
+            break;
+
+        case diamond:
+            money = 16;
+            break;
+
+        default:
+            break;
+        }
+        totalValue = (distance) == 0 ? (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / 0.5) - 5 * needBlock : (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / (money * distance)) - 5 * needBlock;
+        if (totalValue > maxValue)
+        {
+            maxnValue = totalValue;
+            maxnIndex = i;
+        }
+    }
+    return maxnIndex;
+}
+
+// Grid getNext(Grid from, Grid to)
+//{
+//     if (from.x < to.x)
+//         from.x += 1;
+//     else if (from.x > to.x)
+//         from.x -= 1;
+//     else if (from.y < to.y)
+//         from.y += 1;
+//     else if (from.y > to.y)
+//         from.y -= 1;
+//     return from;
+// }
+
+Grid bellmanford(Grid source, Grid target, int *needBlock) // 找到从source到target的花费最少的路，needBlock是花费羊毛数
 {
     if (source.x == target.x && source.y == target.y)
     {
@@ -193,23 +272,71 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)//找到从source到ta
     }
 }
 
+int bellmanford_distance(Grid source, Grid target, int *needBlock)
+{
+    if (source.x == target.x && source.y == target.y)
+    {
+        *needBlock = 0;
+        return 0;
+    }
+    memset(dis, 63, sizeof(dis));
+    memset(pre_pos, 0, sizeof(pre_pos));
+    (*needBlock) = 0;
+    dis[source.x][source.y] = 0;
+    int flag; // 判断一轮循环过程中是否发生松弛操作
+    for (int i = 0; i < 64; i++)
+    {
+        flag = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (dis[i][j] == inf)
+                    continue;
+                // 无穷大与常数加减仍然为无穷大
+                // 因此最短路长度为 inf 的点引出的边不可能发生松弛操作
+                for (int k = 0; k < 4; k++)
+                {
+                    int x = i + dx[k], y = j + dy[k];
+                    // printf("(%d, %d); (%d, %d)\n", i, j, x, y);
+                    if (x < 0 || x >= 8 || y < 0 || y >= 8)
+                        continue;
+                    int edge_w = 2;
+                    if (getHeightOfId(grid2No((Grid){x, y})) == 0)
+                    {
+                        edge_w = 2;
+                    }
+                    else
+                    {
+                        edge_w = 1;
+                    }
+                    if (dis[x][y] > dis[i][j] + edge_w)
+                    {
+                        dis[x][y] = dis[i][j] + edge_w;
+                        pre_pos[x][y][0] = i;
+                        pre_pos[x][y][1] = j;
+                        flag = 1;
+                    }
+                }
+            }
+        }
+        if (!flag)
+            break;
+    }
+    return dis[target.x][target.y];
+}
+
 uint8_t getStuck()
 {
-    return getHeightOfId(grid2No((Grid){nowGrid.x-1,nowGrid.y})) == 0
-        && getHeightOfId(grid2No((Grid){nowGrid.x+1,nowGrid.y})) == 0
-        && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y-1})) == 0
-        && getHeightOfId(grid2No((Grid){nowGrid.x,nowGrid.y+1})) == 0
-        && wool == 0;
+    return getHeightOfId(grid2No((Grid){nowGrid.x - 1, nowGrid.y})) == 0 && getHeightOfId(grid2No((Grid){nowGrid.x + 1, nowGrid.y})) == 0 && getHeightOfId(grid2No((Grid){nowGrid.x, nowGrid.y - 1})) == 0 && getHeightOfId(grid2No((Grid){nowGrid.x, nowGrid.y + 1})) == 0 && wool == 0;
 }
 uint8_t if_op_inAttack()
 {
-    return abs(opGrid.x - nowGrid.x) <= 1
-        && abs(opGrid.y - nowGrid.y) <= 1;
+    return abs(opGrid.x - nowGrid.x) <= 1 && abs(opGrid.y - nowGrid.y) <= 1;
 }
 uint8_t if_op_aroundHome()
 {
-    return abs(opGrid.x - homeGrid.x) <= 1
-        && abs(opGrid.y - homeGrid.y) <= 1;
+    return abs(opGrid.x - homeGrid.x) <= 1 && abs(opGrid.y - homeGrid.y) <= 1;
 }
 
 void statusChange()
@@ -218,12 +345,12 @@ void statusChange()
         status = dead;
     else
     {
-        if (health == 29 /*|| if_op_inAttack()*/)//攻击节点：生命力提升至29或DPS达到2和17或遇到对方
+        if (health == 29 /*|| if_op_inAttack()*/) // 攻击节点：生命力提升至29或DPS达到2和17或遇到对方
         {
-            if(health < 20)//检查状态怎样，补充生命和羊毛
+            if (health < 20) // 检查状态怎样，补充生命和羊毛
             {
                 bellmanford(nowGrid, opGrid, &needWool);
-                if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+                if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
                     status = recover;
                 else
                 {
@@ -231,10 +358,10 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if(wool < 16)
+            else if (wool < 16)
             {
                 bellmanford(nowGrid, opGrid, &needWool);
-                if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+                if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
                 {
                     status = Ppurchase;
                 }
@@ -244,9 +371,9 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if(health >= 20 && wool >= 16)//状态完备，再去攻击
+            else if (health >= 20 && wool >= 16) // 状态完备，再去攻击
             {
-                if(getHeightOfId(grid2No(opHomeGrid)) > 0)//有家先干家
+                if (getHeightOfId(grid2No(opHomeGrid)) > 0) // 有家先干家
                 {
                     bellmanford(nowGrid, opHomeGrid, &needWool);
                     if (wool > needWool && time - lastTime > agility)
@@ -263,11 +390,11 @@ void statusChange()
                         }
                         status = Pmove;
                     }
-                }//去干家
+                } // 去干家
                 else
-                {// 对面没家就干人
+                { // 对面没家就干人
                     bellmanford(nowGrid, opGrid, &needWool);
-                    if(wool > needWool && time - lastTime > agility)
+                    if (wool > needWool && time - lastTime > agility)
                     {
                         desGrid = opGrid;
                         status = Nmove;
@@ -275,22 +402,22 @@ void statusChange()
                 }
             }
         }
-//        else if (if_op_aroundHome() == 1)//敌人在家附近去保护家
-//        {
-//            bellmanford(nowGrid, opGrid, &needWool);
-//            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-//                status=Protecthome;
-//            else
-//            {
-//                desGrid = homeGrid;
-//                status = Pmove;
-//            }
-//        }
+        //        else if (if_op_aroundHome() == 1)//敌人在家附近去保护家
+        //        {
+        //            bellmanford(nowGrid, opGrid, &needWool);
+        //            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+        //                status=Protecthome;
+        //            else
+        //            {
+        //                desGrid = homeGrid;
+        //                status = Pmove;
+        //            }
+        //        }
         else if (emerald >= 70 - wool)
         {
-            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+            if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
             {
-                if(wool < 32)
+                if (wool < 32)
                     status = Ppurchase;
                 else
                     status = upgrade;
@@ -301,24 +428,25 @@ void statusChange()
                 status = Pmove;
             }
         }
-        else//没钱就去采矿
+        else // 没钱就去采矿
         {
-            nearestDiamond = nearestBlock(diamond);
-            bellmanford(nowGrid, nearestDiamond, &needWool);
+            // nearestDiamond = nearestBlock(diamond);
+            // bellmanford(nowGrid, nearestDiamond, &needWool);
+            mostValuableOre = findMostValuableBlock(nowGrid);
+            bellmanford(nowGrid, mostValuableOre, &needWool);
             if (wool > needWool)
             {
-                desGrid = nearestDiamond;
-//                u1_printf("neardiamond\n");
+                desGrid = mostValuableOre;
+                //                u1_printf("neardiamond\n");
             }
             else
             {
                 desGrid = homeGrid;
-//                u1_printf("home\n");
+                //                u1_printf("home\n");
             }
             status = Pmove;
         }
     }
-
 }
 //    else
 //    {
@@ -371,16 +499,14 @@ void ready_func()
     for (uint8_t i = 0; i < 64; i++)
         gameMap[i] = getOreKindOfId(i);
 
-//    for (uint8_t i = 0; i < 8; i++)
-//    {
-//        for (uint8_t j = 0; j < 8; j++)
-//        {
-//            u1_printf("%d ", gameMap[i * 8 + j]);
-//        }
-//        u1_printf("\n");
-//    }
-
-
+    //    for (uint8_t i = 0; i < 8; i++)
+    //    {
+    //        for (uint8_t j = 0; j < 8; j++)
+    //        {
+    //            u1_printf("%d ", gameMap[i * 8 + j]);
+    //        }
+    //        u1_printf("\n");
+    //    }
 }
 void init_func()
 {
@@ -396,13 +522,12 @@ void dead_func()
     goalGrid = homeGrid;
     statusChange();
 }
-void Pmove_func()//打床；移动
+void Pmove_func() // 打床；移动
 {
     goalGrid = bellmanford(nowGrid, desGrid, &needWool);
     if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
     {
-        if ((team == RED_TEAM && nowGrid.x == opHomeGrid.x - 1 && nowGrid.y == opHomeGrid.y - 1)
-         || (team == BLUE_TEAM && nowGrid.x == opHomeGrid.x + 1 && nowGrid.y == opHomeGrid.y + 1))
+        if ((team == RED_TEAM && nowGrid.x == opHomeGrid.x - 1 && nowGrid.y == opHomeGrid.y - 1) || (team == BLUE_TEAM && nowGrid.x == opHomeGrid.x + 1 && nowGrid.y == opHomeGrid.y + 1))
         {
             status = Pdestroy;
             return;
@@ -425,9 +550,10 @@ void Ppurchase_func()
     }
     statusChange();
 }
-void Pdestroy_func()//干床
+void Pdestroy_func() // 干床
 {
-    while(getHeightOfId(grid2No(opHomeGrid)) >0){
+    while (getHeightOfId(grid2No(opHomeGrid)) > 0)
+    {
         attack_id(grid2No(opHomeGrid));
         HAL_Delay(300);
         HAL_Delay(agility);
@@ -435,10 +561,10 @@ void Pdestroy_func()//干床
     }
     statusChange();
 }
-void Nmove_func()//打人||移动
+void Nmove_func() // 打人||移动
 {
     goalGrid = bellmanford(nowGrid, desGrid, &needWool);
-    if(desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
+    if (desGrid.x == nowGrid.x && desGrid.y == nowGrid.y)
     {
         if (nowGrid.x == opGrid.x && nowGrid.y == opGrid.y)
         {
@@ -446,7 +572,7 @@ void Nmove_func()//打人||移动
             return;
         }
     }
-    if(getHeightOfId(grid2No(goalGrid)) == 0)
+    if (getHeightOfId(grid2No(goalGrid)) == 0)
     {
         place_block_id(grid2No(goalGrid));
         HAL_Delay(300);
@@ -454,7 +580,7 @@ void Nmove_func()//打人||移动
     goal = grid2Pos(goalGrid);
     statusChange();
 }
-void Ndestroy_func()//干人
+void Ndestroy_func() // 干人
 {
     attack_id(grid2No(opGrid));
     HAL_Delay(300);
@@ -487,12 +613,12 @@ void homeProtect()
 }
 void upgrade_func()
 {
-    if(maxHealth < 29)
+    if (maxHealth < 29)
     {
         trade_id(1);
         HAL_Delay(300);
     }
-    else if(strength < 17)
+    else if (strength < 17)
     {
         trade_id(2);
         HAL_Delay(300);
