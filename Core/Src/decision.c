@@ -16,26 +16,27 @@
     时刻保证身上携带有至少8个羊毛，不足的话要回去补充，羊毛超过32个则不再购买羊毛；
     如果在采矿时碰到对方，也攻击，直接进入进攻节点
 */
-uint8_t gameMap[64] = {1, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 1};
+uint8_t gameMap[64] =
+    {1, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 1};
 Status status = init;
 
 uint8_t agility;        // 急迫值
-uint8_t health;         // 当前生命
-uint8_t wool;           // 羊毛
 uint8_t emerald;        // 绿宝石
-uint8_t time;           // 目前时间
+uint8_t health;         // 当前生命
+uint8_t maxHealth;      // 最大生命
 uint8_t strength;       // 攻击力
+uint8_t wool;           // 羊毛
 uint8_t team;           // 代表哪一方
 
-uint8_t maxHealth = 20;
-int8_t lastTime = -16;
+int32_t time;           // 目前时间
+int32_t lastTime = -16;
 
 Grid nowGrid;
 Grid goalGrid;   // 当前向哪走
@@ -65,8 +66,18 @@ int inf = 0x3f3f3f3f;
 
 int needWool;
 
+uint16_t accmulatedOre[8][8] =
+        {{0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0}};
 OreInfo ore[64];
 int oreNum = 0;
+int oreUpdCnt = 0;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -114,14 +125,16 @@ Grid nearestBlock(uint8_t type)
     return nearest;
 }
 
-// TODO:The number of ore that one orepos has accumulated
-int getAccumulatedNumberOfOre(Grid OrePos)
+uint16_t getAccumulatedNumberOfOre(Grid OrePos)
 {
-    return 1;
+    return accmulatedOre[OrePos.x][OrePos.y];
 }
 
 void getPositionOfAllOre()
 {
+    for (uint8_t i = 0; i < 64; i++)
+        gameMap[i] = getOreKindOfId(i);
+
     for (int i = 0; i < 64; i++)
     {
         if (gameMap[i] == iron)
@@ -143,7 +156,6 @@ void getPositionOfAllOre()
             oreNum++;
         }
     }
-    oreNum--;
 }
 
 Grid findMostValuableBlock(Grid source)
@@ -159,20 +171,20 @@ Grid findMostValuableBlock(Grid source)
         int distance = bellmanford_distance(source, ore[i].pos, &needBlock);
         switch (ore[i].type)
         {
-        case iron:
-            money = 1;
-            break;
+            case iron:
+                money = 1;
+                break;
 
-        case gold:
-            money = 4;
-            break;
+            case gold:
+                money = 4;
+                break;
 
-        case diamond:
-            money = 16;
-            break;
+            case diamond:
+                money = 16;
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
         totalValue =
                 (distance) == 0 ?
@@ -368,7 +380,7 @@ void statusChange()
                 if (getHeightOfId(grid2No(opHomeGrid)) > 0) // 有家先干家
                 {
                     bellmanford(nowGrid, opHomeGrid, &needWool);
-                    if (wool > needWool && time - lastTime > agility)
+                    if (wool > needWool)
                     {
                         if (team == RED_TEAM)
                         {
@@ -386,7 +398,7 @@ void statusChange()
                 else
                 { // 对面没家就干人
                     bellmanford(nowGrid, opGrid, &needWool);
-                    if (wool > needWool && time - lastTime > agility)
+                    if (wool > needWool)
                     {
                         desGrid = opGrid;
                         status = Nmove;
@@ -429,40 +441,15 @@ void statusChange()
             if (wool > needWool)
             {
                 desGrid = mostValuableOre;
-                //                u1_printf("neardiamond\n");
             }
             else
             {
                 desGrid = homeGrid;
-                //                u1_printf("home\n");
             }
             status = Pmove;
         }
     }
 }
-//    else
-//    {
-//        if (emerald >= 4)
-//        {
-//            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-//                status = recover;
-//            else
-//            {
-//                desGrid = homeGrid;
-//                status = Pmove;
-//            }
-//        }
-//        else
-//        {
-//            nearestDiamond = nearestBlock(diamond);
-//            bellmanford(nowGrid, nearestDiamond, &needWool);
-//            if (wool > needWool)
-//                desGrid = nearestDiamond;
-//            else
-//                desGrid = homeGrid;
-//            status = Pmove;
-//        }
-//    }
 
 void ready_func()
 {
@@ -488,9 +475,7 @@ void ready_func()
     goalGrid = homeGrid;
 
     // upd map
-    for (uint8_t i = 0; i < 64; i++)
-        gameMap[i] = getOreKindOfId(i);
-
+    getPositionOfAllOre();
     //    for (uint8_t i = 0; i < 8; i++)
     //    {
     //        for (uint8_t j = 0; j < 8; j++)
@@ -499,6 +484,41 @@ void ready_func()
     //        }
     //        u1_printf("\n");
     //    }
+}
+void updInfo_func()
+{
+    agility = getAgility();
+    emerald = getEmeraldCount();
+    health = getHealth();
+    maxHealth = getMaxHealth();
+    strength = getStrength();
+    wool = getWoolCount();
+
+    time = getGameTime();
+
+    if (time > 200 * oreUpdCnt)
+    {
+        oreUpdCnt++;
+        for (uint8_t i = 0; i < oreNum; i++)
+        {
+            switch (ore[i].type)
+            {
+                case iron:
+                    accmulatedOre[ore[i].pos.x][ore[i].pos.y] += 1;
+                    break;
+                case gold:
+                    accmulatedOre[ore[i].pos.x][ore[i].pos.y] += 4;
+                    break;
+                case diamond:
+                    accmulatedOre[ore[i].pos.x][ore[i].pos.y] += 16;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    accmulatedOre[nowGrid.x][nowGrid.y] = 0;
+    accmulatedOre[opGrid.x][opGrid.y] = 0;
 }
 void init_func()
 {

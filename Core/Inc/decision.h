@@ -38,15 +38,16 @@ extern uint8_t gameMap[64];
 extern Status status;
 
 extern uint8_t agility;
-extern uint8_t health;
-extern uint8_t wool;
 extern uint8_t emerald;
-extern uint8_t time;
+extern uint8_t health;
+extern uint8_t maxHealth;
 extern uint8_t strength;
+extern uint8_t wool;
+
 extern uint8_t team;
 
-extern uint8_t maxHealth;
-extern int8_t lastTime;
+extern int32_t time;
+extern int32_t lastTime;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -62,8 +63,10 @@ extern Position_edc25 op;
 extern Position_edc25 home;
 extern Position_edc25 opHome;
 
+extern uint16_t accmulatedOre[8][8];
 extern OreInfo ore[64];
 extern int oreNum;
+extern int oreUpdCnt;
 
 uint8_t mhtDst(Grid from, Grid to);
 uint8_t grid2No(Grid grid);
@@ -89,6 +92,7 @@ void ready_func();
 void updInfo_func();
 void init_func();
 void dead_func();
+void protect_func();
 void purchase_func();
 void Pmove_func();
 void Pdestroy_func();

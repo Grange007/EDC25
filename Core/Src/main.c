@@ -156,14 +156,6 @@ int main(void)
         getPositionOpponent(&op);
         opGrid = pos2Grid(op);
 
-        agility = getAgility();
-        health = getHealth();
-        maxHealth = getMaxHealth();
-        wool = getWoolCount();
-        emerald = getEmeraldCount();
-        time = getGameTime();
-        strength = getStrength();
-
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
 //        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
@@ -177,9 +169,9 @@ int main(void)
             ready_func();
         else if (getGameStage() != FINISHED)
         {
+            updInfo_func();
             switch (status)
             {
-
                 case init:
                     u1_printf("init\n");
                     init_func();
