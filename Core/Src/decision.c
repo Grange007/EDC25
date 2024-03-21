@@ -177,14 +177,14 @@ Grid findMostValuableBlock(Grid source)
         default:
             break;
         }
-        totalValue = (distance) == 0 ? (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / 0.5) - 5 * needBlock : (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / (money * distance)) - 5 * needBlock;
+        totalValue = (distance) == 0 ? (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / 0.5) - 5 * needBlock : (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / (distance)) - 5 * needBlock;
         if (totalValue > maxValue)
         {
             maxnValue = totalValue;
             maxnIndex = i;
         }
     }
-    return maxnIndex;
+    return ore[maxnIndex].pos;
 }
 
 // Grid getNext(Grid from, Grid to)
