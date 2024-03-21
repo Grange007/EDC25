@@ -52,6 +52,9 @@ extern Grid opGrid;
 extern Grid homeGrid;
 extern Grid opHomeGrid;
 
+extern int32_t lastTime;
+extern Status lastStatus;
+
 extern Mine mineList[MAX_MINE];
 extern uint8_t mineNum;
 
