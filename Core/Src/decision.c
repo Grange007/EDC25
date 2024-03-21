@@ -328,6 +328,10 @@ void get_enhanced_func(){
 }
 
 float calculate_weight_protect(){
+	bellmanford(nowGrid,homeGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
 	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT&&wool>8){
 		weight=5;
@@ -335,6 +339,10 @@ float calculate_weight_protect(){
 	return weight;
 }
 float calculate_weight_destroy(){
+	bellmanford(nowGrid,opHomeGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
 	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y&&getHeightOfId(grid2No(opHomeGrid))<2){
 		weight=2.5;
@@ -342,13 +350,21 @@ float calculate_weight_destroy(){
 	return weight;
 }
 float calculate_weight_attack(){
+	bellmanford(nowGrid,opGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
 	if(mhtDst(nowGrid,opGrid)<=3){
 		weight=4;
 	}
-	return 0;
+	return 0;		//due to a simulator bug
 }
 float calculate_weight_mine(){
+	bellmanford(nowGrid,find_optimal_mine().grid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
 	return weight;
 }
