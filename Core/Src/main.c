@@ -179,6 +179,7 @@ int main(void)
         {
             switch (status)
             {
+
                 case init:
                     u1_printf("init\n");
                     init_func();
@@ -187,9 +188,13 @@ int main(void)
                     u1_printf("dead\n");
                     dead_func();
                     break;
-                case Ppurchase:
-                    u1_printf("Ppurchase\n");
-                    Ppurchase_func();
+                case protect:
+                    u1_printf("protect\n");
+                    protect_func();
+                    break;
+                case purchase:
+                    u1_printf("purchase\n");
+                    purchase_func();
                     break;
                 case Pmove:
                     u1_printf("Pmove\n");
@@ -207,18 +212,15 @@ int main(void)
                     u1_printf("Ndestroy\n");
                     Ndestroy_func();
                     break;
-                case Protecthome:
-                    u1_printf("homeprotect\n");
-                    homeProtect();
+                case recover:
+                    u1_printf("recover\n");
+                    recover_func();
                     break;
                 case upgrade:
                     u1_printf("upgrade\n");
                     upgrade_func();
                     break;
-//                case recover:
-//                    u1_printf("recover\n");
-//                    recover_func();
-//                    break;
+
                 default:
                     break;
             }

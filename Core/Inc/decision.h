@@ -8,23 +8,29 @@
 #define gold 1
 #define diamond 2
 
-typedef struct{
+typedef struct
+{
     uint8_t x;
     uint8_t y;
 } Grid;
+
+typedef struct
+{
+    Grid pos;
+    uint8_t type;
+}  OreInfo;
 
 typedef enum
 {
     init = 0,
 	dead,
-	Pmove,
-    Ppurchase,
+    protect,
+    purchase,
+    Pmove,
     Pdestroy,
 	Nmove,
-	Nprotect,
 	Ndestroy,
 	recover,
-	Protecthome,
 	upgrade
 } Status;
 
@@ -33,11 +39,14 @@ extern Status status;
 
 extern uint8_t agility;
 extern uint8_t health;
-extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;
 extern uint8_t time;
 extern uint8_t strength;
+extern uint8_t team;
+
+extern uint8_t maxHealth;
+extern int8_t lastTime;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -53,6 +62,9 @@ extern Position_edc25 op;
 extern Position_edc25 home;
 extern Position_edc25 opHome;
 
+extern OreInfo ore[64];
+extern int oreNum;
+
 uint8_t mhtDst(Grid from, Grid to);
 uint8_t grid2No(Grid grid);
 Grid no2Grid(uint8_t no);
@@ -60,9 +72,13 @@ Grid pos2Grid(Position_edc25 pos);
 Position_edc25 grid2Pos(Grid grid);
 
 Grid nearestBlock(uint8_t type);
-Grid getNext(Grid from, Grid to);
+
+int getAccumulatedNumberOfOre(Grid OrePos);
+void getPositionOfAllOre();
+Grid findMostValuableBlock(Grid source);
 
 Grid bellmanford(Grid source, Grid target, int *needBlock);
+int bellmanford_distance(Grid source, Grid target, int *needBlock);
 
 uint8_t getStuck();
 uint8_t if_op_inAttack();
@@ -70,15 +86,15 @@ uint8_t if_op_aroundHome();
 
 void statusChange();
 void ready_func();
+void updInfo_func();
 void init_func();
 void dead_func();
+void purchase_func();
 void Pmove_func();
-void Ppurchase_func();
 void Pdestroy_func();
 void Nmove_func();
 void Ndestroy_func();
 void recover_func();
-void homeProtect();
 void upgrade_func();
 
 #endif
