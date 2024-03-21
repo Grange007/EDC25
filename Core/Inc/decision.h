@@ -76,7 +76,7 @@ Position_edc25 grid2Pos(Grid grid);
 
 Grid nearestBlock(uint8_t type);
 
-int getAccumulatedNumberOfOre(Grid OrePos);
+uint16_t getAccumulatedNumberOfOre(Grid OrePos);
 void getPositionOfAllOre();
 Grid findMostValuableBlock(Grid source);
 
