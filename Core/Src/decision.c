@@ -42,9 +42,11 @@ uint8_t maxHealth = 20;
 uint8_t wool;
 uint8_t emerald;
 uint32_t time;
+uint8_t cd=170;
 
 int8_t team;
 int32_t lastTime = -16;
+int32_t lastAttack = -160;
 Status lastStatus=init;
 
 Grid nowGrid;
@@ -285,6 +287,7 @@ void destroy_func(){
 		return;
 	}
 	attack_id(grid2No(opHomeGrid));
+	lastAttack=time;
 	HAL_Delay(300);
 }
 void attack_func(){
@@ -295,6 +298,7 @@ void attack_func(){
 		return;
 	}
 	attack_id(grid2No(opGrid));
+	lastAttack=time;
 	HAL_Delay(300);
 }
 void mine_func(){
@@ -355,6 +359,9 @@ float calculate_weight_destroy(){
 	if(needWool>wool){
 		return 0;
 	}
+	if(time-lastAttack+20<cd){
+		return 0;
+	}
 	float weight=1;
 	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y&&getHeightOfId(grid2No(opHomeGrid))<2){
 		weight=2.5;
@@ -372,6 +379,9 @@ float calculate_weight_destroy(){
 float calculate_weight_attack(){
 	bellmanford(nowGrid,opGrid,&needWool);
 	if(needWool>wool){
+		return 0;
+	}
+	if(time-lastAttack+20<cd){
 		return 0;
 	}
 	float weight=1;
@@ -470,10 +480,11 @@ void place_and_move()
 	goal = grid2Pos(goalGrid);
 }
 Mine find_optimal_mine(){
-	int32_t best_score=-50;
+	float best_score=-50;
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
-		mineList[i].score=mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid);
+		int8_t dst=mhtDst(nowGrid,mineList[i].grid);
+		mineList[i].score=mineList[i].store*16/(16+dst+needWool);
 		if(mineList[i].score>best_score){
 			best_score=mineList[i].score;
 			best_mine=i;

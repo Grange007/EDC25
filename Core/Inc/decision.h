@@ -18,8 +18,8 @@ typedef struct{
 typedef struct{
     Grid grid;
     uint8_t type;
+    float score;
     uint32_t store;
-    uint32_t score;
     uint32_t last_visit_tick;
 } Mine;
 typedef enum
@@ -45,6 +45,7 @@ extern uint8_t maxHealth;
 extern uint8_t wool;
 extern uint8_t emerald;
 extern uint32_t time;
+extern uint8_t cd;
 
 extern Grid nowGrid;
 extern Grid goalGrid;
@@ -55,6 +56,7 @@ extern Grid opHomeGrid;
 
 extern int32_t lastTime;
 extern Status lastStatus;
+extern int32_t lastAttack;
 
 extern Mine mineList[MAX_MINE];
 extern uint8_t mineNum;

@@ -160,6 +160,7 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
+    cd=agility<32?170-5*agility:10;
 
     
     
