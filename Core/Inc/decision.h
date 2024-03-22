@@ -19,6 +19,7 @@ typedef struct{
     Grid grid;
     uint8_t type;
     uint32_t store;
+    uint32_t score;
     uint32_t last_visit_tick;
 } Mine;
 typedef enum

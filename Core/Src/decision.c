@@ -394,6 +394,9 @@ float calculate_weight_mine(){
 		return 0;
 	}
 	float weight=1;
+	if(find_optimal_mine().score>32){
+		weight=2;
+	}
 	if(lastStatus==mine){
 		if(time-lastTime>=600){
 			weight=weight-1<0?0:weight-1;
@@ -470,8 +473,9 @@ Mine find_optimal_mine(){
 	int32_t best_score=-50;
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
-		if(mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid)>best_score){
-			best_score=mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid);
+		mineList[i].score=mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid);
+		if(mineList[i].score>best_score){
+			best_score=mineList[i].score;
 			best_mine=i;
 		}
 	}
