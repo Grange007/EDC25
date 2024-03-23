@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-Position_edc25 tmp;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,10 +151,10 @@ int main(void)
 
         /* USER CODE BEGIN 3 */
         HAL_Delay(200);
-        getPosition(&now);
-        nowGrid = pos2Grid(now);
-        getPositionOpponent(&op);
-        opGrid = pos2Grid(op);
+//        getPosition(&now);
+//        nowGrid = pos2Grid(now);
+//        getPositionOpponent(&op);
+//        opGrid = pos2Grid(op);
 
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
@@ -266,7 +266,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM6)
   {
-    //      u1_printf("motor\n");
     Mecanum_Pos(now, goal);
     Update_Pwm();
   }

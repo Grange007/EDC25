@@ -50,7 +50,7 @@ Grid blueHomeGrid = {7, 7};
 Grid nearestDiamond;  // 最近钻石矿
 Grid mostValuableOre; // 最有价值的矿物
 
-Position_edc25 now = {0, 0};
+Position_edc25 now = {0.5f, 0.5f};
 Position_edc25 goal = {0, 0};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
@@ -77,7 +77,7 @@ uint16_t accmulatedOre[8][8] =
          {0, 0, 0, 0, 0, 0, 0, 0}};
 OreInfo ore[64];
 int oreNum = 0;
-int oreUpdCnt = 0;
+int oreUpdCnt = 1;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -522,7 +522,6 @@ void updInfo_func()
 }
 void init_func()
 {
-    InitAngle();
     if (health == 0)
         status = dead;
     else
