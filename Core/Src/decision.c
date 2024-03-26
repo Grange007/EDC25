@@ -78,7 +78,6 @@ uint16_t accmulatedOre[8][8] =
 OreInfo ore[64];
 int oreNum = 0;
 int oreUpdCnt = 1;
-uint8_t updMap = 0;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -484,19 +483,8 @@ void ready_func()
     goalGrid = homeGrid;
 
     // upd map
-    if (!updMap)
-    {
-        getPositionOfAllOre();
-        updMap = 1;
-    }
-    //    for (uint8_t i = 0; i < 8; i++)
-    //    {
-    //        for (uint8_t j = 0; j < 8; j++)
-    //        {
-    //            u1_printf("%d ", gameMap[i * 8 + j]);
-    //        }
-    //        u1_printf("\n");
-    //    }
+    oreNum = 0;
+    getPositionOfAllOre();
 }
 void updInfo_func()
 {

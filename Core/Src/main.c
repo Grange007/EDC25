@@ -119,7 +119,7 @@ int main(void)
     // jy62
     jy62_Init(&huart3);
     // zigbee
-//    zigbee_Init(&huart4);
+    zigbee_Init(&huart4);
     // PID
     PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
     PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
@@ -149,10 +149,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
         HAL_Delay(200);
-//        getPosition(&now);
-//        nowGrid = pos2Grid(now);
-//        getPositionOpponent(&op);
-//        opGrid = pos2Grid(op);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
 
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
