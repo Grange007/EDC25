@@ -51,7 +51,7 @@ Grid nearestDiamond;  // 最近钻石矿
 Grid mostValuableOre; // 最有价值的矿物
 
 Position_edc25 now = {0.5f, 0.5f};
-Position_edc25 goal = {0, 0};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
@@ -418,7 +418,7 @@ void statusChange()
         {
             bellmanford(nowGrid, opGrid, &needWool);
             if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-                status=Protecthome;
+                status= protect;
             else
             {
                 desGrid = homeGrid;
@@ -483,15 +483,8 @@ void ready_func()
     goalGrid = homeGrid;
 
     // upd map
+    oreNum = 0;
     getPositionOfAllOre();
-    //    for (uint8_t i = 0; i < 8; i++)
-    //    {
-    //        for (uint8_t j = 0; j < 8; j++)
-    //        {
-    //            u1_printf("%d ", gameMap[i * 8 + j]);
-    //        }
-    //        u1_printf("\n");
-    //    }
 }
 void updInfo_func()
 {
