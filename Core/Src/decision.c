@@ -50,8 +50,8 @@ Grid blueHomeGrid = {7, 7};
 Grid nearestDiamond;  // 最近钻石矿
 Grid mostValuableOre; // 最有价值的矿物
 
-Position_edc25 now = {0, 0};
-Position_edc25 goal = {0, 0};
+Position_edc25 now = {0.5f, 0.5f};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
@@ -77,7 +77,8 @@ uint16_t accmulatedOre[8][8] =
          {0, 0, 0, 0, 0, 0, 0, 0}};
 OreInfo ore[64];
 int oreNum = 0;
-int oreUpdCnt = 0;
+int oreUpdCnt = 1;
+uint8_t updMap = 0;
 
 uint8_t mhtDst(Grid from, Grid to)
 {
@@ -475,7 +476,11 @@ void ready_func()
     goalGrid = homeGrid;
 
     // upd map
-    getPositionOfAllOre();
+    if (!updMap)
+    {
+        getPositionOfAllOre();
+        updMap = 1;
+    }
     //    for (uint8_t i = 0; i < 8; i++)
     //    {
     //        for (uint8_t j = 0; j < 8; j++)

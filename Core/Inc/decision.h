@@ -67,6 +67,7 @@ extern uint16_t accmulatedOre[8][8];
 extern OreInfo ore[64];
 extern int oreNum;
 extern int oreUpdCnt;
+extern uint8_t updMap;
 
 uint8_t mhtDst(Grid from, Grid to);
 uint8_t grid2No(Grid grid);

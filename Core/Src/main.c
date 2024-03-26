@@ -51,7 +51,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-Position_edc25 tmp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
