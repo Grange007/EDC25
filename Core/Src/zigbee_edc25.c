@@ -1,3 +1,4 @@
+#include "jy62.h"
 #include "zigbee_edc25.h"
 
 #include "main.h"
@@ -60,6 +61,10 @@ void zigbee_Init(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
+    if (huart == jy62_huart)
+    {
+        jy62MessageRecord();
+    }
     if (huart == zigbee_huart)
     {
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
