@@ -229,14 +229,18 @@ Grid bellmanford(Grid source, Grid target, int *needBlock) // 找到从source到
                     // printf("(%d, %d); (%d, %d)\n", i, j, x, y);
                     if (x < 0 || x >= 8 || y < 0 || y >= 8)
                         continue;
-                    int edge_w = 2;
+                    int edge_w = 3;
                     if (getHeightOfId(grid2No((Grid){x, y})) == 0)
                     {
-                        edge_w = 2;
+                        edge_w = 4;
+                    }
+                    else if (getOreKindOfId(grid2No((Grid){x, y})) == iron || getOreKindOfId(grid2No((Grid){x, y})) == gold || getOreKindOfId(grid2No((Grid){x, y})) == diamond)
+                    {
+                        edge_w = 1;
                     }
                     else
                     {
-                        edge_w = 1;
+                        edge_w = 3;
                     }
                     if (dis[x][y] > dis[i][j] + edge_w)
                     {
@@ -300,14 +304,18 @@ int bellmanford_distance(Grid source, Grid target, int *needBlock)
                     // printf("(%d, %d); (%d, %d)\n", i, j, x, y);
                     if (x < 0 || x >= 8 || y < 0 || y >= 8)
                         continue;
-                    int edge_w = 2;
+                    int edge_w = 3;
                     if (getHeightOfId(grid2No((Grid){x, y})) == 0)
                     {
-                        edge_w = 2;
+                        edge_w = 4;
+                    }
+                    else if (getOreKindOfId(grid2No((Grid){x, y})) == iron || getOreKindOfId(grid2No((Grid){x, y})) == gold || getOreKindOfId(grid2No((Grid){x, y})) == diamond)
+                    {
+                        edge_w = 1;
                     }
                     else
                     {
-                        edge_w = 1;
+                        edge_w = 3;
                     }
                     if (dis[x][y] > dis[i][j] + edge_w)
                     {
@@ -407,17 +415,17 @@ void statusChange()
                 }
             }
         }
-        //        else if (if_op_aroundHome() == 1)//敌人在家附近去保护家
-        //        {
-        //            bellmanford(nowGrid, opGrid, &needWool);
-        //            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
-        //                status=Protecthome;
-        //            else
-        //            {
-        //                desGrid = homeGrid;
-        //                status = Pmove;
-        //            }
-        //        }
+        else if (getHeightOfId(grid2No(homeGrid)) < 4)//家的高度小于4就去保家
+        {
+            bellmanford(nowGrid, opGrid, &needWool);
+            if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+                status= protect;
+            else
+            {
+                desGrid = homeGrid;
+                status = Pmove;
+            }
+        }
         else if (emerald >= 70 - wool)
         {
             if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
@@ -527,7 +535,6 @@ void updInfo_func()
 }
 void init_func()
 {
-    InitAngle();
     if (health == 0)
         status = dead;
     else

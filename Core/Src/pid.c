@@ -19,6 +19,7 @@ void PID_Init(PidStr* a, float kp, float ki, float kd, float max)
 	a->kp = kp;
 	a->ki = ki;
 	a->kd = kd;
+//	a->max = max;
 }
 
 float PID_Cal(PidStr* a, float cur, float goal)
