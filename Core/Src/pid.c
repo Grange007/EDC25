@@ -19,7 +19,7 @@ void PID_Init(PidStr* a, float kp, float ki, float kd, float max)
 	a->kp = kp;
 	a->ki = ki;
 	a->kd = kd;
-//	a->max = max;
+	a->max = max;
 }
 
 float PID_Cal(PidStr* a, float cur, float goal)
@@ -27,10 +27,10 @@ float PID_Cal(PidStr* a, float cur, float goal)
 	a->err = goal - cur;
 	a->iErr += a->err;
 
-	if (a->iErr > a->max)
-		a->iErr = a->max;
-	if (a->iErr < -a->max)
-		a->iErr = -a->max;
+//	if (a->iErr > a->max)
+//		a->iErr = a->max;
+//	if (a->iErr < -a->max)
+//		a->iErr = -a->max;
 
 	float pwm = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
 	a->lErr = a->err;

@@ -9,8 +9,8 @@
 #define INC_MOVE_H_
 #endif /* INC_MOVE_H_ */
 
-#define MAX_PWM 800
-#define MIN_PWM -800
+#define MAX_PWM 1000
+#define MIN_PWM -1000
 
 typedef struct
 {
