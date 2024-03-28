@@ -161,7 +161,7 @@ void Update_Pwm()
 	}
 	Move(4, RRPwm);
 
-//    u1_printf("%f, %f\n", FLNow, goal_speed[0]);
+//    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
 //    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);
 //    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
 //    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
