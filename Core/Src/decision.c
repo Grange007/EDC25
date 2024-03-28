@@ -132,6 +132,7 @@ uint16_t getAccumulatedNumberOfOre(Grid OrePos)
 
 void getPositionOfAllOre()
 {
+    oreNum = 0;
     for (uint8_t i = 0; i < 64; i++)
         gameMap[i] = getOreKindOfId(i);
 
@@ -483,7 +484,6 @@ void ready_func()
     goalGrid = homeGrid;
 
     // upd map
-    oreNum = 0;
     getPositionOfAllOre();
 }
 void updInfo_func()

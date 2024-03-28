@@ -11,13 +11,13 @@
 
 #include "zigbee_edc25.h"
 
+//#define LX 1.73f
+//#define LY 1.81f
+//#define R 0.3f
+
+#define MAX_VELOCITY 4.0
+#define MIN_VELOCITY 1.0
 #define UNKNOWN 10.8
-
-#define MAX_VELOCITY 60
-
-#define LX 1.73
-#define LY 1.81
-#define R 0.3
 
 extern float goal_speed[4];
 
