@@ -233,7 +233,7 @@ void ready_func()
 	}
 	goal = home;
 	goalGrid = homeGrid;
-
+	mineNum=0;
 	for (int i = 0; i < 64; i++){
 		gameMap[i]=getOreKindOfId(i);
 		if(getOreKindOfId(i)!=3&&mineNum<MAX_MINE){
@@ -374,7 +374,7 @@ float calculate_weight_destroy(){
 			weight=0;
 		}
 	}
-	return weight;
+	return 0;	// on simulator only
 }
 float calculate_weight_attack(){
 	bellmanford(nowGrid,opGrid,&needWool);
@@ -400,10 +400,12 @@ float calculate_weight_attack(){
 }
 float calculate_weight_mine(){
 	bellmanford(nowGrid,find_optimal_mine().grid,&needWool);
+	u1_printf("optimal: %d, %d",find_optimal_mine().grid.x,find_optimal_mine().grid.y);
+	u1_printf("needwool:%d\n",needWool);
 	if(needWool>wool){
 		return 0;
 	}
-	float weight=1;
+	float weight=1.5;
 	if(find_optimal_mine().score>32){
 		weight=2;
 	}
@@ -426,6 +428,9 @@ float calculate_weight_get_wool(){
 		weight=3;
 	}
 	if(lastStatus==get_wool){
+		if(wool<24&&emerald>16){
+			weight=3;
+		}
 		if(time-lastTime>=300){
 			weight=weight-1<0?0:weight-1;
 		}
@@ -440,8 +445,8 @@ float calculate_weight_get_enhanced(){
 	if(emerald<64){
 		weight=0;
 	}
-	else if(emerald>128){
-		weight=2;
+	else if(emerald>96){
+		weight=3;
 	}
 	if(lastStatus==get_enhanced){
 		if(time-lastTime>=300){
