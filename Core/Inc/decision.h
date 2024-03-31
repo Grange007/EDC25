@@ -18,7 +18,7 @@ typedef struct
 {
     Grid pos;
     uint8_t type;
-}  OreInfo;
+} OreInfo;
 
 typedef enum
 {

@@ -103,6 +103,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_UART4_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
     // Output PWM
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
@@ -121,45 +122,64 @@ int main(void)
     // zigbee
     zigbee_Init(&huart4);
     // PID
-    PID_Init(&FLP_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&FRP_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&RLP_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&RRP_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&FLN_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&FRN_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&RLN_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
-    PID_Init(&RRN_Pid, 500.0f, 0.3f, 0.0f, 4000.0f);
+    PID_Init(&FLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
 
-    PID_Init(&xPid, 0.5f, 0.0001f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 0.5f, 0.0001f, 0.0f, 5000.0f);
-    PID_Init(&anglePid, 0.01f, 0.0003f, 0.05f, 50.0f);
+    PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&anglePid, 0.02f, 0.0001f, 0.0f, 50.0f);
 
     u1_printf("Hello\n");
 
     HAL_Delay(1000);
+
+    FLP_Pid.iErr = 0;
+    FRP_Pid.iErr = 0;
+    RLP_Pid.iErr = 0;
+    RRP_Pid.iErr = 0;
+    FLN_Pid.iErr = 0;
+    FRN_Pid.iErr = 0;
+    RLN_Pid.iErr = 0;
+    RRN_Pid.iErr = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+//    int cnt = 0;
 
     while (1)
     {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-        HAL_Delay(200);
+        HAL_Delay(400);
 
         getPosition(&now);
         nowGrid = pos2Grid(now);
         getPositionOpponent(&op);
         opGrid = pos2Grid(op);
 
+//        cnt++;
+//        if (cnt > 5)
+//        {
+//            goal.posx = 1 - goal.posx;
+//            cnt = 0;
+//        }
+
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
 //        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
         u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //        u1_printf("op:(%f, %f)\n", op.posx, op.posy);
-//        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
+        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
@@ -266,7 +286,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
-    Update_Pwm();
+//    Update_Dual_Pwm();
+    Update_Single_Pwm();
   }
 }
 /* USER CODE END 4 */

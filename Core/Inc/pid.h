@@ -11,6 +11,10 @@
 
 #define MAX_PWM 1000
 #define MIN_PWM -1000
+#define MAX_VELOCITY 4
+#define MIN_VELOCITY -4
+#define MAX_OMEGA 2
+#define MIN_OMEGA -2
 
 typedef struct
 {
@@ -26,3 +30,5 @@ extern PidStr anglePid;
 
 void PID_Init(PidStr* a, float kp, float ki, float kd, float max);
 float PID_Cal(PidStr* a, float cur, float goal);
+float Pos_Cal(PidStr* a, float cur, float goal);
+float Angle_Cal(PidStr* a, float cur, float goal);
