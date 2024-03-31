@@ -42,9 +42,12 @@ uint8_t maxHealth = 20;
 uint8_t wool;
 uint8_t emerald;
 uint32_t time;
+uint8_t cd=170;
 
 int8_t team;
-int8_t lastTime = -16;
+int32_t lastTime = -16;
+int32_t lastAttack = -160;
+Status lastStatus=init;
 
 Grid nowGrid;
 Grid goalGrid;
@@ -57,7 +60,7 @@ Grid blueHomeGrid = {7, 7};
 Grid nearestDiamond;
 
 Mine mineList[MAX_MINE];
-uint8_t mineNum=0;
+uint8_t mineNum = 0;
 
 Position_edc25 now = {0.5f, 0.5f};
 Position_edc25 goal = {0.5f, 0.5f};
@@ -192,7 +195,7 @@ void statusChange()
 		status = dead;
 	else
 	{
-
+		lastStatus=status;
 		weight[protect]=calculate_weight_protect();
 		weight[destroy]=calculate_weight_destroy();
 		weight[attack]=calculate_weight_attack();
@@ -200,25 +203,9 @@ void statusChange()
 		weight[get_wool]=calculate_weight_get_wool();
 		weight[get_enhanced]=calculate_weight_get_enhanced();
 		Status best=best_status(protect,get_enhanced);
-		switch(best){
-			case protect:
-			protect_func();
-			break;
-			case destroy:
-			destroy_func();
-			break;
-			case attack:
-			attack_func();
-			break;
-			case mine:
-			mine_func();
-			break;
-			case get_wool:
-			get_wool_func();
-			break;
-			case get_enhanced:
-			get_enhanced_func();
-			break;
+		status = best;
+		if(status!=lastStatus){
+			lastTime=time;
 		}
 	}
 }
@@ -246,11 +233,12 @@ void ready_func()
 	}
 	goal = home;
 	goalGrid = homeGrid;
+
 	for (int i = 0; i < 64; i++){
-		gameMap[i]=getTypeOfId(i);
-		if(getTypeOfId(i)!=3&&mineNum<MAX_MINE){
+		gameMap[i]=getOreKindOfId(i);
+		if(getOreKindOfId(i)!=3&&mineNum<MAX_MINE){
 			mineList[mineNum].grid=no2Grid(i);
-			mineList[mineNum].type=getTypeOfId(i);
+			mineList[mineNum].type=getOreKindOfId(i);
 			mineList[mineNum].last_visit_tick=0;
 			mineNum++;
 		}
@@ -299,6 +287,7 @@ void destroy_func(){
 		return;
 	}
 	attack_id(grid2No(opHomeGrid));
+	lastAttack=time;
 	HAL_Delay(300);
 }
 void attack_func(){
@@ -309,6 +298,7 @@ void attack_func(){
 		return;
 	}
 	attack_id(grid2No(opGrid));
+	lastAttack=time;
 	HAL_Delay(300);
 }
 void mine_func(){
@@ -346,28 +336,85 @@ void get_enhanced_func(){
 }
 
 float calculate_weight_protect(){
+	bellmanford(nowGrid,homeGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
 	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT&&wool>8){
 		weight=5;
 	}
+	if(lastStatus==protect){
+		if(time-lastTime>=600){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=1200){
+			weight=0;
+		}
+	}
 	return weight;
 }
 float calculate_weight_destroy(){
+	bellmanford(nowGrid,opHomeGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
+	if(time-lastAttack+20<cd){
+		return 0;
+	}
 	float weight=1;
 	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y&&getHeightOfId(grid2No(opHomeGrid))<2){
 		weight=2.5;
 	}
+	if(lastStatus==destroy){
+		if(time-lastTime>=600){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=1200){
+			weight=0;
+		}
+	}
 	return weight;
 }
 float calculate_weight_attack(){
+	bellmanford(nowGrid,opGrid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
+	if(time-lastAttack+20<cd){
+		return 0;
+	}
 	float weight=1;
 	if(mhtDst(nowGrid,opGrid)<=3){
 		weight=4;
 	}
-	return weight;
+	if(lastStatus==attack){
+		if(time-lastTime>=600){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=1200){
+			weight=0;
+		}
+	}
+	return 0;		//due to a simulator bug
 }
 float calculate_weight_mine(){
+	bellmanford(nowGrid,find_optimal_mine().grid,&needWool);
+	if(needWool>wool){
+		return 0;
+	}
 	float weight=1;
+	if(find_optimal_mine().score>32){
+		weight=2;
+	}
+	if(lastStatus==mine){
+		if(time-lastTime>=600){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=1200){
+			weight=0;
+		}
+	}
 	return weight;
 }
 float calculate_weight_get_wool(){
@@ -378,6 +425,14 @@ float calculate_weight_get_wool(){
 	else if(wool<16&&emerald>16){
 		weight=3;
 	}
+	if(lastStatus==get_wool){
+		if(time-lastTime>=300){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=600){
+			weight=0;
+		}
+	}
 	return weight;
 }
 float calculate_weight_get_enhanced(){
@@ -387,6 +442,14 @@ float calculate_weight_get_enhanced(){
 	}
 	else if(emerald>128){
 		weight=2;
+	}
+	if(lastStatus==get_enhanced){
+		if(time-lastTime>=300){
+			weight=weight-1<0?0:weight-1;
+		}
+		if(time-lastTime>=600){
+			weight=0;
+		}
 	}
 	return weight;
 }
@@ -417,11 +480,13 @@ void place_and_move()
 	goal = grid2Pos(goalGrid);
 }
 Mine find_optimal_mine(){
-	int32_t best_score=-50;
+	float best_score=-50;
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
-		if(mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid)>best_score){
-			best_score=mineList[i].store-5*mhtDst(nowGrid,mineList[i].grid);
+		int8_t dst=mhtDst(nowGrid,mineList[i].grid);
+		mineList[i].score=mineList[i].store*16/(16+dst+needWool);
+		if(mineList[i].score>best_score){
+			best_score=mineList[i].score;
 			best_mine=i;
 		}
 	}

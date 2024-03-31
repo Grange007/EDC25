@@ -30,7 +30,6 @@
 #include "pid.h"
 #include "zigbee_edc25.h"
 #include "decision.h"
-#include "visual.h"
 #include <math.h>
 /* USER CODE END Includes */
 
@@ -137,8 +136,6 @@ int main(void)
 	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
 
 	u1_printf("Hello\n");
-//	decode_init(gameMap);
-//	visual_receive();
 	HAL_Delay(1000);
   /* USER CODE END 2 */
 
@@ -158,30 +155,32 @@ int main(void)
 
 		agility = getAgility();
 		health = getHealth();
-    strength=getStrength();
+		strength=getStrength();
 		maxHealth = getMaxHealth();
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
+    cd=agility<32?170-5*agility:10;
 
     
     
 //		u1_printf("yaw:%f\n",GetYaw());
-		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
+
+//		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
-		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
+//		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
 		u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
-//		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
-//		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
+		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
 
 		if (getGameStage() == READY)
 			ready_func();
 		else if (getGameStage() != FINISHED)
 		{
-      update_mine();
-      statusChange();
+            update_mine();
+            statusChange();
 			switch (status)
 			{
 				case init:
