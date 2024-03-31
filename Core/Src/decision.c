@@ -51,7 +51,7 @@ Grid nearestDiamond;  // 最近钻石矿
 Grid mostValuableOre; // 最有价值的矿物
 
 Position_edc25 now = {0.5f, 0.5f};
-Position_edc25 goal = {3.0f, 0.5f};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
@@ -190,12 +190,13 @@ Grid findMostValuableBlock(Grid source)
         totalValue =
                 (distance) == 0 ?
                 (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / 0.5) - 5 * needBlock :
-                (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / (distance)) - 5 * needBlock;
+                (float)(money * 10 * getAccumulatedNumberOfOre(ore[i].pos) / (distance) / (distance)            ) - 5 * needBlock;
         if (totalValue > maxnValue)
         {
             maxnValue = totalValue;
             maxnIndex = i;
         }
+
     }
     return ore[maxnIndex].pos;
 }
@@ -234,7 +235,7 @@ Grid bellmanford(Grid source, Grid target, int *needBlock) // 找到从source到
                     {
                         edge_w = 4;
                     }
-                    else if (getOreKindOfId(grid2No((Grid){x, y})) == iron || getOreKindOfId(grid2No((Grid){x, y})) == gold || getOreKindOfId(grid2No((Grid){x, y})) == diamond)
+                    if (getOreKindOfId(grid2No((Grid){x, y})) == iron || getOreKindOfId(grid2No((Grid){x, y})) == gold || getOreKindOfId(grid2No((Grid){x, y})) == diamond)
                     {
                         edge_w = 1;
                     }
@@ -362,7 +363,7 @@ void statusChange()
         {
             if (health < 20) // 检查状态怎样，补充生命和羊毛
             {
-                bellmanford(nowGrid, opGrid, &needWool);
+
                 if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
                     status = recover;
                 else
@@ -371,9 +372,9 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if (wool < 16)
+            else if (wool < 8)
             {
-                bellmanford(nowGrid, opGrid, &needWool);
+
                 if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
                 {
                     status = purchase;
@@ -384,7 +385,7 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if (health >= 20 && wool >= 16) // 状态完备，再去攻击
+            else if (health >= 20 && wool >= 8) // 状态完备，再去攻击
             {
                 if (getHeightOfId(grid2No(opHomeGrid)) > 0) // 有家先干家
                 {
@@ -417,9 +418,25 @@ void statusChange()
         }
         else if (getHeightOfId(grid2No(homeGrid)) < 4)//家的高度小于4就去保家
         {
-            bellmanford(nowGrid, opGrid, &needWool);
+            bellmanford(nowGrid, homeGrid, &needWool);
             if(nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
                 status= protect;
+            else
+            {
+                desGrid = homeGrid;
+                status = Pmove;
+            }
+        }
+        else if (status == purchase && wool < 16 && emerald >= 2)
+        {
+                status = purchase;
+        }
+        else if (wool < 8 && emerald >= 16)
+        {
+            if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
+            {
+                status = purchase;
+            }
             else
             {
                 desGrid = homeGrid;
@@ -430,10 +447,7 @@ void statusChange()
         {
             if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
             {
-                if (wool < 32)
-                    status = purchase;
-                else
-                    status = upgrade;
+                status = upgrade;
             }
             else
             {
@@ -443,9 +457,11 @@ void statusChange()
         }
         else // 没钱就去采矿
         {
+            u1_printf("mine\n");
             // nearestDiamond = nearestBlock(diamond);
             // bellmanford(nowGrid, nearestDiamond, &needWool);
             mostValuableOre = findMostValuableBlock(nowGrid);
+            u1_printf("ore grid:%d %d\n", mostValuableOre.x, mostValuableOre.y);
             bellmanford(nowGrid, mostValuableOre, &needWool);
             if (wool > needWool)
             {
@@ -500,6 +516,7 @@ void updInfo_func()
     if (time > 200 * oreUpdCnt)
     {
         oreUpdCnt++;
+//        u1_printf("upd:");
         for (uint8_t i = 0; i < oreNum; i++)
         {
             switch (ore[i].type)
@@ -516,6 +533,7 @@ void updInfo_func()
                 default:
                     break;
             }
+//            u1_printf("%d ", accmulatedOre[ore[i].pos.x][ore[i].pos.y]);
         }
     }
     accmulatedOre[nowGrid.x][nowGrid.y] = 0;
@@ -536,22 +554,16 @@ void dead_func()
 }
 void protect_func()
 {
-    while (getHeightOfId(grid2No(homeGrid)) < 4 && wool > 0)
+    if (getHeightOfId(grid2No(homeGrid)) < 4 && wool > 0)
     {
         place_block_id(grid2No(homeGrid));
         HAL_Delay(300);
     }
-    while (wool < 8 && emerald > 2)
-    {
-        trade_id(3);
-        HAL_Delay(300);
-    }
-    desGrid = opGrid;
-    status = Nmove;
+    statusChange();
 }
 void purchase_func()
 {
-    if (wool < 32 && emerald > 2)
+    if (wool < 16&& emerald > 2)
     {
         trade_id(3);
         HAL_Delay(300);

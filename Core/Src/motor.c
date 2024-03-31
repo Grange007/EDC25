@@ -30,7 +30,7 @@ void Move(uint8_t id, float pwm)
 			HAL_GPIO_WritePin(F_in3_GPIO_Port, F_in3_Pin, 1);
 			HAL_GPIO_WritePin(F_in4_GPIO_Port, F_in4_Pin, 0);
 		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, fabs(pwm));
+		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, abs((int)pwm));
 	}
 	else if (id == 2)
 	{
@@ -44,7 +44,7 @@ void Move(uint8_t id, float pwm)
 			HAL_GPIO_WritePin(F_in1_GPIO_Port, F_in1_Pin, 1);
 			HAL_GPIO_WritePin(F_in2_GPIO_Port, F_in2_Pin, 0);
 		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, fabs(pwm));
+		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, abs((int)pwm));
 	}
 	else if (id == 3)
 	{
@@ -58,7 +58,7 @@ void Move(uint8_t id, float pwm)
 			HAL_GPIO_WritePin(R_in3_GPIO_Port, R_in3_Pin, 1);
 			HAL_GPIO_WritePin(R_in4_GPIO_Port, R_in4_Pin, 0);
 		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, fabs(pwm));
+		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, abs((int)pwm));
 	}
 	else if (id == 4)
 	{
@@ -72,7 +72,7 @@ void Move(uint8_t id, float pwm)
 			HAL_GPIO_WritePin(R_in1_GPIO_Port, R_in1_Pin, 1);
 			HAL_GPIO_WritePin(R_in2_GPIO_Port, R_in2_Pin, 0);
 		}
-		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_4, fabs(pwm));
+		__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_4, abs((int)pwm));
 	}
 }
 
@@ -222,6 +222,10 @@ void Update_Single_Pwm()
 //    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
 //    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
 
+//   u1_printf("FLpwm:%d\n", (int)FLPwm);
+//   u1_printf("FRpwm:%d\n", (int)FRPwm);
+//   u1_printf("RLpwm:%d\n", (int)RLPwm);
+//   u1_printf("RRpwm:%d\n", (int)RRPwm);
 }
 
 void Mecanum_Speed(float vx, float vy, float w)
@@ -250,12 +254,12 @@ void Mecanum_Speed(float vx, float vy, float w)
         max = fabs(RL);
     if (fabs(RR) > max)
         max = fabs(RR);
-    if (max > 0 && max > MAX_VELOCITY)
+    if (max > MAX_SPEED)
     {
-        FL = FL / max * MAX_VELOCITY;
-        FR = FR / max * MAX_VELOCITY;
-        RL = RL / max * MAX_VELOCITY;
-        RR = RR / max * MAX_VELOCITY;
+        FL = FL / max * MAX_SPEED;
+        FR = FR / max * MAX_SPEED;
+        RL = RL / max * MAX_SPEED;
+        RR = RR / max * MAX_SPEED;
     }
 
     // 更新电机速度
@@ -274,9 +278,9 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 		yaw = yaw - 0;
 //	u1_printf("%f, 0\n", yaw);
 
-	float vx = PID_Cal(&xPid, now.posx, goal.posx);
-	float vy = PID_Cal(&yPid, now.posy, goal.posy);
-	float w = PID_Cal(&anglePid, yaw, 0);
+	float vx = Pos_Cal(&xPid, now.posx, goal.posx);
+	float vy = Pos_Cal(&yPid, now.posy, goal.posy);
+	float w = Angle_Cal(&anglePid, yaw, 0);
 
 //    float vx = 0.4f;
 //    float vy = 0.0f;
