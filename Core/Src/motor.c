@@ -76,7 +76,7 @@ void Move(uint8_t id, float pwm)
 	}
 }
 
-void Update_Pwm()
+void Update_Dual_Pwm()
 {
 
 //    float UNKNOWN = 10.8f;
@@ -91,12 +91,12 @@ void Update_Pwm()
 	float FLPwm;
 	if (goal_speed[0] >= 0)
 	{
-	    FLN_Pid.iErr = 0;
+//	    FLN_Pid.iErr = 0;
 	    FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
 	}
 	else
 	{
-	    FLP_Pid.iErr = 0;
+//	    FLP_Pid.iErr = 0;
 	    FLPwm = PID_Cal(&FLN_Pid, FLNow, goal_speed[0]);
 	}
 	Move(1, FLPwm);
@@ -111,12 +111,12 @@ void Update_Pwm()
 	float FRPwm;
 	if (goal_speed[1] >= 0)
 	{
-	    FRN_Pid.iErr = 0;
+//	    FRN_Pid.iErr = 0;
 	    FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
 	}
 	else
 	{
-	    FRP_Pid.iErr = 0;
+//	    FRP_Pid.iErr = 0;
 	    FRPwm = PID_Cal(&FRN_Pid, FRNow, goal_speed[1]);
 	}
 	Move(2, FRPwm);
@@ -131,12 +131,12 @@ void Update_Pwm()
 	float RLPwm;
 	if (goal_speed[2] >= 0)
 	{
-	    RLN_Pid.iErr = 0;
+//	    RLN_Pid.iErr = 0;
 	    RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
 	}
 	else
 	{
-	    RLP_Pid.iErr = 0;
+//	    RLP_Pid.iErr = 0;
 	    RLPwm = PID_Cal(&RLN_Pid, RLNow, goal_speed[2]);
 	}
 	Move(3, RLPwm);
@@ -151,15 +151,71 @@ void Update_Pwm()
 	float RRPwm;
 	if (goal_speed[3] >= 0)
 	{
-	    RRN_Pid.iErr = 0;
+//	    RRN_Pid.iErr = 0;
 	    RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
 	}
 	else
 	{
-	    RRP_Pid.iErr = 0;
+//	    RRP_Pid.iErr = 0;
 	    RRPwm = PID_Cal(&RRN_Pid, RRNow, goal_speed[3]);
 	}
 	Move(4, RRPwm);
+
+//    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
+//    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);
+//    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
+//    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
+
+}
+
+void Update_Single_Pwm()
+{
+
+//    float UNKNOWN = 10.8f;
+
+    int FLCnt = __HAL_TIM_GET_COUNTER(&htim2);
+    __HAL_TIM_SetCounter(&htim2, 0);
+    if (FLCnt > 32767)
+        FLCnt = 65535 - FLCnt;
+    else
+        FLCnt = 0 - FLCnt;
+    float FLNow = 1.0 * FLCnt / UNKNOWN;
+    float FLPwm;
+    FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
+    Move(1, FLPwm);
+
+    int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
+    __HAL_TIM_SetCounter(&htim3, 0);
+    if (FRCnt > 32767)
+        FRCnt = FRCnt - 65535;
+    else
+        FRCnt = FRCnt - 0;
+    float FRNow = 1.0 * FRCnt / UNKNOWN;
+    float FRPwm;
+    FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
+    Move(2, FRPwm);
+
+    int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
+    __HAL_TIM_SetCounter(&htim4, 0);
+    if (RLCnt > 32767)
+        RLCnt = 65535 - RLCnt;
+    else
+        RLCnt = 0 - RLCnt;
+    float RLNow = 1.0 * RLCnt / UNKNOWN;
+    float RLPwm;
+	RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
+    Move(3, RLPwm);
+
+    int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
+    __HAL_TIM_SetCounter(&htim5, 0);
+    if (RRCnt > 32767)
+        RRCnt = RRCnt - 65535;
+    else
+        RRCnt = RRCnt - 0;
+    float RRNow = 1.0 * RRCnt / UNKNOWN;
+    float RRPwm;
+	RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
+    Move(4, RRPwm);
 
 //    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
 //    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);

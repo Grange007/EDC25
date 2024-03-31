@@ -51,7 +51,7 @@ Grid nearestDiamond;  // 最近钻石矿
 Grid mostValuableOre; // 最有价值的矿物
 
 Position_edc25 now = {0.5f, 0.5f};
-Position_edc25 goal = {0.5f, 0.5f};
+Position_edc25 goal = {3.0f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};

@@ -22,6 +22,7 @@
 extern float goal_speed[4];
 
 void Move(uint8_t id, float pwm);
-void Update_Pwm();
+void Update_Dual_Pwm();
+void Update_Single_Pwm();
 void Mecanum_Speed(float vx, float vy, float w);
 void Mecanum_Pos(Position_edc25 now, Position_edc25 goal);
