@@ -150,7 +150,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_Delay(100);
+		HAL_Delay(300);
 		getPosition(&now);
 		nowGrid = pos2Grid(now);
 		getPositionOpponent(&op);
@@ -168,9 +168,9 @@ int main(void)
     
 //		u1_printf("yaw:%f\n",GetYaw());
 		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
-		u1_printf("now:(%f,%f)\n", now.posx, now.posy);
+		u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
 		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
-		u1_printf("goal:(%f,%f)\n", goal.posx, goal.posy);
+		u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
