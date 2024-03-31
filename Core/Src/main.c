@@ -151,10 +151,10 @@ int main(void)
     /* USER CODE BEGIN 3 */
         HAL_Delay(200);
 
-//        getPosition(&now);
-//        nowGrid = pos2Grid(now);
-//        getPositionOpponent(&op);
-//        opGrid = pos2Grid(op);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
 
 //        cnt++;
 //        if (cnt > 5)
@@ -172,60 +172,60 @@ int main(void)
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 
-//        if (getGameStage() == READY)
-//            ready_func();
-//        else if (getGameStage() != FINISHED)
-//        {
-//            updInfo_func();
-//            switch (status)
-//            {
-//                case init:
-//                    u1_printf("init\n");
-//                    init_func();
-//                    break;
-//                case dead:
-//                    u1_printf("dead\n");
-//                    dead_func();
-//                    break;
-//                case protect:
-//                    u1_printf("protect\n");
-//                    protect_func();
-//                    break;
-//                case purchase:
-//                    u1_printf("purchase\n");
-//                    purchase_func();
-//                    break;
-//                case Pmove:
-//                    u1_printf("Pmove\n");
-//                    Pmove_func();
-//                    break;
-//                case Pdestroy:
-//                    u1_printf("Pdestroy\n");
-//                    Pdestroy_func();
-//                    break;
-//                case Nmove:
-//                    u1_printf("Nmove\n");
-//                    Nmove_func();
-//                    break;
-//                case Ndestroy:
-//                    u1_printf("Ndestroy\n");
-//                    Ndestroy_func();
-//                    break;
-//                case recover:
-//                    u1_printf("recover\n");
-//                    recover_func();
-//                    break;
-//                case upgrade:
-//                    u1_printf("upgrade\n");
-//                    upgrade_func();
-//                    break;
-//
-//                default:
-//                    break;
-//            }
-//        }
-//        else
-//            ;
+        if (getGameStage() == READY)
+            ready_func();
+        else if (getGameStage() != FINISHED)
+        {
+            updInfo_func();
+            switch (status)
+            {
+                case init:
+                    u1_printf("init\n");
+                    init_func();
+                    break;
+                case dead:
+                    u1_printf("dead\n");
+                    dead_func();
+                    break;
+                case protect:
+                    u1_printf("protect\n");
+                    protect_func();
+                    break;
+                case purchase:
+                    u1_printf("purchase\n");
+                    purchase_func();
+                    break;
+                case Pmove:
+                    u1_printf("Pmove\n");
+                    Pmove_func();
+                    break;
+                case Pdestroy:
+                    u1_printf("Pdestroy\n");
+                    Pdestroy_func();
+                    break;
+                case Nmove:
+                    u1_printf("Nmove\n");
+                    Nmove_func();
+                    break;
+                case Ndestroy:
+                    u1_printf("Ndestroy\n");
+                    Ndestroy_func();
+                    break;
+                case recover:
+                    u1_printf("recover\n");
+                    recover_func();
+                    break;
+                case upgrade:
+                    u1_printf("upgrade\n");
+                    upgrade_func();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        else
+            ;
     }
   /* USER CODE END 3 */
 }
@@ -275,6 +275,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
+//    Update_Dual_Pwm();
     Update_Single_Pwm();
   }
 }
