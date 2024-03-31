@@ -121,11 +121,16 @@ Grid nearestBlock(uint8_t type)
 		}
 	return nearest;
 }
-Grid bellmanford(Grid source, Grid target, int *needBlock)
+Grid bellmanford(Grid source, Grid target, int *needBlock) // 找到从source到target的花费最少的路，needBlock是花费羊毛数
 {
+    if (source.x == target.x && source.y == target.y)
+    {
+        needBlock = 0;
+        return target;
+    }
     memset(dis, 63, sizeof(dis));
-	memset(pre_pos, 0, sizeof(pre_pos));
-	(*needBlock) = 0;
+    memset(pre_pos, 0, sizeof(pre_pos));
+    (*needBlock) = 0;
     dis[source.x][source.y] = 0;
     int flag; // 判断一轮循环过程中是否发生松弛操作
     for (int i = 0; i < 64; i++)
@@ -145,14 +150,18 @@ Grid bellmanford(Grid source, Grid target, int *needBlock)
                     // printf("(%d, %d); (%d, %d)\n", i, j, x, y);
                     if (x < 0 || x >= 8 || y < 0 || y >= 8)
                         continue;
-                    int edge_w = 2;
+                    int edge_w = 3;
                     if (getHeightOfId(grid2No((Grid){x, y})) == 0)
                     {
-                        edge_w = 2;
+                        edge_w = 4;
+                    }
+                    if (getOreKindOfId(grid2No((Grid){x, y})) == iron || getOreKindOfId(grid2No((Grid){x, y})) == gold || getOreKindOfId(grid2No((Grid){x, y})) == diamond)
+                    {
+                        edge_w = 1;
                     }
                     else
                     {
-                        edge_w = 1;
+                        edge_w = 3;
                     }
                     if (dis[x][y] > dis[i][j] + edge_w)
                     {
@@ -449,6 +458,9 @@ float calculate_weight_get_enhanced(){
 		weight=3;
 	}
 	if(lastStatus==get_enhanced){
+		if(emerald>64&&wool>8){
+			weight=3;
+		}
 		if(time-lastTime>=300){
 			weight=weight-1<0?0:weight-1;
 		}

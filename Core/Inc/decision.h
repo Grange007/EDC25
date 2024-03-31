@@ -4,9 +4,9 @@
 #include "zigbee_edc25.h"
 
 #define	blank 0
-#define	iron 1
-#define gold 2
-#define diamond 3
+#define	iron 0
+#define gold 1
+#define diamond 2
 
 // possible max numbers
 #define MAX_MINE 32
