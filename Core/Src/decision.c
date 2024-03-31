@@ -368,7 +368,7 @@ float calculate_weight_destroy(){
 	if(needWool>wool){
 		return 0;
 	}
-	if(time-lastAttack+20<cd){
+	if(time-lastAttack<cd){
 		return 0;
 	}
 	float weight=1;
@@ -390,7 +390,7 @@ float calculate_weight_attack(){
 	if(needWool>wool){
 		return 0;
 	}
-	if(time-lastAttack+20<cd){
+	if(time-lastAttack<cd){
 		return 0;
 	}
 	float weight=1;
