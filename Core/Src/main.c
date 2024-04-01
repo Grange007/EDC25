@@ -133,7 +133,7 @@ int main(void)
 
     PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 5000.0f);
     PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&anglePid, 0.02f, 0.0001f, 0.0f, 50.0f);
+    PID_Init(&anglePid, 0.02f, 0.00005f, 0.0f, 50.0f);
 
     u1_printf("Hello\n");
 
@@ -162,10 +162,10 @@ int main(void)
     /* USER CODE BEGIN 3 */
         HAL_Delay(400);
 
-//        getPosition(&now);
-//        nowGrid = pos2Grid(now);
-//        getPositionOpponent(&op);
-//        opGrid = pos2Grid(op);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
 
 //        float yaw = GetYaw();
 //        u1_printf("yaw %f\n", yaw);
