@@ -4,7 +4,7 @@
 #include "main.h"
 #include "usart.h"
 
-#define MAX_SINGLE_MSG 95 // 可修正
+#define MAX_SINGLE_MSG 95 // �?�?�?
 #define MAX_MSG_LEN 150
 #define MAX_STATUS_LEN 150
 
@@ -61,14 +61,12 @@ void zigbee_Init(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
-	if (huart == jy62_huart)
-	{
-//		u1_printf("jy62\n");
-		jy62MessageRecord();
-	}
+    if (huart == jy62_huart)
+    {
+        jy62MessageRecord();
+    }
     if (huart == zigbee_huart)
     {
-//    	u1_printf("zigb\n");
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
         uint8_t *rawPtr = &zigbeeRaw[0];
         memcpy(zigbeeMsgPtr, rawPtr, sizeof(uint8_t) * MAX_MSG_LEN / 2);
@@ -81,6 +79,10 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+//    if (huart == jy62_huart)
+//    {
+//        jy62MessageRecord();
+//    }
     if (huart == zigbee_huart)
     {
         uint8_t *zigbeeMsgPtr = &zigbeeMessage[memPtr];
@@ -162,13 +164,34 @@ GameStage_edc25 getGameStage()
 
 void getHeightOfAllChunks(uint8_t *dest)
 {
-    memcpy(dest, gameStatusMessage[5], 64);
+    memcpy(dest, gameStatusMessage+5, 64);
+    for(int i = 0;i<64;i++)
+    {
+        dest[i] = dest[i]&0x0F;
+    }
+}
+void getOreKindOfAllChunks(uint8_t *dest)//0 mean Iron, 1 mean Gold, 2 mean Diamond, 3 mean None
+{
+    memcpy(dest, gameStatusMessage+5, 64);
+    for(int i = 0;i<64;i++)
+    {
+        dest[i] = dest[i]>>4;
+    }
 }
 
 uint8_t getHeightOfId(uint8_t id)
-{
-    return gameStatusMessage[5 + id];
+{  
+    
+    return gameStatusMessage[5 + id]&0x0F;
+      
 }
+uint8_t getOreKindOfId(uint8_t id)//0 mean Iron, 1 mean Gold, 2 mean Diamond, 3 mean None
+{
+    
+    return gameStatusMessage[5 + id]>>4;
+   
+}
+
 
 bool hasBed()
 {
