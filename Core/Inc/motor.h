@@ -11,17 +11,17 @@
 
 #include "zigbee_edc25.h"
 
+//#define LX 1.73f
+//#define LY 1.81f
+
+#define MAX_SPEED 4.5
+#define MIN_SPEED 1.0
 #define UNKNOWN 10.8
-
-#define MAX_VELOCITY 60
-
-#define LX 1.73
-#define LY 1.81
-#define R 0.3
 
 extern float goal_speed[4];
 
 void Move(uint8_t id, float pwm);
-void Update_Pwm();
+void Update_Dual_Pwm();
+void Update_Single_Pwm();
 void Mecanum_Speed(float vx, float vy, float w);
 void Mecanum_Pos(Position_edc25 now, Position_edc25 goal);

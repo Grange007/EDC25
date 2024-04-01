@@ -2,6 +2,7 @@
 #include "jy62.h"
 #include "main.h"
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define RED_TEAM 1
@@ -49,12 +50,13 @@ int32_t lastTime = -16;
 int32_t lastAttack = -160;
 Status lastStatus=init;
 
+
 Grid nowGrid;
-Grid goalGrid;
-Grid desGrid;
-Grid opGrid;
-Grid homeGrid;
-Grid opHomeGrid;
+Grid goalGrid;   // 当前向哪走
+Grid desGrid;    // 最终的目标
+Grid opGrid;     // op是对面
+Grid homeGrid;   // 家的位置
+Grid opHomeGrid; // 对面家的位置
 Grid redHomeGrid = {0, 0};
 Grid blueHomeGrid = {7, 7};
 Grid nearestDiamond;
@@ -77,49 +79,65 @@ int dx[4] = {0, 0, 1, -1};
 int dy[4] = {1, -1, 0, 0};
 int inf = 0x3f3f3f3f;
 
+int needWool;
+
+uint16_t accmulatedOre[8][8] =
+        {{0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0, 0}};
+OreInfo ore[64];
+int oreNum = 0;
+int oreUpdCnt = 1;
+
 uint8_t mhtDst(Grid from, Grid to)
 {
-	return abs(from.x - to.x) + abs(from.y - to.y);
+    return abs(from.x - to.x) + abs(from.y - to.y);
 }
 uint8_t grid2No(Grid grid)
 {
-	return grid.x + 8 * grid.y;
+    return grid.x + 8 * grid.y;
 }
 Grid no2Grid(uint8_t no)
 {
-	Grid tmp;
-	tmp.x = no % 8;
-	tmp.y = no / 8;
-	return tmp;
+    Grid tmp;
+    tmp.x = no % 8;
+    tmp.y = no / 8;
+    return tmp;
 }
 Grid pos2Grid(Position_edc25 pos)
 {
-	Grid tmp;
-	tmp.x = (uint8_t)pos.posx;
-	tmp.y = (uint8_t)pos.posy;
-	return tmp;
+    Grid tmp;
+    tmp.x = (uint8_t)pos.posx;
+    tmp.y = (uint8_t)pos.posy;
+    return tmp;
 }
 Position_edc25 grid2Pos(Grid grid)
 {
-	Position_edc25 tmp;
-	tmp.posx = (float)grid.x + 0.5;
-	tmp.posy = (float)grid.y + 0.5;
-	return tmp;
+    Position_edc25 tmp;
+    tmp.posx = (float)grid.x + 0.5;
+    tmp.posy = (float)grid.y + 0.5;
+    return tmp;
 }
+
 Grid nearestBlock(uint8_t type)
 {
-	Grid nearest = {0, 0};
-	uint8_t dst = 255;
-	for (int i = 0; i < 64; i++)
-		if (gameMap[i] == type)
-		{
-			if (mhtDst(nowGrid, no2Grid(i)) < dst)
-			{
-				nearest = no2Grid(i);
-				dst = mhtDst(nowGrid, no2Grid(i));
-			}
-		}
-	return nearest;
+    Grid nearest = {0, 0};
+    uint8_t dst = 255;
+    for (int i = 0; i < 64; i++)
+        if (gameMap[i] == type)
+        {
+            if (mhtDst(nowGrid, no2Grid(i)) < dst)
+            {
+                nearest = no2Grid(i);
+                dst = mhtDst(nowGrid, no2Grid(i));
+            }
+        }
+    return nearest;
 }
 Grid bellmanford(Grid source, Grid target, int *needBlock) // 找到从source到target的花费最少的路，needBlock是花费羊毛数
 {

@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-Position_edc25 tmp;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,35 +105,48 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-	// Output PWM
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //FL
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //FR
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); //RL
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); //RR
-	// Measure
-	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); //FL
-	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); //FR
-	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); //RL
-	HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); //RR
-	// Update PWM
-	HAL_TIM_Base_Start_IT(&htim6);
-	// jy62
-	jy62_Init(&huart3);
-	// zigbee
-	zigbee_Init(&huart4);
-	// PID
-	PID_Init(&FLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRP_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&FRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RLN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
-	PID_Init(&RRN_Pid, 10.0f, 2.0f, 0.0f, 50000.0f);
+    // Output PWM
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
+    // Measure
+    HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
+    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
+    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
+    HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
+    // Update PWM
+    HAL_TIM_Base_Start_IT(&htim6);
+    // jy62
+    jy62_Init(&huart3);
+    // zigbee
+    zigbee_Init(&huart4);
+    // PID
+    PID_Init(&FLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&RRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
 
-	PID_Init(&xPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-	PID_Init(&yPid, 30.0f, 0.1f, 0.0f, 5000.0f);
-	PID_Init(&anglePid, 0.5f, 2.0f, 10.0f, 100.0f);
+    PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&anglePid, 0.02f, 0.00005f, 0.0f, 50.0f);
+
+    u1_printf("Hello\n");
+
+    HAL_Delay(1000);
+
+    FLP_Pid.iErr = 0;
+    FRP_Pid.iErr = 0;
+    RLP_Pid.iErr = 0;
+    RRP_Pid.iErr = 0;
+    FLN_Pid.iErr = 0;
+    FRN_Pid.iErr = 0;
+    RLN_Pid.iErr = 0;
+    RRN_Pid.iErr = 0;
 
 	u1_printf("Hello\n");
 	HAL_Delay(1000);
@@ -142,8 +155,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	while (1)
-	{
+//    int cnt = 0;
+
+    while (1)
+    {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -269,12 +284,12 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Instance == TIM6)
-	{
-//		u1_printf("motor\n");
-		Mecanum_Pos(now, goal);
-		Update_Pwm();
-	}
+  if (htim->Instance == TIM6)
+  {
+    Mecanum_Pos(now, goal);
+//    Update_Dual_Pwm();
+    Update_Single_Pwm();
+  }
 }
 /* USER CODE END 4 */
 
