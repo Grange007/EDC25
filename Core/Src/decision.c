@@ -273,7 +273,7 @@ void protect_func(){
 		place_and_move();
 		return;
 	}
-	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT){
+	if(getHeightOfId(grid2No(homeGrid))<8){
 		place_block_id(grid2No(homeGrid));
 		HAL_Delay(300);
 	}
@@ -351,6 +351,9 @@ float calculate_weight_protect(){
 	}
 	float weight=1;
 	if(getHeightOfId(grid2No(homeGrid))<HOME_HEIGHT&&wool>8){
+		weight=5;
+	}
+	else if(getHeightOfId(grid2No(homeGrid))<8&&wool>=16){
 		weight=5;
 	}
 	if(lastStatus==protect){
