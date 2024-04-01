@@ -344,13 +344,7 @@ uint8_t getStuck()
 }
 uint8_t if_op_inAttack()
 {
-    return abs(opGrid.x - nowGrid.x) <= 1
-        && abs(opGrid.y - nowGrid.y) <= 1;
-}
-uint8_t if_op_aroundHome()
-{
-    return abs(opGrid.x - homeGrid.x) <= 1
-        && abs(opGrid.y - homeGrid.y) <= 1;
+    return health<maxHealth;
 }
 
 void statusChange()
@@ -359,9 +353,9 @@ void statusChange()
         status = dead;
     else
     {
-        if (health == 29 /*|| if_op_inAttack()*/) // 攻击节点：生命力提升至29或DPS达到2和17或遇到对方
+        if ( time>=9600||agility>=30|| if_op_inAttack()) // 攻击节点：生命力提升至29或DPS达到2和17或遇到对方
         {
-            if (health < 20) // 检查状态怎样，补充生命和羊毛
+            if (health < 29&&emerald>=32) // 检查状态怎样，补充生命和羊毛
             {
 
                 if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
@@ -372,7 +366,7 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if (wool < 8)
+            else if (wool < 8&&emerald>=16)
             {
 
                 if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
@@ -385,7 +379,7 @@ void statusChange()
                     status = Pmove;
                 }
             }
-            else if (health >= 20 && wool >= 8) // 状态完备，再去攻击
+            else if (health >= 29 && wool >= 8) // 状态完备，再去攻击
             {
                 if (getHeightOfId(grid2No(opHomeGrid)) > 0) // 有家先干家
                 {
@@ -443,7 +437,7 @@ void statusChange()
                 status = Pmove;
             }
         }
-        else if (emerald >= 70 - wool)
+        else if (emerald >= 80 - wool&&(agility<30||strength<17||maxHealth<29))
         {
             if (nowGrid.x == homeGrid.x && nowGrid.y == homeGrid.y)
             {
@@ -466,12 +460,16 @@ void statusChange()
             if (wool > needWool)
             {
                 desGrid = mostValuableOre;
+				status = Pmove;
             }
-            else
+            else if(nowGrid.x != homeGrid.x && nowGrid.y != homeGrid.y)
             {
                 desGrid = homeGrid;
+				status=Pmove;
             }
-            status = Pmove;
+            else{
+				status=purchase;
+			}
         }
     }
 }
@@ -628,7 +626,7 @@ void Ndestroy_func() // 干人
 }
 void recover_func()
 {
-    while (health < 20 && emerald > 4)
+    if (health < 29 && emerald > 4)
     {
         trade_id(4);
         HAL_Delay(300);
