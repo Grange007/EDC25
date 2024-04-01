@@ -162,10 +162,10 @@ int main(void)
     /* USER CODE BEGIN 3 */
         HAL_Delay(400);
 
-        getPosition(&now);
-        nowGrid = pos2Grid(now);
-        getPositionOpponent(&op);
-        opGrid = pos2Grid(op);
+//        getPosition(&now);
+//        nowGrid = pos2Grid(now);
+//        getPositionOpponent(&op);
+//        opGrid = pos2Grid(op);
 
 //        float yaw = GetYaw();
 //        u1_printf("yaw %f\n", yaw);
