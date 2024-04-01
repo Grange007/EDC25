@@ -337,7 +337,7 @@ void get_enhanced_func(){
 		place_and_move();
 		return;
 	}
-	if (emerald >= 64)
+	if (emerald >= 32)
 	{
 		trade_id(find_optimal_enhancement());
 		HAL_Delay(300);
@@ -368,12 +368,13 @@ float calculate_weight_destroy(){
 	if(needWool>wool){
 		return 0;
 	}
-	if(time-lastAttack<cd){
+	if(time-lastAttack+20<cd){
 		return 0;
 	}
 	float weight=1;
-	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y&&getHeightOfId(grid2No(opHomeGrid))<2){
-		weight=2.5;
+	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y
+		&&getHeightOfId(grid2No(opHomeGrid))<(200/cd)){
+		weight=4.5;
 	}
 	if(lastStatus==destroy){
 		if(time-lastTime>=600){
@@ -390,11 +391,14 @@ float calculate_weight_attack(){
 	if(needWool>wool){
 		return 0;
 	}
-	if(time-lastAttack<cd){
+	if(!hasBedOpponent()){
+		return 4.5;
+	}
+	if(time-lastAttack+20<cd){
 		return 0;
 	}
 	float weight=1;
-	if(mhtDst(nowGrid,opGrid)<=3){
+	if(mhtDst(nowGrid,opGrid)<=sqrt(strength)){
 		weight=4;
 	}
 	if(lastStatus==attack){
@@ -409,8 +413,8 @@ float calculate_weight_attack(){
 }
 float calculate_weight_mine(){
 	bellmanford(nowGrid,find_optimal_mine().grid,&needWool);
-	u1_printf("optimal: %d, %d",find_optimal_mine().grid.x,find_optimal_mine().grid.y);
-	u1_printf("needwool:%d\n",needWool);
+	// u1_printf("optimal: %d, %d\n",find_optimal_mine().grid.x,find_optimal_mine().grid.y);
+	// u1_printf("needwool:%d\n",needWool);
 	if(needWool>wool){
 		return 0;
 	}
@@ -451,14 +455,15 @@ float calculate_weight_get_wool(){
 }
 float calculate_weight_get_enhanced(){
 	float weight=1;
-	if(emerald<64){
+	bool enough_to_enhance=emerald>=64||(emerald>=32&&find_optimal_enhancement()!=STRENGTH);
+	if(!enough_to_enhance){
 		weight=0;
 	}
 	else if(emerald>96){
 		weight=3;
 	}
 	if(lastStatus==get_enhanced){
-		if(emerald>64&&wool>8){
+		if(enough_to_enhance&&wool>8){
 			weight=3;
 		}
 		if(time-lastTime>=300){
@@ -510,6 +515,9 @@ Mine find_optimal_mine(){
 	return mineList[best_mine];
 }
 uint8_t find_optimal_enhancement(){
+	if(time>10000){
+		return HEALTH;
+	}
 	if(strength<9){
 		return STRENGTH;
 	}

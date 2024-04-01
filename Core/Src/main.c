@@ -173,8 +173,9 @@ int main(void)
 //		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
-		u1_printf("mine: %d\n",mineNum);
-		u1_printf("07: %d\n",getOreKindOfId(7));
+		// u1_printf("mine: %d\n",mineNum);
+		// u1_printf("07: %d\n",getOreKindOfId(7));
+    u1_printf("score: %f\n",find_optimal_mine().score);
 
 		if (getGameStage() == READY)
 			ready_func();

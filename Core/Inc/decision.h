@@ -20,7 +20,7 @@ typedef struct{
     uint8_t type;
     float score;
     uint32_t store;
-    uint32_t last_visit_tick;
+    int32_t last_visit_tick;
 } Mine;
 typedef enum
 {
