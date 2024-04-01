@@ -167,12 +167,12 @@ int main(void)
         getPositionOpponent(&op);
         opGrid = pos2Grid(op);
 
-//        cnt++;
-//        if (cnt > 5)
-//        {
-//            goal.posx = 1 - goal.posx;
-//            cnt = 0;
-//        }
+//        float yaw = GetYaw();
+//        u1_printf("yaw %f\n", yaw);
+//        u1_printf("FL %f\n", goal_speed[0]);
+//        u1_printf("FR %f\n", goal_speed[1]);
+//        u1_printf("RL %f\n", goal_speed[2]);
+//        u1_printf("RR %f\n", goal_speed[3]);
 
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
