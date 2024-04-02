@@ -131,8 +131,8 @@ int main(void)
     PID_Init(&RLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
     PID_Init(&RRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
 
-    PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&xPid, 0.5f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 0.5f, 0.0f, 0.0f, 5000.0f);
     PID_Init(&anglePid, 0.02f, 0.00005f, 0.0f, 50.0f);
 
     u1_printf("Hello\n");
@@ -153,14 +153,13 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-//    int cnt = 0;
-
     while (1)
     {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-        HAL_Delay(400);
+        HAL_Delay(100);
+
 
         getPosition(&now);
         nowGrid = pos2Grid(now);
@@ -179,7 +178,7 @@ int main(void)
 //        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
         u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
 //        u1_printf("op:(%f, %f)\n", op.posx, op.posy);
-        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
+//        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
 //        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 

@@ -15,6 +15,10 @@
 #include <math.h>
 
 float goal_speed[4];
+float FLNow, FRNow, RLNow, RRNow;
+float vx = 0;
+float vy = 0;
+float w = 0;
 
 void Move(uint8_t id, float pwm)
 {
@@ -179,7 +183,7 @@ void Update_Single_Pwm()
         FLCnt = 65535 - FLCnt;
     else
         FLCnt = 0 - FLCnt;
-    float FLNow = 1.0 * FLCnt / UNKNOWN;
+    FLNow = 1.0 * FLCnt / UNKNOWN;
     float FLPwm;
     FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
     Move(1, FLPwm);
@@ -190,7 +194,7 @@ void Update_Single_Pwm()
         FRCnt = FRCnt - 65535;
     else
         FRCnt = FRCnt - 0;
-    float FRNow = 1.0 * FRCnt / UNKNOWN;
+    FRNow = 1.0 * FRCnt / UNKNOWN;
     float FRPwm;
     FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
     Move(2, FRPwm);
@@ -201,7 +205,7 @@ void Update_Single_Pwm()
         RLCnt = 65535 - RLCnt;
     else
         RLCnt = 0 - RLCnt;
-    float RLNow = 1.0 * RLCnt / UNKNOWN;
+    RLNow = 1.0 * RLCnt / UNKNOWN;
     float RLPwm;
 	RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
     Move(3, RLPwm);
@@ -212,14 +216,14 @@ void Update_Single_Pwm()
         RRCnt = RRCnt - 65535;
     else
         RRCnt = RRCnt - 0;
-    float RRNow = 1.0 * RRCnt / UNKNOWN;
+    RRNow = 1.0 * RRCnt / UNKNOWN;
     float RRPwm;
 	RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
     Move(4, RRPwm);
 
 //    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
 //    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);
-//    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
+//    u1_printf("%RL %f, %f\n", RLNow, goal_speed[2]);
 //    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
 
 //   u1_printf("FLpwm:%d\n", (int)FLPwm);
@@ -278,13 +282,13 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 		yaw = yaw - 0;
 //	u1_printf("%f, 0\n", yaw);
 
-	float vx = Pos_Cal(&xPid, now.posx, goal.posx);
-	float vy = Pos_Cal(&yPid, now.posy, goal.posy);
-	float w = Angle_Cal(&anglePid, yaw, 0);
+	vx = Pos_Cal(&xPid, now.posx, goal.posx);
+	vy = Pos_Cal(&yPid, now.posy, goal.posy);
+	w = Angle_Cal(&anglePid, yaw, 0);
 
-//    float vx = 0.4f;
-//    float vy = 0.0f;
-//    float w = 0.0f;
+//    vx = 1.5f;
+//    vy = 0.0f;
+//    w = 0.0f;
 
 //    u1_printf("vx:%f\n", vx);
 //    u1_printf("vy:%f\n", vy);
