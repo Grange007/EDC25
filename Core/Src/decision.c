@@ -396,7 +396,7 @@ float calculate_weight_destroy(){
 	return weight;	// on simulator only
 }
 float calculate_weight_attack(){
-	if(opGrid.x=64&&opGrid.y=0){
+	if(opGrid.x==64&&opGrid.y==0){
 		return 0;
 	}
 	bellmanford(nowGrid,opGrid,&needWool);
