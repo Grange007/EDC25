@@ -95,8 +95,14 @@ Grid no2Grid(uint8_t no)
 Grid pos2Grid(Position_edc25 pos)
 {
 	Grid tmp;
-	tmp.x = (uint8_t)pos.posx;
-	tmp.y = (uint8_t)pos.posy;
+	if(pos.posx<0||pos.posx>8)
+		tmp.x = 64;
+	else
+		tmp.x = (uint8_t)pos.posx;
+	if(pos.posy<0||pos.posy>8)
+		tmp.y = 0;
+	else
+		tmp.y = (uint8_t)pos.posy;
 	return tmp;
 }
 Position_edc25 grid2Pos(Grid grid)
@@ -387,9 +393,12 @@ float calculate_weight_destroy(){
 			weight=0;
 		}
 	}
-	return 0;	// on simulator only
+	return weight;	// on simulator only
 }
 float calculate_weight_attack(){
+	if(opGrid.x=64&&opGrid.y=0){
+		return 0;
+	}
 	bellmanford(nowGrid,opGrid,&needWool);
 	if(needWool>wool){
 		return 0;
@@ -412,7 +421,7 @@ float calculate_weight_attack(){
 			weight=0;
 		}
 	}
-	return 0;		//due to a simulator bug
+	return weight;		//due to a simulator bug
 }
 float calculate_weight_mine(){
 	bellmanford(nowGrid,find_optimal_mine().grid,&needWool);
