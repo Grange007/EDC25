@@ -80,19 +80,6 @@ int inf = 0x3f3f3f3f;
 
 int needWool;
 
-uint16_t accmulatedOre[8][8] =
-        {{0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0}};
-OreInfo ore[64];
-int oreNum = 0;
-int oreUpdCnt = 1;
-
 uint8_t mhtDst(Grid from, Grid to)
 {
     return abs(from.x - to.x) + abs(from.y - to.y);
