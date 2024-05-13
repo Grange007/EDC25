@@ -122,31 +122,22 @@ int main(void)
     // zigbee
     zigbee_Init(&huart4);
     // PID
-    PID_Init(&FLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
 
-    PID_Init(&xPid, 0.5f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 0.5f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&xPid, 0.4f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 0.4f, 0.0f, 0.0f, 5000.0f);
     PID_Init(&anglePid, 0.02f, 0.00005f, 0.0f, 50.0f);
 
     u1_printf("Hello\n");
 
     HAL_Delay(1000);
-
-    FLP_Pid.iErr = 0;
-    FRP_Pid.iErr = 0;
-    RLP_Pid.iErr = 0;
-    RRP_Pid.iErr = 0;
-    FLN_Pid.iErr = 0;
-    FRN_Pid.iErr = 0;
-    RLN_Pid.iErr = 0;
-    RRN_Pid.iErr = 0;
 
   /* USER CODE END 2 */
 
@@ -165,13 +156,6 @@ int main(void)
         nowGrid = pos2Grid(now);
         getPositionOpponent(&op);
         opGrid = pos2Grid(op);
-
-//        float yaw = GetYaw();
-//        u1_printf("yaw %f\n", yaw);
-//        u1_printf("FL %f\n", goal_speed[0]);
-//        u1_printf("FR %f\n", goal_speed[1]);
-//        u1_printf("RL %f\n", goal_speed[2]);
-//        u1_printf("RR %f\n", goal_speed[3]);
 
 //        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
         u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);

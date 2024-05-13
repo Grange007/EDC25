@@ -280,6 +280,7 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 		yaw = yaw - 360;
 	else
 		yaw = yaw - 0;
+
 //	u1_printf("%f, 0\n", yaw);
 
 	vx = Pos_Cal(&xPid, now.posx, goal.posx);
