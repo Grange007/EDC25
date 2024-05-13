@@ -164,16 +164,16 @@ int main(void)
 		time = getGameTime();
 		cd=agility<32?170-5*agility:10;
 
-		if (cnt == 15)
-		    goal.posx = 5;
-		else if (cnt == 30)
-		    goal.posx = -5;
-		else if (cnt == 45)
-		{
-		    goal.posx = 0;
-		    cnt = 0;
-		}
-		cnt ++;
+		// if (cnt == 15)
+		//     goal.posx = 5;
+		// else if (cnt == 30)
+		//     goal.posx = -5;
+		// else if (cnt == 45)
+		// {
+		//     goal.posx = 0;
+		//     cnt = 0;
+		// }
+		// cnt ++;
     
 //		u1_printf("yaw:%f\n",GetYaw());
 
