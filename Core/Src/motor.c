@@ -15,6 +15,10 @@
 #include <math.h>
 
 float goal_speed[4];
+float FLNow;
+float FRNow;
+float RLNow;
+float RRNow;
 
 void Move(uint8_t id, float pwm)
 {
@@ -87,7 +91,7 @@ void Update_Dual_Pwm()
 		FLCnt = 65535 - FLCnt;
 	else
 		FLCnt = 0 - FLCnt;
-	float FLNow = 1.0 * FLCnt / UNKNOWN;
+	FLNow = 1.0 * FLCnt / UNKNOWN;
 	float FLPwm;
 	if (goal_speed[0] >= 0)
 	{
@@ -107,7 +111,7 @@ void Update_Dual_Pwm()
 		FRCnt = FRCnt - 65535;
 	else
 		FRCnt = FRCnt - 0;
-	float FRNow = 1.0 * FRCnt / UNKNOWN;
+	FRNow = 1.0 * FRCnt / UNKNOWN;
 	float FRPwm;
 	if (goal_speed[1] >= 0)
 	{
@@ -127,7 +131,7 @@ void Update_Dual_Pwm()
 		RLCnt = 65535 - RLCnt;
 	else
 		RLCnt = 0 - RLCnt;
-	float RLNow = 1.0 * RLCnt / UNKNOWN;
+	RLNow = 1.0 * RLCnt / UNKNOWN;
 	float RLPwm;
 	if (goal_speed[2] >= 0)
 	{
@@ -147,7 +151,7 @@ void Update_Dual_Pwm()
 		RRCnt = RRCnt - 65535;
 	else
 		RRCnt = RRCnt - 0;
-	float RRNow = 1.0 * RRCnt / UNKNOWN;
+	RRNow = 1.0 * RRCnt / UNKNOWN;
 	float RRPwm;
 	if (goal_speed[3] >= 0)
 	{
@@ -179,7 +183,7 @@ void Update_Single_Pwm()
         FLCnt = 65535 - FLCnt;
     else
         FLCnt = 0 - FLCnt;
-    float FLNow = 1.0 * FLCnt / UNKNOWN;
+    FLNow = 1.0 * FLCnt / UNKNOWN;
     float FLPwm;
     FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
     Move(1, FLPwm);
@@ -190,7 +194,7 @@ void Update_Single_Pwm()
         FRCnt = FRCnt - 65535;
     else
         FRCnt = FRCnt - 0;
-    float FRNow = 1.0 * FRCnt / UNKNOWN;
+    FRNow = 1.0 * FRCnt / UNKNOWN;
     float FRPwm;
     FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
     Move(2, FRPwm);
@@ -201,7 +205,7 @@ void Update_Single_Pwm()
         RLCnt = 65535 - RLCnt;
     else
         RLCnt = 0 - RLCnt;
-    float RLNow = 1.0 * RLCnt / UNKNOWN;
+    RLNow = 1.0 * RLCnt / UNKNOWN;
     float RLPwm;
 	RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
     Move(3, RLPwm);
@@ -212,7 +216,7 @@ void Update_Single_Pwm()
         RRCnt = RRCnt - 65535;
     else
         RRCnt = RRCnt - 0;
-    float RRNow = 1.0 * RRCnt / UNKNOWN;
+    RRNow = 1.0 * RRCnt / UNKNOWN;
     float RRPwm;
 	RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
     Move(4, RRPwm);
@@ -267,6 +271,12 @@ void Mecanum_Speed(float vx, float vy, float w)
     goal_speed[1] = FR;
     goal_speed[2] = RL;
     goal_speed[3] = RR;
+	
+//    float v = 2;
+//    goal_speed[0] = v;
+//    goal_speed[1] = 0;
+//    goal_speed[2] = 0;
+//    goal_speed[3] = 0;
 }
 
 void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
@@ -284,7 +294,7 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 
 //    float vx = 0.4f;
 //    float vy = 0.0f;
-//    float w = 0.0f;
+    float w = 0.0f;
 
 //    u1_printf("vx:%f\n", vx);
 //    u1_printf("vy:%f\n", vy);

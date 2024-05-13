@@ -122,17 +122,17 @@ int main(void)
     // zigbee
     zigbee_Init(&huart4);
     // PID
-    PID_Init(&FLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RLP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RRP_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&FRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RLN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
-    PID_Init(&RRN_Pid, 500.0f, 0.5f, 0.0f, 4000.0f);
+    PID_Init(&FLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&FRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+    PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
 
-    PID_Init(&xPid, 1.0f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 1.0f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&xPid, 0.4f, 0.0f, 0.0f, 50.0f);
+    PID_Init(&yPid, 0.4f, 0.0f, 0.0f, 50.0f);
     PID_Init(&anglePid, 0.02f, 0.0001f, 0.0f, 50.0f);
 
 	u1_printf("Hello\n");
@@ -142,7 +142,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-//    int cnt = 0;
+    int cnt = 0;
 
     while (1)
     {
@@ -162,9 +162,18 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
-    cd=agility<32?170-5*agility:10;
+		cd=agility<32?170-5*agility:10;
 
-    
+		if (cnt == 15)
+		    goal.posx = 5;
+		else if (cnt == 30)
+		    goal.posx = -5;
+		else if (cnt == 45)
+		{
+		    goal.posx = 0;
+		    cnt = 0;
+		}
+		cnt ++;
     
 //		u1_printf("yaw:%f\n",GetYaw());
 
@@ -176,15 +185,15 @@ int main(void)
 //		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
 //		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 		// u1_printf("mine: %d\n",mineNum);
-		// u1_printf("07: %d\n",getOreKindOfId(7));
+		// u1_printf("07: %d\n",getOreKindOfId(7)); 
     u1_printf("score: %f\n",find_optimal_mine().score);
 
 		if (getGameStage() == READY)
 			ready_func();
 		else if (getGameStage() != FINISHED)
 		{
-            update_mine();
-            statusChange();
+         update_mine();
+         statusChange();
 			switch (status)
 			{
 				case init:
