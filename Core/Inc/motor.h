@@ -14,7 +14,7 @@
 //#define LX 1.73f
 //#define LY 1.81f
 
-#define MAX_SPEED 4.5
+#define MAX_SPEED 3
 #define MIN_SPEED 1.0
 #define UNKNOWN 10.8
 
