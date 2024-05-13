@@ -294,7 +294,7 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 
 //    float vx = 0.4f;
 //    float vy = 0.0f;
-    float w = 0.0f;
+//    float w = 0.0f;
 
 //    u1_printf("vx:%f\n", vx);
 //    u1_printf("vy:%f\n", vy);
