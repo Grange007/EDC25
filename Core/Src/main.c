@@ -119,6 +119,9 @@ int main(void)
     HAL_TIM_Base_Start_IT(&htim6);
     // jy62
     jy62_Init(&huart3);
+    InitAngle();
+    SetHorizontal();
+    Calibrate();
     // zigbee
     zigbee_Init(&huart4);
     // PID
@@ -131,9 +134,9 @@ int main(void)
     PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
     PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
 
-    PID_Init(&xPid, 0.4f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 0.4f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&anglePid, 0.02f, 0.00005f, 0.0f, 50.0f);
+    PID_Init(&xPid, 0.6f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&yPid, 0.6f, 0.0f, 0.0f, 5000.0f);
+    PID_Init(&anglePid, 0.02f, 0.0005f, 0.01f, 20.0f);
 
     u1_printf("Hello\n");
 
@@ -269,8 +272,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
-//    Update_Dual_Pwm();
-    Update_Single_Pwm();
+    Update_Dual_Pwm();
+//    Update_Single_Pwm();
   }
 }
 /* USER CODE END 4 */
