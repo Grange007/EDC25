@@ -82,9 +82,6 @@ void Move(uint8_t id, float pwm)
 
 void Update_Dual_Pwm()
 {
-
-//    float UNKNOWN = 10.8f;
-
 	int FLCnt = __HAL_TIM_GET_COUNTER(&htim2);
 	__HAL_TIM_SetCounter(&htim2, 0);
 	if (FLCnt > 32767)
@@ -95,12 +92,12 @@ void Update_Dual_Pwm()
 	float FLPwm;
 	if (goal_speed[0] >= 0)
 	{
-//	    FLN_Pid.iErr = 0;
+	    FLN_Pid.iErr = 0;
 	    FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
 	}
 	else
 	{
-//	    FLP_Pid.iErr = 0;
+	    FLP_Pid.iErr = 0;
 	    FLPwm = PID_Cal(&FLN_Pid, FLNow, goal_speed[0]);
 	}
 	Move(1, FLPwm);
@@ -115,12 +112,12 @@ void Update_Dual_Pwm()
 	float FRPwm;
 	if (goal_speed[1] >= 0)
 	{
-//	    FRN_Pid.iErr = 0;
+	    FRN_Pid.iErr = 0;
 	    FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
 	}
 	else
 	{
-//	    FRP_Pid.iErr = 0;
+	    FRP_Pid.iErr = 0;
 	    FRPwm = PID_Cal(&FRN_Pid, FRNow, goal_speed[1]);
 	}
 	Move(2, FRPwm);
@@ -135,12 +132,12 @@ void Update_Dual_Pwm()
 	float RLPwm;
 	if (goal_speed[2] >= 0)
 	{
-//	    RLN_Pid.iErr = 0;
+	    RLN_Pid.iErr = 0;
 	    RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
 	}
 	else
 	{
-//	    RLP_Pid.iErr = 0;
+	    RLP_Pid.iErr = 0;
 	    RLPwm = PID_Cal(&RLN_Pid, RLNow, goal_speed[2]);
 	}
 	Move(3, RLPwm);
@@ -155,12 +152,12 @@ void Update_Dual_Pwm()
 	float RRPwm;
 	if (goal_speed[3] >= 0)
 	{
-//	    RRN_Pid.iErr = 0;
+	    RRN_Pid.iErr = 0;
 	    RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
 	}
 	else
 	{
-//	    RRP_Pid.iErr = 0;
+	    RRP_Pid.iErr = 0;
 	    RRPwm = PID_Cal(&RRN_Pid, RRNow, goal_speed[3]);
 	}
 	Move(4, RRPwm);
@@ -174,9 +171,6 @@ void Update_Dual_Pwm()
 
 void Update_Single_Pwm()
 {
-
-//    float UNKNOWN = 10.8f;
-
     int FLCnt = __HAL_TIM_GET_COUNTER(&htim2);
     __HAL_TIM_SetCounter(&htim2, 0);
     if (FLCnt > 32767)
