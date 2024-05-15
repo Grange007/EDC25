@@ -20,6 +20,8 @@ float FRNow;
 float RLNow;
 float RRNow;
 
+float yaw;
+
 void Move(uint8_t id, float pwm)
 {
 	if (id == 1)
@@ -275,7 +277,7 @@ void Mecanum_Speed(float vx, float vy, float w)
 
 void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 {
-	float yaw = GetYaw();
+	yaw = GetYaw();
 	if (yaw > 180)
 		yaw = yaw - 360;
 	else

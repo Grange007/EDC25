@@ -63,8 +63,8 @@ Grid nearestDiamond;
 Mine mineList[MAX_MINE];
 uint8_t mineNum = 0;
 
-Position_edc25 now = {0.0f, 0.0f};
-Position_edc25 goal = {0.5f, 0.0f};
+Position_edc25 now = {0.5f, 0.5f};
+Position_edc25 goal = {0.5f, 0.5f};
 Position_edc25 des = {0, 0};
 Position_edc25 op = {0, 0};
 Position_edc25 home = {0, 0};
