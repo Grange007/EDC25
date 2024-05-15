@@ -14,11 +14,12 @@
 //#define LX 1.73f
 //#define LY 1.81f
 
-#define MAX_SPEED 3
+#define MAX_SPEED 2.5
 #define MIN_SPEED 1.0
 #define UNKNOWN 10.8
 
 extern float goal_speed[4];
+extern float yaw;
 
 void Move(uint8_t id, float pwm);
 void Update_Dual_Pwm();

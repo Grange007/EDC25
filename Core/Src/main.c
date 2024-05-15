@@ -119,6 +119,9 @@ int main(void)
     HAL_TIM_Base_Start_IT(&htim6);
     // jy62
     jy62_Init(&huart3);
+    InitAngle();
+    SetHorizontal();
+    Calibrate();
     // zigbee
     zigbee_Init(&huart4);
     // PID
@@ -131,9 +134,9 @@ int main(void)
     PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
     PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
 
-    PID_Init(&xPid, 0.4f, 0.0f, 0.0f, 50.0f);
-    PID_Init(&yPid, 0.4f, 0.0f, 0.0f, 50.0f);
-    PID_Init(&anglePid, 0.02f, 0.0001f, 0.0f, 50.0f);
+    PID_Init(&xPid, 0.5f, 0.0f, 0.0f, 50.0f);
+    PID_Init(&yPid, 0.5f, 0.0f, 0.0f, 50.0f);
+    PID_Init(&anglePid, 0.01f, 0.0005f, 0.01f, 20.0f);
 
 	u1_printf("Hello\n");
 	HAL_Delay(1000);
@@ -150,10 +153,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		HAL_Delay(300);
-		getPosition(&now);
-		nowGrid = pos2Grid(now);
-		getPositionOpponent(&op);
-		opGrid = pos2Grid(op);
+        getPosition(&now);
+        nowGrid = pos2Grid(now);
+        getPositionOpponent(&op);
+        opGrid = pos2Grid(op);
 
 		agility = getAgility();
 		health = getHealth();
@@ -164,19 +167,18 @@ int main(void)
 		time = getGameTime();
 		cd=agility<32?170-5*agility:10;
 
-		// if (cnt == 15)
-		//     goal.posx = 5;
-		// else if (cnt == 30)
-		//     goal.posx = -5;
-		// else if (cnt == 45)
-		// {
-		//     goal.posx = 0;
-		//     cnt = 0;
-		// }
-		// cnt ++;
-    
-//		u1_printf("yaw:%f\n",GetYaw());
+//		 if (cnt == 15)
+//		     goal.posx = 1.5;
+//		 else if (cnt == 30)
+//		     goal.posx = -0.5;
+//		 else if (cnt == 45)
+//		 {
+//		     goal.posx = 0.5;
+//		     cnt = 0;
+//		 }
+//		 cnt ++;
 
+//		u1_printf("yaw:%f\n", yaw);
 //		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
 		u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
 //		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
@@ -186,7 +188,7 @@ int main(void)
 //		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
 		// u1_printf("mine: %d\n",mineNum);
 		// u1_printf("07: %d\n",getOreKindOfId(7)); 
-    u1_printf("score: %f\n",find_optimal_mine().score);
+		u1_printf("score: %f\n",find_optimal_mine().score);
 
 		if (getGameStage() == READY)
 			ready_func();
@@ -283,8 +285,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
-//    Update_Dual_Pwm();
-    Update_Single_Pwm();
+    Update_Dual_Pwm();
+//    Update_Single_Pwm();
   }
 }
 /* USER CODE END 4 */
