@@ -20,6 +20,8 @@ float FRNow;
 float RLNow;
 float RRNow;
 
+float FL, FR, RL, RR;
+
 float yaw;
 
 void Move(uint8_t id, float pwm)
@@ -230,11 +232,6 @@ void Update_Single_Pwm()
 
 void Mecanum_Speed(float vx, float vy, float w)
 {
-    float FL = 0;
-    float FR = 0;
-    float RL = 0;
-    float RR = 0;
-
     float LX = 1.73f;
     float LY = 1.81f;
     float R = 0.3f;

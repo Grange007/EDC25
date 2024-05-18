@@ -165,7 +165,7 @@ int main(void)
 		wool = getWoolCount();
 		emerald = getEmeraldCount();
 		time = getGameTime();
-		cd=agility<32?170-5*agility:10;
+		cd=(agility<32)?(170-5*agility):10;
 
 //		 if (cnt == 15)
 //		     goal.posx = 1.5;
@@ -285,8 +285,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
-    Update_Dual_Pwm();
-//    Update_Single_Pwm();
+//    Update_Dual_Pwm();
+    Update_Single_Pwm();
   }
 }
 /* USER CODE END 4 */
