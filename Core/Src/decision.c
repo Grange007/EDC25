@@ -539,7 +539,10 @@ Mine find_optimal_mine(){
 }
 uint8_t find_optimal_enhancement(){
 	if(time>10000){
-		return HEALTH;
+		if(health<maxHealth-3)
+			return HEALING;
+		else
+			return HEALTH;
 	}
 	if(strength<10){
 		return STRENGTH;
