@@ -385,9 +385,13 @@ float calculate_weight_destroy(){
 		return 0;
 	}
 	float weight=1;
-	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y
-		&&getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
-		weight=4.5;
+	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y){
+		if(getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
+			weight=4.5;
+		}
+		else if(cd<100){
+			weight=2.1;
+		}
 	}
 	if(lastStatus==destroy){
 		if(time-lastTime>=600){
@@ -417,6 +421,9 @@ float calculate_weight_attack(){
 	if(mhtDst(nowGrid,opGrid)<=sqrt(strength)){
 		weight=4;
 	}
+	else if(strength>9){
+		weight=2;	
+	}
 	if(lastStatus==attack){
 		if(time-lastTime>=600){
 			weight=weight-1<0?0:weight-1;
@@ -435,8 +442,8 @@ float calculate_weight_mine(){
 		return 0;
 	}
 	float weight=1.5;
-	if(find_optimal_mine().score>32){
-		weight=2;
+	if(find_optimal_mine().score>64){
+		weight=2.5;
 	}
 	if(lastStatus==mine){
 		if(time-lastTime>=600){
@@ -534,7 +541,7 @@ uint8_t find_optimal_enhancement(){
 	if(time>10000){
 		return HEALTH;
 	}
-	if(strength<9){
+	if(strength<10){
 		return STRENGTH;
 	}
 	else if(agility<32){
