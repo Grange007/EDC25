@@ -386,7 +386,7 @@ float calculate_weight_destroy(){
 	}
 	float weight=1;
 	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y
-		&&getHeightOfId(grid2No(opHomeGrid))<(200/cd)){
+		&&getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
 		weight=4.5;
 	}
 	if(lastStatus==destroy){

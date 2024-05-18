@@ -19,6 +19,7 @@
 #define UNKNOWN 10.8
 
 extern float goal_speed[4];
+extern float FL, FR, RL, RR;
 extern float yaw;
 
 void Move(uint8_t id, float pwm);
