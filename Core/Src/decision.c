@@ -527,7 +527,11 @@ Mine find_optimal_mine(){
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
 		int8_t dst=mhtDst(nowGrid,mineList[i].grid);
+		// bellmanford(nowGrid,mineList[i].grid,&needWool);
 		mineList[i].score=mineList[i].store*16/(16+dst+needWool);
+		// if(needWool>wool){
+		// 	mineList[i].score=0;
+		// }
 		if(mineList[i].score>best_score){
 			best_score=mineList[i].score;
 			best_mine=i;
