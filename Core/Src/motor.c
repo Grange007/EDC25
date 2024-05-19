@@ -237,10 +237,10 @@ void Mecanum_Speed(float vx, float vy, float w)
   float LY = 1.81f;
   float R = 0.3f;
 
-  FL = (vx + vy + (LX + LY) * w) / R;
-  FR = (vx - vy - (LX + LY) * w) / R;
-  RL = (vx - vy + (LX + LY) * w) / R;
-  RR = (vx + vy - (LX + LY) * w) / R;
+  FL = (vx + vy - (LX + LY) * w) / R;
+  FR = (vx - vy + (LX + LY) * w) / R;
+  RL = (vx - vy - (LX + LY) * w) / R;
+  RR = (vx + vy + (LX + LY) * w) / R;
 
 //  u1_printf("FL:%f FR:%f RL:%f RR:%f\n", FL, FR, RL, RR);
 

@@ -140,7 +140,7 @@ int main(void)
 
   u1_printf("Hello\n");
   HAL_Delay(1000);
-  ready_func();
+  // ready_func();
   /* USER CODE END 2 */
 
   /* Infinite loop */
