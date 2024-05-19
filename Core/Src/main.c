@@ -136,7 +136,7 @@ int main(void)
 
   PID_Init(&xPid, 0.5f, 0.0f, 0.0f, 50.0f);
   PID_Init(&yPid, 0.5f, 0.0f, 0.0f, 50.0f);
-  PID_Init(&anglePid, 0.02f, 0.0005f, 0.01f, 20.0f);
+  PID_Init(&anglePid, 0.015f, 0.0005f, 0.01f, 20.0f);
 
   u1_printf("Hello\n");
   HAL_Delay(1000);

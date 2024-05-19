@@ -478,7 +478,7 @@ float calculate_weight_get_wool(){
 		weight=3;
 	}
 	if(lastStatus==get_wool){
-		if(wool<24&&emerald>16){
+		if(wool<24&&emerald>8){
 			weight=3;
 		}
 		if(time-lastTime>=300){
