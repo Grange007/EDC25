@@ -30,12 +30,12 @@ void Move(uint8_t id, float pwm)
   if (id == 1)
   {
     if (pwm > 0)
-    {// FL +
+    { // FL +
       HAL_GPIO_WritePin(F_in3_GPIO_Port, F_in3_Pin, 0);
       HAL_GPIO_WritePin(F_in4_GPIO_Port, F_in4_Pin, 1);
     }
     else
-    {// FL -
+    { // FL -
       HAL_GPIO_WritePin(F_in3_GPIO_Port, F_in3_Pin, 1);
       HAL_GPIO_WritePin(F_in4_GPIO_Port, F_in4_Pin, 0);
     }
@@ -44,12 +44,12 @@ void Move(uint8_t id, float pwm)
   else if (id == 2)
   {
     if (pwm > 0)
-    {// FR +
+    { // FR +
       HAL_GPIO_WritePin(F_in1_GPIO_Port, F_in1_Pin, 0);
       HAL_GPIO_WritePin(F_in2_GPIO_Port, F_in2_Pin, 1);
     }
     else
-    {// FR -
+    { // FR -
       HAL_GPIO_WritePin(F_in1_GPIO_Port, F_in1_Pin, 1);
       HAL_GPIO_WritePin(F_in2_GPIO_Port, F_in2_Pin, 0);
     }
@@ -58,12 +58,12 @@ void Move(uint8_t id, float pwm)
   else if (id == 3)
   {
     if (pwm > 0)
-    {// RL +
+    { // RL +
       HAL_GPIO_WritePin(R_in3_GPIO_Port, R_in3_Pin, 0);
       HAL_GPIO_WritePin(R_in4_GPIO_Port, R_in4_Pin, 1);
     }
     else
-    {// RL -
+    { // RL -
       HAL_GPIO_WritePin(R_in3_GPIO_Port, R_in3_Pin, 1);
       HAL_GPIO_WritePin(R_in4_GPIO_Port, R_in4_Pin, 0);
     }
@@ -72,12 +72,12 @@ void Move(uint8_t id, float pwm)
   else if (id == 4)
   {
     if (pwm > 0)
-    {// RR +
+    { // RR +
       HAL_GPIO_WritePin(R_in1_GPIO_Port, R_in1_Pin, 0);
       HAL_GPIO_WritePin(R_in2_GPIO_Port, R_in2_Pin, 1);
     }
     else
-    {// RR -
+    { // RR -
       HAL_GPIO_WritePin(R_in1_GPIO_Port, R_in1_Pin, 1);
       HAL_GPIO_WritePin(R_in2_GPIO_Port, R_in2_Pin, 0);
     }
@@ -106,7 +106,7 @@ void Update_Dual_Pwm()
     FLPwm = PID_Cal(&FLN_Pid, FLNow, goal_speed[0]);
   }
   Move(1, FLPwm);
-
+  
   int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
   __HAL_TIM_SetCounter(&htim3, 0);
   if (FRCnt > 32767)
@@ -126,7 +126,7 @@ void Update_Dual_Pwm()
     FRPwm = PID_Cal(&FRN_Pid, FRNow, goal_speed[1]);
   }
   Move(2, FRPwm);
-
+  
   int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
   __HAL_TIM_SetCounter(&htim4, 0);
   if (RLCnt > 32767)
@@ -146,7 +146,7 @@ void Update_Dual_Pwm()
     RLPwm = PID_Cal(&RLN_Pid, RLNow, goal_speed[2]);
   }
   Move(3, RLPwm);
-
+  
   int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
   __HAL_TIM_SetCounter(&htim5, 0);
   if (RRCnt > 32767)
@@ -166,12 +166,12 @@ void Update_Dual_Pwm()
     RRPwm = PID_Cal(&RRN_Pid, RRNow, goal_speed[3]);
   }
   Move(4, RRPwm);
-
+  
 //    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
 //    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);
 //    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
 //    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
-
+  
 }
 
 void Update_Single_Pwm()
@@ -186,7 +186,7 @@ void Update_Single_Pwm()
   float FLPwm;
   FLPwm = PID_Cal(&FLP_Pid, FLNow, goal_speed[0]);
   Move(1, FLPwm);
-
+  
   int FRCnt = __HAL_TIM_GET_COUNTER(&htim3);
   __HAL_TIM_SetCounter(&htim3, 0);
   if (FRCnt > 32767)
@@ -197,7 +197,7 @@ void Update_Single_Pwm()
   float FRPwm;
   FRPwm = PID_Cal(&FRP_Pid, FRNow, goal_speed[1]);
   Move(2, FRPwm);
-
+  
   int RLCnt = __HAL_TIM_GET_COUNTER(&htim4);
   __HAL_TIM_SetCounter(&htim4, 0);
   if (RLCnt > 32767)
@@ -208,7 +208,7 @@ void Update_Single_Pwm()
   float RLPwm;
   RLPwm = PID_Cal(&RLP_Pid, RLNow, goal_speed[2]);
   Move(3, RLPwm);
-
+  
   int RRCnt = __HAL_TIM_GET_COUNTER(&htim5);
   __HAL_TIM_SetCounter(&htim5, 0);
   if (RRCnt > 32767)
@@ -219,12 +219,12 @@ void Update_Single_Pwm()
   float RRPwm;
   RRPwm = PID_Cal(&RRP_Pid, RRNow, goal_speed[3]);
   Move(4, RRPwm);
-
+  
 //    u1_printf("FL %f, %f\n", FLNow, goal_speed[0]);
 //    u1_printf("FR %f, %f\n", FRNow, goal_speed[1]);
 //    u1_printf("RL %f, %f\n", RLNow, goal_speed[2]);
 //    u1_printf("RR %f, %f\n", RRNow, goal_speed[3]);
-
+  
 //   u1_printf("FLpwm:%d\n", (int)FLPwm);
 //   u1_printf("FRpwm:%d\n", (int)FRPwm);
 //   u1_printf("RLpwm:%d\n", (int)RLPwm);
@@ -236,15 +236,15 @@ void Mecanum_Speed(float vx, float vy, float w)
   float LX = 1.73f;
   float LY = 1.81f;
   float R = 0.3f;
-
+  
   FL = (vx + vy - (LX + LY) * w) / R;
   FR = (vx - vy + (LX + LY) * w) / R;
   RL = (vx - vy - (LX + LY) * w) / R;
   RR = (vx + vy + (LX + LY) * w) / R;
-
+  
 //  u1_printf("FL:%f FR:%f RL:%f RR:%f\n", FL, FR, RL, RR);
-
-  // 限制最大速度
+  
+// 限制最大速度
   float max = fabs(FL);
   if (fabs(FR) > max)
     max = fabs(FR);
@@ -259,13 +259,13 @@ void Mecanum_Speed(float vx, float vy, float w)
     RL = RL / max * MAX_SPEED;
     RR = RR / max * MAX_SPEED;
   }
-
+  
   // 更新电机速度
   goal_speed[0] = FL;
   goal_speed[1] = FR;
   goal_speed[2] = RL;
   goal_speed[3] = RR;
-
+  
 //  float v = 2;
 //  goal_speed[0] = v;
 //  goal_speed[1] = 0;
@@ -281,11 +281,11 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
   else
     yaw = yaw - 0;
 //	u1_printf("%f, 0\n", yaw);
-
+  
   vx = Pos_Cal(&xPid, now.posx, goal.posx);
   vy = Pos_Cal(&yPid, now.posy, goal.posy);
   w = Angle_Cal(&anglePid, yaw, 0);
-
+  
 //  float vx = 0.4f;
 //  float vy = 0.0f;
 //  float w = 0.0f;
@@ -293,6 +293,6 @@ void Mecanum_Pos(Position_edc25 now, Position_edc25 goal)
 //  u1_printf("vx:%f\n", vx);
 //  u1_printf("vy:%f\n", vy);
 //  u1_printf("w:%f\n", w);
-
+  
   Mecanum_Speed(vx, vy, w);
 }
