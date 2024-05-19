@@ -385,13 +385,11 @@ float calculate_weight_destroy(){
 		return 0;
 	}
 	float weight=1;
-	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y){
-		if(getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
-			weight=4.5;
-		}
-		else if(cd<100){
-			weight=2.1;
-		}
+	if(getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
+		weight=4.5;
+	}
+	else if(cd<100){
+		weight=2.1;
 	}
 	if(lastStatus==destroy){
 		if(time-lastTime>=600){
@@ -419,7 +417,7 @@ float calculate_weight_attack(){
 	}
 	float weight=1;
 	if(mhtDst(nowGrid,opGrid)<=sqrt(strength)){
-		weight=4;
+		weight=5.5;
 	}
 	else if(strength>9){
 		weight=2;	
