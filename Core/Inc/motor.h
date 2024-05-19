@@ -21,6 +21,7 @@
 extern float goal_speed[4];
 extern float FL, FR, RL, RR;
 extern float yaw;
+extern float vx, vy, w;
 
 void Move(uint8_t id, float pwm);
 void Update_Dual_Pwm();

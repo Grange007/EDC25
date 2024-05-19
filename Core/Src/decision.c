@@ -385,7 +385,7 @@ float calculate_weight_destroy(){
 		return 0;
 	}
 	float weight=1;
-	if(opGrid.x!=opHomeGrid.x&&opGrid.y!=opHomeGrid.y){
+	if(opGrid.x!=opHomeGrid.x||opGrid.y!=opHomeGrid.y||strength>9){
 		if(getHeightOfId(grid2No(opHomeGrid))<=(200/cd)){
 			weight=4.5;
 		}
@@ -419,7 +419,7 @@ float calculate_weight_attack(){
 	}
 	float weight=1;
 	if(mhtDst(nowGrid,opGrid)<=sqrt(strength)){
-		weight=4;
+		weight=5.5;
 	}
 	else if(strength>9){
 		weight=2;	
@@ -529,7 +529,11 @@ Mine find_optimal_mine(){
 	int8_t best_mine=0;
 	for(int i=0;i<mineNum;i++){
 		int8_t dst=mhtDst(nowGrid,mineList[i].grid);
+		// bellmanford(nowGrid,mineList[i].grid,&needWool);
 		mineList[i].score=mineList[i].store*16/(16+dst+needWool);
+		// if(needWool>wool){
+		// 	mineList[i].score=0;
+		// }
 		if(mineList[i].score>best_score){
 			best_score=mineList[i].score;
 			best_mine=i;
@@ -539,7 +543,10 @@ Mine find_optimal_mine(){
 }
 uint8_t find_optimal_enhancement(){
 	if(time>10000){
-		return HEALTH;
+		if(health<maxHealth-3)
+			return HEALING;
+		else
+			return HEALTH;
 	}
 	if(strength<10){
 		return STRENGTH;
