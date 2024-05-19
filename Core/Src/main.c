@@ -285,8 +285,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM6)
   {
     Mecanum_Pos(now, goal);
-    Update_Dual_Pwm();
-//    Update_Single_Pwm();
+//    Update_Dual_Pwm();
+    Update_Single_Pwm();
   }
 }
 /* USER CODE END 4 */

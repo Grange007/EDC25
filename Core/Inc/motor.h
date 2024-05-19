@@ -23,15 +23,6 @@ extern float FL, FR, RL, RR;
 extern float yaw;
 extern float vx, vy, w;
 
-extern float FLNow;
-extern float FRNow;
-extern float RLNow;
-extern float RRNow;
-
-extern float vx;
-extern float vy;
-extern float w;
-
 void Move(uint8_t id, float pwm);
 void Update_Dual_Pwm();
 void Update_Single_Pwm();
