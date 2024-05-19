@@ -377,7 +377,21 @@ float calculate_weight_protect(){
 	return weight;
 }
 float calculate_weight_destroy(){
-	bellmanford(nowGrid,opHomeGrid,&needWool);
+	Grid calc_desGrid;
+	if (team == RED_TEAM)
+	{
+		calc_desGrid.x = opHomeGrid.x - 1;
+		calc_desGrid.y = opHomeGrid.y - 1;
+	}
+	if (team == BLUE_TEAM)
+	{
+		calc_desGrid.x = opHomeGrid.x + 1;
+		calc_desGrid.y = opHomeGrid.y + 1;
+	}
+	bellmanford(nowGrid,calc_desGrid,&needWool);
+	if(needWool>10){
+		needWool=10;
+	}
 	if(needWool>wool){
 		return 0;
 	}
