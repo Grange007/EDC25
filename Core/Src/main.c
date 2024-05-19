@@ -105,26 +105,26 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-// Output PWM
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);// FL
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);// FR
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);// RL
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);// RR
-// Measure
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);// FL
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);// FR
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);// RL
-  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL);// RR
-// Update PWM
+  // Output PWM
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
+  // Measure
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
+  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
+  // Update PWM
   HAL_TIM_Base_Start_IT(&htim6);
-// jy62
+  // jy62
   jy62_Init(&huart3);
   InitAngle();
   SetHorizontal();
   Calibrate();
-// zigbee
+  // zigbee
   zigbee_Init(&huart4);
-// PID
+  // PID
   PID_Init(&FLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
   PID_Init(&FRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
   PID_Init(&RLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
