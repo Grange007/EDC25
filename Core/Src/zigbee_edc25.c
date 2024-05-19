@@ -1,6 +1,5 @@
-#include "jy62.h"
 #include "zigbee_edc25.h"
-
+#include "jy62.h"
 #include "main.h"
 #include "usart.h"
 

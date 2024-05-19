@@ -11,64 +11,64 @@ PidStr FLN_Pid, FRN_Pid, RLN_Pid, RRN_Pid;
 PidStr xPid, yPid;
 PidStr anglePid;
 
-void PID_Init(PidStr* a, float kp, float ki, float kd, float max)
+void PID_Init(PidStr *a, float kp, float ki, float kd, float max)
 {
-	a->err = 0;
-	a->iErr = 0;
-	a->lErr = 0;
-	a->kp = kp;
-	a->ki = ki;
-	a->kd = kd;
-	a->max = max;
+  a->err = 0;
+  a->iErr = 0;
+  a->lErr = 0;
+  a->kp = kp;
+  a->ki = ki;
+  a->kd = kd;
+  a->max = max;
 }
 
-float PID_Cal(PidStr* a, float cur, float goal)
+float PID_Cal(PidStr *a, float cur, float goal)
 {
-	a->err = goal - cur;
-	a->iErr += a->err;
+  a->err = goal - cur;
+  a->iErr += a->err;
 
 //	if (a->iErr > a->max)
 //		a->iErr = a->max;
 //	if (a->iErr < -a->max)
 //		a->iErr = -a->max;
 
-	float pwm = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
-	a->lErr = a->err;
+  float pwm = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
+  a->lErr = a->err;
 
-	if (pwm >= MAX_PWM)
-		pwm = MAX_PWM;
-	if (pwm <= MIN_PWM)
-		pwm = MIN_PWM;
-	return pwm;
+  if (pwm >= MAX_PWM)
+    pwm = MAX_PWM;
+  if (pwm <= MIN_PWM)
+    pwm = MIN_PWM;
+  return pwm;
 }
 
-float Pos_Cal(PidStr* a, float cur, float goal)
+float Pos_Cal(PidStr *a, float cur, float goal)
 {
-	a->err = goal - cur;
-	float v = a->kp * a->err;
-	if (v >= MAX_VELOCITY)
-		v = MAX_VELOCITY;
-	if (v <= MIN_VELOCITY)
-		v = MIN_VELOCITY;
-	return v;
+  a->err = goal - cur;
+  float v = a->kp * a->err;
+  if (v >= MAX_VELOCITY)
+    v = MAX_VELOCITY;
+  if (v <= MIN_VELOCITY)
+    v = MIN_VELOCITY;
+  return v;
 }
 
-float Angle_Cal(PidStr* a, float cur, float goal)
+float Angle_Cal(PidStr *a, float cur, float goal)
 {
-	a->err = goal - cur;
-	a->iErr += a->err;
+  a->err = goal - cur;
+  a->iErr += a->err;
 
-	if (a->iErr > a->max)
-		a->iErr = a->max;
-	if (a->iErr < -a->max)
-		a->iErr = -a->max;
+  if (a->iErr > a->max)
+    a->iErr = a->max;
+  if (a->iErr < -a->max)
+    a->iErr = -a->max;
 
-	float o = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
-	a->lErr = a->err;
-	
-	if (o >= MAX_OMEGA)
-		o = MAX_OMEGA;
-	if (o <= MIN_OMEGA)
-		o = MIN_OMEGA;
-	return o;
+  float o = a->kp * a->err + a->ki * a->iErr + a->kd * (a->err - a->lErr);
+  a->lErr = a->err;
+
+  if (o >= MAX_OMEGA)
+    o = MAX_OMEGA;
+  if (o <= MIN_OMEGA)
+    o = MIN_OMEGA;
+  return o;
 }

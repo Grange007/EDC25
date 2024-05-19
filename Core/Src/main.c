@@ -66,9 +66,9 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -105,140 +105,153 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-    // Output PWM
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
-    // Measure
-    HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
-    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
-    HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
-    HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
-    // Update PWM
-    HAL_TIM_Base_Start_IT(&htim6);
-    // jy62
-    jy62_Init(&huart3);
-    InitAngle();
-    SetHorizontal();
-    Calibrate();
-    // zigbee
-    zigbee_Init(&huart4);
-    // PID
-    PID_Init(&FLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&FRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&RLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&RRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&FLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&FRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
-    PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  // Output PWM
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // FL
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // FR
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // RL
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // RR
+  // Measure
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL); // FL
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL); // FR
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL); // RL
+  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL); // RR
+  // Update PWM
+  HAL_TIM_Base_Start_IT(&htim6);
+  // jy62
+  jy62_Init(&huart3);
+  InitAngle();
+  SetHorizontal();
+  Calibrate();
+  // zigbee
+  zigbee_Init(&huart4);
+  // PID
+  PID_Init(&FLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&FRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&RLP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&RRP_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&FLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&FRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&RLN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
+  PID_Init(&RRN_Pid, 500.0f, 10.0f, 0.0f, 40000.0f);
 
-    PID_Init(&xPid, 0.6f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&yPid, 0.6f, 0.0f, 0.0f, 5000.0f);
-    PID_Init(&anglePid, 0.02f, 0.0005f, 0.01f, 20.0f);
+  PID_Init(&xPid, 0.5f, 0.0f, 0.0f, 50.0f);
+  PID_Init(&yPid, 0.5f, 0.0f, 0.0f, 50.0f);
+  PID_Init(&anglePid, 0.015f, 0.0005f, 0.01f, 20.0f);
 
-    u1_printf("Hello\n");
-
-    HAL_Delay(1000);
-
+  u1_printf("Hello\n");
+  HAL_Delay(1000);
+  // ready_func();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-    while (1)
-    {
+  int cnt = 0;
+  
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-        HAL_Delay(100);
+    HAL_Delay(300);
+    getPosition(&now);
+    nowGrid = pos2Grid(now);
+    getPositionOpponent(&op);
+    opGrid = pos2Grid(op);
 
+    agility = getAgility();
+    health = getHealth();
+    strength = getStrength();
+    maxHealth = getMaxHealth();
+    wool = getWoolCount();
+    emerald = getEmeraldCount();
+    time = getGameTime();
+    cd = (agility < 32) ? (170 - 5 * agility) : 10;
 
-        getPosition(&now);
-        nowGrid = pos2Grid(now);
-        getPositionOpponent(&op);
-        opGrid = pos2Grid(op);
+//    if (cnt == 15)
+//       goal.posy = 1.5;
+//    else if (cnt == 30)
+//       goal.posy = -0.5;
+//    else if (cnt == 45)
+//    {
+//       goal.posy = 0.5;
+//       cnt = 0;
+//    }
+//    cnt ++;
 
-//        u1_printf("now grid:(%d,%d)\n", nowGrid.x, nowGrid.y);
-        u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
-//        u1_printf("goal grid:(%d,%d)\n", goalGrid.x, goalGrid.y);
-        u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
-//        u1_printf("op:(%f, %f)\n", op.posx, op.posy);
-//        u1_printf("des grid:(%d,%d)\n", desGrid.x, desGrid.y);
-//        u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
-//        u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
-
-        if (getGameStage() == READY)
-            ready_func();
-        else if (getGameStage() != FINISHED)
-        {
-            updInfo_func();
-            switch (status)
-            {
-                case init:
-                    u1_printf("init\n");
-                    init_func();
-                    break;
-                case dead:
-                    u1_printf("dead\n");
-                    dead_func();
-                    break;
-                case protect:
-                    u1_printf("protect\n");
-                    protect_func();
-                    break;
-                case purchase:
-                    u1_printf("purchase\n");
-                    purchase_func();
-                    break;
-                case Pmove:
-                    u1_printf("Pmove\n");
-                    Pmove_func();
-                    break;
-                case Pdestroy:
-                    u1_printf("Pdestroy\n");
-                    Pdestroy_func();
-                    break;
-                case Nmove:
-                    u1_printf("Nmove\n");
-                    Nmove_func();
-                    break;
-                case Ndestroy:
-                    u1_printf("Ndestroy\n");
-                    Ndestroy_func();
-                    break;
-                case recover:
-                    u1_printf("recover\n");
-                    recover_func();
-                    break;
-                case upgrade:
-                    u1_printf("upgrade\n");
-                    upgrade_func();
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        else
-            ;
+    u1_printf("yaw:%f\n", yaw);
+//		u1_printf("now:(%d,%d)\n", nowGrid.x, nowGrid.y);
+    u1_printf("now pos:(%f,%f)\n", now.posx, now.posy);
+//		u1_printf("goal:(%d,%d)\n", goalGrid.x, goalGrid.y);
+    u1_printf("goal pos:(%f,%f)\n", goal.posx, goal.posy);
+//		u1_printf("des:(%d,%d)\n", desGrid.x, desGrid.y);
+//		u1_printf("home:(%d,%d)\n", homeGrid.x, homeGrid.y);
+//		u1_printf("ophome:(%d,%d)\n", opHomeGrid.x, opHomeGrid.y);
+//    u1_printf("mine: %d\n",mineNum);
+//    u1_printf("07: %d\n",getOreKindOfId(7));
+    u1_printf("score: %f\n", find_optimal_mine().score);
+    if (getGameStage() == READY)
+      ready_func();
+//		    ;
+    else if (getGameStage() != FINISHED)
+    {
+      update_mine();
+      statusChange();
+      switch (status)
+      {
+        case init:
+          u1_printf("init\n");
+          init_func();
+          break;
+        case dead:
+          u1_printf("dead\n");
+          dead_func();
+          break;
+        case protect:
+          u1_printf("protect\n");
+          protect_func();
+          break;
+        case destroy:
+          u1_printf("destroy\n");
+          destroy_func();
+          break;
+        case attack:
+          u1_printf("attack\n");
+          attack_func();
+          break;
+        case mine:
+          u1_printf("mine\n");
+          mine_func();
+          break;
+        case get_wool:
+          u1_printf("get wool\n");
+          get_wool_func();
+          break;
+        case get_enhanced:
+          u1_printf("get enhanced\n");
+          get_enhanced_func();
+          break;
+        default:
+          break;
+      }
     }
+    else
+      ;
+  }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
@@ -252,9 +265,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+      | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -279,9 +292,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
